@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Tutoring — by Deni</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --bg: #0b1121; --bg2: #111827; --card: rgba(17,24,39,0.85);
+  --fg: #e2e8f0; --muted: #64748b; --accent: #10b981;
+  --accent2: #f59e0b; --danger: #ef4444; --border: rgba(100,116,139,0.2);
+  --glass: rgba(16,185,129,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Latar belakang animasi */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(16,185,129,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(245,158,11,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(16,185,129,0.03) 0%, transparent 50%);
+}
+.bg-grid::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(16,185,129,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,185,129,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Transisi halaman */
+.view { display: none; position: relative; z-index: 1; }
+.view.active { display: block; animation: fadeSlideIn 0.4s ease; }
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Peta node */
+.map-node {
+  width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease;
+  position: relative; border: 3px solid var(--border);
+  background: var(--bg2);
+}
+.map-node.unlocked { border-color: var(--accent); box-shadow: 0 0 20px rgba(16,185,129,0.2); }
+.map-node.unlocked:hover { transform: scale(1.12); box-shadow: 0 0 30px rgba(16,185,129,0.4); }
+.map-node.completed { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.map-node.completed:hover { transform: scale(1.08); }
+.map-node.locked { opacity: 0.35; cursor: not-allowed; }
+.map-node.current { animation: pulseGlow 2s ease-in-out infinite; }
+@keyframes pulseGlow {
+  0%,100% { box-shadow: 0 0 15px rgba(16,185,129,0.3); }
+  50% { box-shadow: 0 0 35px rgba(16,185,129,0.6); }
+}
+
+/* Koneksi garis peta */
+.map-line { width: 3px; height: 40px; margin: 0 auto; background: var(--border); transition: background 0.5s; }
+.map-line.done { background: var(--accent); }
+.map-branch-line { height: 3px; width: 60px; background: var(--border); transition: background 0.5s; }
+.map-branch-line.done { background: var(--accent); }
+
+/* Lesson node di peta detail */
+.lesson-node {
+  width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; cursor: pointer; transition: all 0.3s; border: 2px solid var(--border); background: var(--bg2);
+}
+.lesson-node.theory { border-radius: 50%; }
+.lesson-node.exercise { border-radius: 16px; }
+.lesson-node.unlocked { border-color: var(--accent); }
+.lesson-node.unlocked:hover { transform: scale(1.15); box-shadow: 0 0 20px rgba(16,185,129,0.3); }
+.lesson-node.completed { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.lesson-node.locked { opacity: 0.3; cursor: not-allowed; }
+.lesson-connector { width: 2px; height: 24px; margin: 0 auto; background: var(--border); }
+.lesson-connector.done { background: var(--accent); }
+
+/* Tombol */
+.btn-primary {
+  background: var(--accent); color: var(--bg); font-weight: 600; padding: 14px 32px; border-radius: 14px;
+  border: none; cursor: pointer; font-size: 1rem; font-family: inherit; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { filter: brightness(1.15); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16,185,129,0.3); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; filter: none; }
+.btn-secondary {
+  background: transparent; color: var(--accent); font-weight: 600; padding: 12px 24px; border-radius: 14px;
+  border: 2px solid var(--accent); cursor: pointer; font-size: 0.9rem; font-family: inherit; transition: all 0.2s;
+}
+.btn-secondary:hover { background: rgba(16,185,129,0.1); }
+
+/* Opsi exercise */
+.opt-card {
+  padding: 16px 20px; border: 2px solid var(--border); border-radius: 14px; cursor: pointer;
+  transition: all 0.2s; background: var(--card); min-height: 52px; display: flex; align-items: center; gap: 12px;
+}
+.opt-card:hover { border-color: rgba(16,185,129,0.4); background: var(--glass); }
+.opt-card.selected { border-color: var(--accent); background: rgba(16,185,129,0.12); }
+.opt-card.correct { border-color: #10b981; background: rgba(16,185,129,0.15); }
+.opt-card.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+.opt-card.disabled { pointer-events: none; opacity: 0.7; }
+
+/* Input exercise */
+.ex-input {
+  background: var(--bg2); border: 2px solid var(--border); border-radius: 12px; padding: 14px 18px;
+  color: var(--fg); font-size: 1rem; font-family: inherit; width: 100%; outline: none; transition: border-color 0.2s;
+}
+.ex-input:focus { border-color: var(--accent); }
+.ex-input.correct { border-color: #10b981; }
+.ex-input.wrong { border-color: #ef4444; }
+
+/* Code block */
+.code-block {
+  background: #0d1117; border: 1px solid rgba(100,116,139,0.2); border-radius: 12px;
+  padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+  line-height: 1.7; overflow-x: auto; white-space: pre;
+}
+
+/* Progress bar */
+.prog-bar { height: 6px; border-radius: 3px; background: rgba(100,116,139,0.2); overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.5s ease; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+  padding: 14px 28px; border-radius: 14px; font-weight: 600; z-index: 999;
+  transition: transform 0.4s ease; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { background: #10b981; color: #0b1121; }
+.toast.error { background: #ef4444; color: white; }
+.toast.info { background: #f59e0b; color: #0b1121; }
+
+/* XP popup */
+.xp-popup {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0);
+  background: var(--bg2); border: 2px solid var(--accent2); border-radius: 24px;
+  padding: 40px 60px; z-index: 100; text-align: center;
+  transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.xp-popup.show { transform: translate(-50%,-50%) scale(1); }
+
+/* Celebration particles */
+.confetti { position: fixed; top: -10px; z-index: 99; pointer-events: none; animation: confettiFall 2s ease-out forwards; }
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Match exercise */
+.match-item {
+  padding: 12px 18px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer;
+  transition: all 0.2s; background: var(--card); text-align: center; user-select: none;
+}
+.match-item:hover { border-color: rgba(16,185,129,0.4); }
+.match-item.active { border-color: var(--accent); background: rgba(16,185,129,0.12); box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+.match-item.matched { border-color: #10b981; background: rgba(16,185,129,0.15); opacity: 0.6; pointer-events: none; }
+.match-item.wrong-match { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+
+/* Order exercise */
+.order-item {
+  padding: 14px 20px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer;
+  transition: all 0.2s; background: var(--card); user-select: none;
+}
+.order-item:hover { border-color: rgba(16,185,129,0.4); }
+.order-item.ordered { border-color: var(--accent2); background: rgba(245,158,11,0.1); opacity: 0.5; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.3); border-radius: 3px; }
+
+/* Responsif */
+@media (max-width: 640px) {
+  .map-node { width: 56px; height: 56px; font-size: 1rem; }
+  .lesson-node { width: 48px; height: 48px; font-size: 0.75rem; }
+}
+
+/* Animasi masuk */
+.stagger-in > * { opacity: 0; transform: translateY(15px); animation: staggerFade 0.4s ease forwards; }
+.stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-in > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-in > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-in > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-in > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-in > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-in > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-in > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-in > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-in > *:nth-child(10) { animation-delay: 0.5s; }
+@keyframes staggerFade { to { opacity: 1; transform: translateY(0); } }
+
+/* Feedback benar/salah */
+.feedback-bar {
+  padding: 18px 24px; border-radius: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px;
+  animation: fadeSlideIn 0.3s ease;
+}
+.feedback-bar.correct-fb { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #10b981; }
+.feedback-bar.wrong-fb { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
+
+/* Terjemahan bahasa Indonesia di bawah teks utama */
+.id-lang { display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 2px; line-height: 1.4; }
+
+/* Khusus label di node peta/lesson: tidak wrap, indo di bawah inggris */
+.node-title { text-align: center; white-space: nowrap; }
+.node-title .id-lang { display: block; white-space: nowrap; margin-top: 2px; }
+
+/* Modal Rules */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+.modal-box {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 20px;
+  padding: 30px; max-width: 450px; width: 90%; position: relative;
+  animation: scaleIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<!-- Rules Modal -->
+<div id="rulesModal" class="modal-overlay">
+  <div class="modal-box">
+    <button onclick="closeRules()" class="absolute top-4 right-4 text-slate-500 hover:text-slate-300 transition">
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </button>
+    <h3 class="text-xl font-bold mb-5 text-amber-400">
+      <i class="fa-solid fa-gavel mr-2"></i>Class Rules <span class="id-lang" style="display:inline; color:#f59e0b;">Aturan Kelas</span>
+    </h3>
+    <ul class="space-y-4 text-slate-300">
+      <li class="flex items-start gap-3">
+        <span class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-comments text-emerald-400"></i></span>
+        <div>
+          <strong>Take turns speaking</strong>
+          <span class="id-lang">Berbicara secara bergantian</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-video text-amber-400"></i></span>
+        <div>
+          <strong>Turn on camera & microphone when required</strong>
+          <span class="id-lang">Menyalakan kamera & microphone jika diperlukan</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-hand text-violet-400"></i></span>
+        <div>
+          <strong>Ask for permission to leave the class</strong>
+          <span class="id-lang">Meminta izin jika ingin meninggalkan kelas</span>
+        </div>
+      </li>
+    </ul>
+    <div class="mt-6 text-right">
+      <button onclick="closeRules()" class="btn-primary">Got it! <span class="id-lang" style="color:rgba(11,17,33,0.7); display:inline;">Mengerti!</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- XP Popup -->
+<div id="xpPopup" class="xp-popup">
+  <div class="text-5xl font-bold text-amber-400 mb-2">+<span id="xpAmount">10</span> XP</div>
+  <div class="text-lg text-slate-400">Correct answer! <span class="id-lang">Jawaban benar!</span></div>
+</div>
+
+<!-- ========== MAP VIEW ========== -->
+<div id="mapView" class="view active">
+  <header class="sticky top-0 z-10 backdrop-blur-xl bg-[#0b1121]/80 border-b border-white/5">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+          <i class="fa-solid fa-square-root-variable text-emerald-400"></i>
+        </div>
+        <div>
+          <div class="font-bold text-lg leading-tight">Math Tutoring</div>
+          <div class="text-xs text-slate-500">by Deni</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button onclick="openRules()" class="text-xs text-slate-500 hover:text-amber-400 transition flex items-center gap-1 border border-transparent hover:border-amber-400/30 rounded-lg px-2 py-1" title="Class Rules">
+          <i class="fa-solid fa-gavel"></i> Rules
+        </button>
+        <button onclick="resetProgress()" class="text-xs text-slate-500 hover:text-red-400 transition flex items-center gap-1 border border-transparent hover:border-red-400/30 rounded-lg px-2 py-1" title="Reset Semua Progress">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+        <div class="flex items-center gap-2 text-amber-400 font-semibold">
+          <i class="fa-solid fa-bolt"></i><span id="headerXP">0</span> XP
+        </div>
+        <div class="flex items-center gap-2 text-orange-400 font-semibold">
+          <i class="fa-solid fa-fire"></i><span id="headerStreak">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 pt-8 pb-20">
+    <div class="text-center mb-10">
+		<h1 class="text-2xl md:text-3xl font-extrabold mb-3 bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent leading-tight">
+		  Merakit dan Membongkar Bilangan Empat Angka
+		  <span class="id-lang" style="display:block; color:#94a3b8; margin-top: 4px; font-size: 1.25rem;">Assembling and Disassembling Four-Digit Numbers</span>
+		</h1>
+            <div class="text-slate-400 mx-auto text-center" style="max-width: 90%;">
+        <div style="white-space: nowrap;">Complete each map to unlock the next. Collect XP and build your learning streak!</div>
+        <div class="id-lang" style="white-space: nowrap;">Selesaikan setiap peta untuk membuka peta berikutnya. Kumpulkan XP dan bangun streak belajarmu!</div>
+      </div>
+    </div>
+
+    <!-- Progress keseluruhan -->
+    <div class="max-w-md mx-auto mb-10">
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-slate-400">Overall Progress <span class="id-lang" style="display:inline; color:#64748b;">Progress Keseluruhan</span></span>
+        <span class="text-emerald-400 font-semibold" id="totalProgress">0%</span>
+      </div>
+      <div class="prog-bar">
+        <div class="prog-fill" id="totalProgFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Peta nodes akan dirender oleh JS -->
+    <div id="mapContainer" class="flex flex-col items-center gap-0"></div>
+  </main>
+</div>
+
+<!-- ========== PETA VIEW (detail lesson) ========== -->
+<div id="petaView" class="view">
+  <header class="sticky top-0 z-10 backdrop-blur-xl bg-[#0b1121]/80 border-b border-white/5">
+    <div class="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
+      <button onclick="showMap()" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
+        <i class="fa-solid fa-arrow-left text-slate-400"></i>
+      </button>
+      <div>
+        <div class="font-bold text-lg" id="petaTitle"></div>
+        <div class="text-xs text-slate-500" id="petaSubtitle"></div>
+      </div>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-4 pt-8 pb-20">
+    <div id="lessonContainer" class="flex flex-col items-center"></div>
+  </main>
+</div>
+
+<!-- ========== LESSON VIEW ========== -->
+<div id="lessonView" class="view">
+  <header class="sticky top-0 z-10 backdrop-blur-xl bg-[#0b1121]/80 border-b border-white/5">
+    <div class="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
+      <button onclick="closeLesson()" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
+        <i class="fa-solid fa-xmark text-slate-400"></i>
+      </button>
+      <div class="flex-1">
+        <div class="prog-bar">
+          <div class="prog-fill" id="lessonProgFill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="text-sm text-slate-400 font-mono" id="lessonCounter">1/10</div>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-4 pt-6 pb-20" id="lessonContent"></main>
+</div>
+
+<script>
+// ============================================================
+// DATA KURSUS — Seluruh konten pembelajaran
+// ============================================================
+const COURSE = {
+  title: "Merakit dan Membongkar Bilangan Empat Angka <span class='id-lang'>Assembling and Disassembling Four-Digit Numbers</span>",
+  maps: [
+    // ==================== SECTION 1 ====================
+    {
+      id:1, title:"Spiral Review Warm-up <span class='id-lang'>Pemanasan Review</span>", icon:"fa-rotate", color:"#10b981", branch:false,
+      lessons:[
+        // T1
+        {type:"T",title:"Mengenal Kembali Nilai Tempat <span class='id-lang'>Reviewing Place Values</span>",
+         body:`<p>Sebelum belajar bilangan empat angka, mari kita ingat kembali nilai tempat! Setiap angka dalam sebuah bilangan punya "rumah" sendiri: satuan, puluhan, ratusan, dan ribuan. <span class='id-lang'>Before learning four-digit numbers, let's review place values! Each digit in a number has its own "house": ones, tens, hundreds, and thousands.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+           <div class="text-emerald-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">Pada bilangan \\( 750 \\), angka 7 menempati rumah ratusan, jadi nilainya \\( 700 \\), bukan hanya 7. Angka 5 di puluhan bernilai \\( 50 \\), dan angka 0 di satuan bernilai \\( 0 \\). <span class='id-lang'>In 750, the digit 7 sits in the hundreds house, so its value is 700. The 5 in tens is worth 50, and the 0 in ones is worth 0.</span></p>
+         </div>`},
+        // E1 - MC
+        {type:"E",etype:"mc",
+         q:"Berapakah nilai angka 7 pada bilangan \\( 750 \\)? <span class='id-lang'>What is the value of digit 7 in 750?</span>",
+         o:["\\( 7 \\)","\\( 70 \\)","\\( 700 \\)","\\( 7.000 \\)"],
+         a:2,
+         h:"Lihat posisi angka 7. Itu di rumah ratusan. <span class='id-lang'>Look at the position of 7. It's in the hundreds house.</span>"},
+        // E2 - FB
+        {type:"E",etype:"fb",
+         q:"Tuliskan bilangan yang \\( 100 \\) lebih besar dari \\( 250 \\). <span class='id-lang'>Write the number that is 100 more than 250.</span>",
+         a:"350",
+         h:"Tambahkan 100 ke 250. <span class='id-lang'>Add 100 to 250.</span>"},
+        // E3 - TF
+        {type:"E",etype:"tf",
+         q:"Pada bilangan \\( 432 \\), angka 4 bernilai 4. <span class='id-lang'>In 432, the digit 4 has a value of 4.</span>",
+         a:false,
+         h:"Angka 4 di posisi ratusan bernilai 400. <span class='id-lang'>The digit 4 in hundreds position is worth 400.</span>"},
+        // T2
+        {type:"T",title:"Merakit Bilangan dari Komponen <span class='id-lang'>Assembling Numbers from Components</span>",
+         body:`<p>Merakit bilangan artinya menyatukan komponen nilai tempat menjadi satu bilangan utuh. Kita jumlahkan semua komponennya. <span class='id-lang'>Assembling a number means combining place value components into one complete number.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+           <div class="text-cyan-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">\\( 1 \\) ribuan \\( + 5 \\) puluhan \\( = 1.000 + 50 = 1.050 \\). Perhatikan bahwa ratusan dan satuan kosong, jadi kita isi dengan angka 0. <span class='id-lang'>1 thousand + 5 tens = 1,000 + 50 = 1,050. Hundreds and ones are empty, so fill them with 0.</span></p>
+         </div>`},
+        // E4 - MC
+        {type:"E",etype:"mc",
+         q:"Jika ada 1 ribuan dan 5 puluhan, bilangan yang terbentuk adalah... <span class='id-lang'>If there is 1 thousand and 5 tens, the number formed is...</span>",
+         o:["\\( 15 \\)","\\( 105 \\)","\\( 1.005 \\)","\\( 1.050 \\)"],
+         a:3,
+         h:"Ingat: 1 ribuan = 1.000, 5 puluhan = 50. <span class='id-lang'>1 thousand = 1,000, 5 tens = 50.</span>"},
+        // E5 - FB
+        {type:"E",etype:"fb",
+         q:"Rakitlah komponen berikut: \\( 2.000 + 300 + 40 + 5 \\). <span class='id-lang'>Assemble: 2,000 + 300 + 40 + 5.</span>",
+         a:"2.345||2345",
+         h:"Jumlahkan semua komponennya. <span class='id-lang'>Add all components.</span>"},
+        // E6 - Match
+        {type:"E",etype:"match",
+         q:"Cocokkan komponen dengan bilangan utuhnya. <span class='id-lang'>Match components with the complete number.</span>",
+         left:["\\( 1.000 + 200 \\)","\\( 3.000 + 40 + 5 \\)","\\( 5.000 + 600 + 70 + 8 \\)"],
+         right:["\\( 5.678 \\)","\\( 1.200 \\)","\\( 3.045 \\)"],
+         a:[1,2,0],
+         h:"Jumlahkan komponen kiri untuk dapat bilangan kanan. <span class='id-lang'>Add left components to get the right number.</span>"},
+        // T3
+        {type:"T",title:"Membongkar Bilangan Menjadi Komponen <span class='id-lang'>Disassembling Numbers into Components</span>",
+         body:`<p>Membongkar bilangan adalah kebalikan dari merakit. Kita pisahkan bilangan menjadi ribuan + ratusan + puluhan + satuan. <span class='id-lang'>Disassembling is the reverse of assembling. We separate the number into thousands + hundreds + tens + ones.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">\\( 1.200 = 1.000 + 200 \\). Karena tidak ada puluhan dan satuan, kita tidak perlu menulisnya. <span class='id-lang'>1,200 = 1,000 + 200. No tens and ones, so we don't write them.</span></p>
+         </div>`},
+        // E7 - FB
+        {type:"E",etype:"fb",
+         q:"Bongkarlah bilangan \\( 1.200 \\) menjadi ribuan + ratusan. <span class='id-lang'>Decompose 1,200 into thousands + hundreds.</span>",
+         a:"1000+200||1.000+200",
+         h:"Pisahkan 1.200 menjadi ribuan dan ratusan. <span class='id-lang'>Separate 1,200 into thousands and hundreds.</span>"},
+        // E8 - MC
+        {type:"E",etype:"mc",
+         q:"Bentuk bongkar yang benar dari \\( 3.450 \\) adalah... <span class='id-lang'>The correct decomposed form of 3,450 is...</span>",
+         o:["\\( 3.000 + 400 + 5 + 0 \\)","\\( 3.000 + 400 + 50 \\)","\\( 300 + 40 + 5 \\)","\\( 3 + 4 + 5 + 0 \\)"],
+         a:1,
+         h:"3.450 = 3.000 + 400 + 50. <span class='id-lang'>3,450 = 3,000 + 400 + 50.</span>"},
+        // E9 - Ord
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah membongkar bilangan \\( 5.678 \\). <span class='id-lang'>Order the steps to decompose 5,678.</span>",
+         o:["Identifikasi ribuan: \\( 5.000 \\)","Identifikasi ratusan: \\( 600 \\)","Identifikasi puluhan: \\( 70 \\)","Identifikasi satuan: \\( 8 \\)"],
+         a:[0,1,2,3],
+         h:"Mulai dari ribuan ke satuan. <span class='id-lang'>Start from thousands to ones.</span>"},
+        // E10 - SA
+        {type:"E",etype:"sa",
+         q:"Manakah bentuk bongkar yang benar untuk \\( 2.345 \\)? <span class='id-lang'>Which are correct decomposed forms of 2,345?</span>",
+         o:["\\( 2.000 + 300 + 40 + 5 \\)","\\( 2 + 3 + 4 + 5 \\)","\\( 2.000 + 300 + 45 \\)","\\( 2.000 + 345 \\)"],
+         a:[0,2,3],
+         h:"Ada beberapa bentuk yang benar. Periksa nilainya. <span class='id-lang'>Multiple correct forms. Check the values.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 2 ====================
+    {
+      id:2, title:"Real-World Connection <span class='id-lang'>Koneksi Dunia Nyata</span>", icon:"fa-lightbulb", color:"#06b6d4", branch:false,
+      lessons:[
+        // T1
+        {type:"T",title:"Bilangan Empat Angka di Sekitar Kita <span class='id-lang'>Four-Digit Numbers Around Us</span>",
+         body:`<p>Di dunia pengiriman paket atau logistik, setiap barang punya kode unik empat angka. Kalau kita salah baca kode, paketnya bisa nyasar ke tempat lain! Bilangan empat angka juga ada di tahun, kode pos, dan nomor peserta. <span class='id-lang'>In shipping and logistics, each package has a unique four-digit code. If we misread the code, the package may go to the wrong place! Four-digit numbers also appear in years, postal codes, and participant numbers.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+           <div class="text-cyan-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">Tahun \\( 2024 \\), kode pos \\( 1.234 \\), dan nomor peserta \\( 4.567 \\) adalah contoh bilangan empat angka. <span class='id-lang'>Year 2024, postal code 1,234, and participant number 4,567 are examples of four-digit numbers.</span></p>
+         </div>`},
+        // E1 - MC
+        {type:"E",etype:"mc",
+         q:"Manakah yang merupakan bilangan empat angka? <span class='id-lang'>Which is a four-digit number?</span>",
+         o:["\\( 250 \\)","\\( 2.024 \\)","\\( 12.345 \\)","\\( 7 \\)"],
+         a:1,
+         h:"Bilangan empat angka punya 4 digit. <span class='id-lang'>A four-digit number has 4 digits.</span>"},
+        // E2 - FB
+        {type:"E",etype:"fb",
+         q:"Berapa digit pada kode paket \\( 4.567 \\)? <span class='id-lang'>How many digits are in the package code 4,567?</span>",
+         a:"4||empat",
+         h:"Hitung jumlah angkanya. <span class='id-lang'>Count the number of digits.</span>"},
+        // E3 - TF
+        {type:"E",etype:"tf",
+         q:"Kode paket logistik selalu menggunakan bilangan empat angka. <span class='id-lang'>Logistics package codes always use four-digit numbers.</span>",
+         a:false,
+         h:"Tidak selalu. Bisa lebih atau kurang dari 4 angka. <span class='id-lang'>Not always. It can be more or less than 4 digits.</span>"},
+        // T2
+        {type:"T",title:"Membaca Kode Bilangan Empat Angka <span class='id-lang'>Reading Four-Digit Number Codes</span>",
+         body:`<p>Membaca bilangan empat angka dimulai dari ribuan, lalu ratusan, puluhan, dan satuan. <span class='id-lang'>Reading a four-digit number starts from thousands, then hundreds, tens, and ones.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+           <div class="text-emerald-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">\\( 4.250 \\) dibaca "empat ribu dua ratus lima puluh". <span class='id-lang'>4,250 is read "four thousand two hundred fifty".</span></p>
+         </div>`},
+        // E4 - MC
+        {type:"E",etype:"mc",
+         q:"Bilangan \\( 4.250 \\) dibaca... <span class='id-lang'>The number 4,250 is read...</span>",
+         o:["empat ribu dua ratus lima puluh <span class='id-lang'></span>","empat dua lima nol <span class='id-lang'></span>","empat ratus dua puluh lima <span class='id-lang'></span>","empat puluh dua ribu lima <span class='id-lang'></span>"],
+         a:0,
+         h:"Mulai dari ribuan: 4.000 + 200 + 50. <span class='id-lang'>Start from thousands: 4,000 + 200 + 50.</span>"},
+        // E5 - FB
+        {type:"E",etype:"fb",
+         q:"Pada bilangan \\( 3.456 \\), berapakah nilai ribuannya? <span class='id-lang'>In 3,456, what is the value of the thousands?</span>",
+         a:"3000||3.000",
+         h:"Angka 3 di posisi ribuan bernilai 3.000. <span class='id-lang'>The digit 3 in thousands position is worth 3,000.</span>"},
+        // E6 - Match
+        {type:"E",etype:"match",
+         q:"Cocokkan kode dengan bacaannya. <span class='id-lang'>Match the code with its reading.</span>",
+         left:["\\( 1.234 \\)","\\( 2.045 \\)","\\( 5.600 \\)"],
+         right:["seribu dua ratus tiga puluh empat","dua ribu empat puluh lima","lima ribu enam ratus"],
+         a:[0,1,2],
+         h:"Baca dari ribuan ke satuan. <span class='id-lang'>Read from thousands to ones.</span>"},
+        // T3
+        {type:"T",title:"Pentingnya Membaca Bilangan dengan Teliti <span class='id-lang'>The Importance of Reading Numbers Carefully</span>",
+         body:`<p>Membaca bilangan dengan teliti sangat penting. \\( 1.050 \\) dan \\( 1.500 \\) terlihat mirip, tapi nilainya sangat berbeda! <span class='id-lang'>Reading numbers carefully is very important. 1,050 and 1,500 look similar, but their values are very different!</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Hati-hati! <span class='id-lang'>Be careful!</span></div>
+           <p class="text-sm text-slate-300">\\( 1.050 = 1.000 + 50 \\), sedangkan \\( 1.500 = 1.000 + 500 \\). Selisihnya \\( 450 \\)! <span class='id-lang'>1,050 = 1,000 + 50, while 1,500 = 1,000 + 500. The difference is 450!</span></p>
+         </div>`},
+        // E7 - MC
+        {type:"E",etype:"mc",
+         q:"Manakah yang lebih besar: \\( 1.050 \\) atau \\( 1.500 \\)? <span class='id-lang'>Which is larger: 1,050 or 1,500?</span>",
+         o:["\\( 1.050 \\) lebih besar <span class='id-lang'></span>","\\( 1.500 \\) lebih besar <span class='id-lang'></span>","Sama besar <span class='id-lang'></span>","Tidak bisa dibandingkan <span class='id-lang'></span>"],
+         a:1,
+         h:"Bandingkan ratusannya: 0 vs 5. <span class='id-lang'>Compare hundreds: 0 vs 5.</span>"},
+        // E8 - FB
+        {type:"E",etype:"fb",
+         q:"Pada bilangan \\( 2.030 \\), posisi ratusan diisi angka... <span class='id-lang'>In 2,030, the hundreds position is filled with...</span>",
+         a:"0||nol",
+         h:"Lihat posisi ketiga dari kanan. <span class='id-lang'>Look at the third position from the right.</span>"},
+        // E9 - Ord
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah membaca \\( 4.567 \\). <span class='id-lang'>Order the steps to read 4,567.</span>",
+         o:["Baca ribuan: empat ribu","Baca ratusan: lima ratus","Baca puluhan: enam puluh","Baca satuan: tujuh"],
+         a:[0,1,2,3],
+         h:"Mulai dari ribuan ke satuan. <span class='id-lang'>Start from thousands to ones.</span>"},
+        // E10 - SA
+        {type:"E",etype:"sa",
+         q:"Manakah pernyataan yang benar tentang \\( 3.045 \\)? <span class='id-lang'>Which statements are true about 3,045?</span>",
+         o:["angka 3 di posisi ribuan <span class='id-lang'></span>","angka 0 di posisi puluhan <span class='id-lang'></span>","angka 4 di posisi ratusan <span class='id-lang'></span>","angka 5 di posisi satuan <span class='id-lang'></span>"],
+         a:[0,3],
+         h:"Tulis posisi tiap angka: ribuan-ratusan-puluhan-satuan. <span class='id-lang'>Write each digit's position: thousands-hundreds-tens-ones.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 3 ====================
+    {
+      id:3, title:"Review of Prior Knowledge <span class='id-lang'>Review Pengetahuan</span>", icon:"fa-brain", color:"#8b5cf6", branch:false,
+      lessons:[
+        // T1
+        {type:"T",title:"Rumah Nilai Tempat <span class='id-lang'>Place Value Houses</span>",
+         body:`<p>Angka itu punya "rumah". Rumah ribuan, ratusan, puluhan, dan satuan. Posisi angka menentukan nilainya. <span class='id-lang'>Digits have "houses". Thousands, hundreds, tens, and ones houses. The position of a digit determines its value.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-violet-500/10 border border-violet-500/20">
+           <div class="text-violet-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">Pada \\( 4.321 \\): angka 4 di ribuan (nilai \\( 4.000 \\)), angka 3 di ratusan (nilai \\( 300 \\)), angka 2 di puluhan (nilai \\( 20 \\)), angka 1 di satuan (nilai \\( 1 \\)). <span class='id-lang'>In 4,321: digit 4 in thousands (value 4,000), 3 in hundreds (300), 2 in tens (20), 1 in ones (1).</span></p>
+         </div>`},
+        // E1 - MC
+        {type:"E",etype:"mc",
+         q:"Pada \\( 4.321 \\), mana angka yang duduk di kursi 'Ratusan'? <span class='id-lang'>In 4,321, which digit sits in the 'Hundreds' seat?</span>",
+         o:["\\( 4 \\)","\\( 3 \\)","\\( 2 \\)","\\( 1 \\)"],
+         a:1,
+         h:"Ratusan adalah posisi ketiga dari kanan. <span class='id-lang'>Hundreds is the third position from the right.</span>"},
+        // E2 - FB
+        {type:"E",etype:"fb",
+         q:"Berapakah nilai angka 3 pada \\( 4.321 \\)? <span class='id-lang'>What is the value of digit 3 in 4,321?</span>",
+         a:"300||tiga ratus",
+         h:"Angka 3 di ratusan = 300. <span class='id-lang'>Digit 3 in hundreds = 300.</span>"},
+        // E3 - TF
+        {type:"E",etype:"tf",
+         q:"Pada \\( 2.567 \\), angka 5 bernilai 5. <span class='id-lang'>In 2,567, the digit 5 has a value of 5.</span>",
+         a:false,
+         h:"Angka 5 di ratusan bernilai 500. <span class='id-lang'>Digit 5 in hundreds is worth 500.</span>"},
+        // T2
+        {type:"T",title:"Nilai Tempat vs Nilai Angka <span class='id-lang'>Place Value vs Digit Value</span>",
+         body:`<p>Nilai tempat adalah posisi angka (ribuan, ratusan, dll). Nilai angka adalah hasil kali angka dengan nilai tempatnya. <span class='id-lang'>Place value is the position of a digit (thousands, hundreds, etc). Digit value is the digit multiplied by its place value.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+           <div class="text-cyan-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">Pada \\( 7.890 \\): nilai tempat angka 8 adalah ratusan, dan nilai angkanya adalah \\( 8 \\times 100 = 800 \\). <span class='id-lang'>In 7,890: the place value of digit 8 is hundreds, and its digit value is 8 × 100 = 800.</span></p>
+         </div>`},
+        // E4 - MC
+        {type:"E",etype:"mc",
+         q:"Pada \\( 7.890 \\), nilai angka 8 adalah... <span class='id-lang'>In 7,890, the value of digit 8 is...</span>",
+         o:["\\( 8 \\)","\\( 80 \\)","\\( 800 \\)","\\( 8.000 \\)"],
+         a:2,
+         h:"Angka 8 di ratusan: 8 × 100 = 800. <span class='id-lang'>Digit 8 in hundreds: 8 × 100 = 800.</span>"},
+        // E5 - FB
+        {type:"E",etype:"fb",
+         q:"Pada \\( 6.123 \\), berapakah nilai angka 1? <span class='id-lang'>In 6,123, what is the value of digit 1?</span>",
+         a:"100||seratus",
+         h:"Angka 1 di posisi ratusan. <span class='id-lang'>Digit 1 is in the hundreds position.</span>"},
+        // E6 - Match
+        {type:"E",etype:"match",
+         q:"Cocokkan angka pada \\( 5.246 \\) dengan nilainya. <span class='id-lang'>Match the digits in 5,246 with their values.</span>",
+         left:["angka 5 (ribuan)","angka 4 (puluhan)","angka 6 (satuan)"],
+         right:["\\( 5.000 \\)","\\( 40 \\)","\\( 6 \\)"],
+         a:[0,1,2],
+         h:"Kalikan angka dengan nilai tempatnya. <span class='id-lang'>Multiply digit by its place value.</span>"},
+        // T3
+        {type:"T",title:"Membedakan Bilangan yang Mirip <span class='id-lang'>Distinguishing Similar Numbers</span>",
+         body:`<p>\\( 4.321 \\) dan \\( 4.231 \\) terlihat mirip, tapi berbeda. Untuk membandingkan, lihat dari ribuan dulu, lalu ratusan, lalu puluhan, lalu satuan. <span class='id-lang'>4,321 and 4,231 look similar but are different. To compare, look from thousands first, then hundreds, then tens, then ones.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Strategi <span class='id-lang'>Strategy</span></div>
+           <p class="text-sm text-slate-300">Bandingkan digit demi digit dari kiri (ribuan). Pada posisi pertama yang berbeda, bilangan dengan digit lebih besar adalah yang lebih besar. <span class='id-lang'>Compare digit by digit from the left (thousands). At the first different position, the number with the larger digit is larger.</span></p>
+         </div>`},
+        // E7 - MC
+        {type:"E",etype:"mc",
+         q:"Manakah yang lebih besar: \\( 4.321 \\) atau \\( 4.231 \\)? <span class='id-lang'>Which is larger: 4,321 or 4,231?</span>",
+         o:["\\( 4.321 \\) lebih besar <span class='id-lang'></span>","\\( 4.231 \\) lebih besar <span class='id-lang'></span>","Sama besar <span class='id-lang'></span>","Tidak bisa dibandingkan <span class='id-lang'></span>"],
+         a:0,
+         h:"Bandingkan ratusannya: 3 vs 2. <span class='id-lang'>Compare hundreds: 3 vs 2.</span>"},
+        // E8 - FB
+        {type:"E",etype:"fb",
+         q:"Berapakah nilai angka 9 pada \\( 9.004 \\)? <span class='id-lang'>What is the value of digit 9 in 9,004?</span>",
+         a:"9000||9.000",
+         h:"Angka 9 di posisi ribuan. <span class='id-lang'>Digit 9 is in the thousands position.</span>"},
+        // E9 - Ord
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah menentukan nilai angka. <span class='id-lang'>Order the steps to determine a digit's value.</span>",
+         o:["Identifikasi posisi angka dalam bilangan","Tentukan rumahnya (ribuan/ratusan/dst)","Kalikan angka dengan nilai tempatnya"],
+         a:[0,1,2],
+         h:"Posisi → rumah → nilai. <span class='id-lang'>Position → house → value.</span>"},
+        // E10 - SA
+        {type:"E",etype:"sa",
+         q:"Manakah pernyataan yang benar tentang \\( 5.608 \\)? <span class='id-lang'>Which statements are true about 5,608?</span>",
+         o:["angka 5 bernilai \\( 5.000 \\) <span class='id-lang'></span>","angka 6 bernilai \\( 60 \\) <span class='id-lang'></span>","angka 0 bernilai \\( 0 \\) <span class='id-lang'></span>","angka 8 bernilai \\( 8 \\) <span class='id-lang'></span>"],
+         a:[0,2,3],
+         h:"Angka 6 di ratusan bernilai 600, bukan 60. <span class='id-lang'>Digit 6 in hundreds is worth 600, not 60.</span>"}
+      ]
+    },
+    // ==================== SECTION 4 ====================
+    {
+      id:4, title:"Problem Introduction <span class='id-lang'>Pengenalan Masalah</span>", icon:"fa-circle-question", color:"#f59e0b", branch:false,
+      lessons:[
+        // T1
+        {type:"T",title:"Menganalisis Bentuk Ekspansi yang Diacak <span class='id-lang'>Analyzing Scrambled Expanded Forms</span>",
+         body:`<p>Kadang, komponen bilangan ditulis dengan urutan yang diacak, seperti \\( 3000 + 5 + 400 \\). Meskipun diacak, nilainya tetap sama karena penjumlahan bersifat komutatif (urutan tidak masalah). <span class='id-lang'>Sometimes, number components are written in a scrambled order, like 3,000 + 5 + 400. Even scrambled, the value remains the same because addition is commutative (order doesn't matter).</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">\\( 3000 + 5 + 400 \\) sama dengan \\( 3000 + 400 + 5 = 3.405 \\). <span class='id-lang'>3,000 + 5 + 400 is the same as 3,000 + 400 + 5 = 3,405.</span></p>
+         </div>`},
+        // E1 - MC
+        {type:"E",etype:"mc",
+         q:"Rakitlah komponen yang diacak ini: \\( 3000 + 400 + 5 \\). <span class='id-lang'>Assemble these scrambled components: 3,000 + 400 + 5.</span>",
+         o:["\\( 3.045 \\)","\\( 3.405 \\)","\\( 3.450 \\)","\\( 3.540 \\)"],
+         a:1,
+         h:"Jumlahkan 3000 + 400 + 5. <span class='id-lang'>Add 3,000 + 400 + 5.</span>"},
+        // E2 - FB
+        {type:"E",etype:"fb",
+         q:"Rakitlah komponen ini: \\( 70 + 5 + 4000 + 100 \\). <span class='id-lang'>Assemble: 70 + 5 + 4,000 + 100.</span>",
+         a:"4175||4.175",
+         h:"Urutkan menjadi 4000 + 100 + 70 + 5. <span class='id-lang'>Arrange as 4,000 + 100 + 70 + 5.</span>"},
+        // E3 - TF
+        {type:"E",etype:"tf",
+         q:"Bentuk bongkar \\( 5 + 3000 + 400 \\) menghasilkan bilangan yang sama dengan \\( 3405 \\). <span class='id-lang'>The expanded form 5 + 3,000 + 400 results in the same number as 3,405.</span>",
+         a:true,
+         h:"Urutan penjumlahan tidak mengubah hasil. <span class='id-lang'>The order of addition doesn't change the result.</span>"},
+        // T2
+        {type:"T",title:"Rumah yang Kosong (Angka Nol) <span class='id-lang'>Empty Houses (Zero Digit)</span>",
+         body:`<p>Saat merakit bilangan, kita harus berhati-hati jika ada "rumah" yang kosong. Jika sebuah rumah kosong, kita harus menempatkan angka \\( 0 \\) sebagai penjaga rumah agar posisi angka lain tidak bergeser. <span class='id-lang'>When assembling numbers, we must be careful if a "house" is empty. If a house is empty, we must place a 0 as a placeholder so other digits don't shift positions.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+           <div class="text-cyan-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">Rakit \\( 5000 + 70 + 2 \\). Ratusannya kosong! Jadi kita tulis \\( 0 \\) di ratusan. Hasilnya \\( 5.072 \\). <span class='id-lang'>Assemble 5,000 + 70 + 2. Hundreds is empty! So we write 0 in hundreds. Result is 5,072.</span></p>
+         </div>`},
+        // E4 - MC
+        {type:"E",etype:"mc",
+         q:"Rakitlah bilangan ini: \\( 8000 + 0 + 40 + 3 \\). <span class='id-lang'>Assemble this number: 8,000 + 0 + 40 + 3.</span>",
+         o:["\\( 8.430 \\)","\\( 8.043 \\)","\\( 8.403 \\)","\\( 8.340 \\)"],
+         a:1,
+         h:"Ratusan kosong (0), lalu puluhan 4, satuan 3. <span class='id-lang'>Hundreds empty (0), then tens 4, ones 3.</span>"},
+        // E5 - FB
+        {type:"E",etype:"fb",
+         q:"Tuliskan bilangan dari 4 ribuan, 0 ratusan, 0 puluhan, dan 5 satuan. <span class='id-lang'>Write the number for 4 thousands, 0 hundreds, 0 tens, and 5 ones.</span>",
+         a:"4005||4.005",
+         h:"Tulis angkanya berurutan. <span class='id-lang'>Write the digits in order.</span>"},
+        // E6 - Match
+        {type:"E",etype:"match",
+         q:"Cocokkan komponen dengan bilangan utuhnya. <span class='id-lang'>Match components with their whole numbers.</span>",
+         left:["\\( 5000 + 70 + 2 \\)","\\( 9000 + 400 + 0 + 1 \\)","\\( 2000 + 0 + 60 + 0 \\)"],
+         right:["\\( 2.060 \\)","\\( 5.072 \\)","\\( 9.401 \\)"],
+         a:[1,2,0],
+         h:"Perhatikan posisi nolnya! <span class='id-lang'>Watch the position of zeros!</span>"},
+        // T3
+        {type:"T",title:"Membuktikan Kesamaan Bilangan <span class='id-lang'>Proving Number Equality</span>",
+         body:`<p>Kita punya dua tumpukan komponen: A \\( (3000 + 400 + 5) \\) dan B \\( (3000 + 40 + 500) \\). Kelihatannya mirip, tapi apakah mereka sama? Kita harus merakitnya untuk membuktikannya. <span class='id-lang'>We have two component piles: A (3,000 + 400 + 5) and B (3,000 + 40 + 500). They look similar, but are they the same? We must assemble them to prove it.</span></p>
+         <div class="mt-mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Analisis <span class='id-lang'>Analysis</span></div>
+           <p class="text-sm text-slate-300">A \\( = 3.405 \\). B \\( = 3.540 \\). Ternyata mereka berbeda! Ketelitian detektif sangat diuji di sini. <span class='id-lang'>A = 3,405. B = 3,540. They are different! Detective's precision is tested here.</span></p>
+         </div>`},
+        // E7 - MC
+        {type:"E",etype:"mc",
+         q:"Apakah \\( 3000 + 400 + 5 \\) sama dengan \\( 3000 + 40 + 500 \\)? <span class='id-lang'>Is 3,000 + 400 + 5 equal to 3,000 + 40 + 500?</span>",
+         o:["Ya, sama <span class='id-lang'></span>","Tidak, yang pertama lebih kecil <span class='id-lang'></span>","Tidak, yang pertama lebih besar <span class='id-lang'></span>","Tidak bisa ditentukan <span class='id-lang'></span>"],
+         a:1,
+         h:"Rakit keduanya lalu bandingkan. 3.405 vs 3.540. <span class='id-lang'>Assemble both then compare. 3,405 vs 3,540.</span>"},
+        // E8 - FB
+        {type:"E",etype:"fb",
+         q:"Bongkarlah bilangan \\( 9.042 \\) (perhatikan posisi yang bernilai nol). <span class='id-lang'>Decompose 9,042 (mind the zero position).</span>",
+         a:"9000+0+40+2||9.000+0+40+2||9000+40+2",
+         h:"Ratusannya 0. <span class='id-lang'>Hundreds is 0.</span>"},
+        // E9 - Ord
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah merakit komponen yang diacak. <span class='id-lang'>Order the steps to assemble scrambled components.</span>",
+         o:["Identifikasi nilai tiap komponen","Urutkan komponen dari terbesar ke terkecil","Jumlahkan komponen yang sejenis","Tulis bilangan utuh dari hasil penjumlahan"],
+         a:[0,1,2,3],
+         h:"Pisahkan, urutkan, jumlahkan, tulis. <span class='id-lang'>Separate, sort, add, write.</span>"},
+        // E10 - SA
+        {type:"E",etype:"sa",
+         q:"Manakah bentuk bongkar yang benar untuk \\( 3.050 \\)? <span class='id-lang'>Which are correct decomposed forms of 3,050?</span>",
+         o:["\\( 3.000 + 50 \\)","\\( 3.000 + 0 + 50 + 0 \\)","\\( 3000 + 500 \\)","\\( 3 + 5 \\)"],
+         a:[0,1],
+         h:"3.050 tidak punya ratusan dan satuan. <span class='id-lang'>3,050 has no hundreds and no ones.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 5 ====================
+    {
+      id:5, title:"Guided Practice <span class='id-lang'>Latihan Terbimbing</span>", icon:"fa-chalkboard-user", color:"#ec4899", branch:false,
+      lessons:[
+        // T1
+        {type:"T",title:"Merakit Bilangan dengan Blok <span class='id-lang'>Assembling Numbers with Blocks</span>",
+         body:`<p>Mari kita kerjakan bersama. Bayangkan kita menarik blok ribuan, ratusan, puluhan, dan satuan. Untuk merakit \\( 5.072 \\), kita tarik 5 blok ribuan, 0 blok ratusan, 7 blok puluhan, dan 2 blok satuan. <span class='id-lang'>Let's do it together. Imagine pulling blocks of thousands, hundreds, tens, and ones. To assemble 5,072, we pull 5 thousand blocks, 0 hundred blocks, 7 ten blocks, and 2 one blocks.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-pink-500/10 border border-pink-500/20">
+           <div class="text-pink-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">Jika tidak ada ratusannya, kita beri angka nol. \\( 5000 + 0 + 70 + 2 = 5.072 \\). <span class='id-lang'>If no hundreds, we give zero. 5,000 + 0 + 70 + 2 = 5,072.</span></p>
+         </div>`},
+        // E1 - MC
+        {type:"E",etype:"mc",
+         q:"Kita merakit bilangan \\( 5.072 \\). Berapa blok ratusan yang harus ditarik? <span class='id-lang'>We assemble 5,072. How many hundred blocks must be pulled?</span>",
+         o:["\\( 0 \\)","\\( 5 \\)","\\( 7 \\)","\\( 2 \\)"],
+         a:0,
+         h:"Lihat angka di posisi ratusan. <span class='id-lang'>Look at the digit in hundreds position.</span>"},
+        // E2 - FB
+        {type:"E",etype:"fb",
+         q:"Rakitlah bilangan dari \\( 6.000 + 300 + 10 + 4 \\). <span class='id-lang'>Assemble 6,000 + 300 + 10 + 4.</span>",
+         a:"6314||6.314",
+         h:"Jumlahkan semua komponennya. <span class='id-lang'>Add all components.</span>"},
+        // E3 - TF
+        {type:"E",etype:"tf",
+         q:"Bilangan \\( 5.072 \\) dan \\( 5.702 \\) adalah bilangan yang sama. <span class='id-lang'>5,072 and 5,702 are the same number.</span>",
+         a:false,
+         h:"Posisi nol berbeda menghasilkan nilai berbeda. <span class='id-lang'>Different zero positions produce different values.</span>"},
+        // T2
+        {type:"T",title:"Memasangkan Bilangan Utuh dengan Bongkarannya <span class='id-lang'>Matching Whole Numbers with Expanded Forms</span>",
+         body:`<p>Sekarang kita akan berlatih memasangkan garis antara bilangan utuh (seperti \\( 8.235 \\)) dengan bentuk bongkarannya. Pastikan setiap angka menempati rumahnya dengan benar. <span class='id-lang'>Now we will practice drawing lines between whole numbers (like 8,235) and their expanded forms. Ensure each digit sits in its correct house.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+           <div class="text-emerald-400 font-semibold mb-2">Tips <span class='id-lang'>Tip</span></div>
+           <p class="text-sm text-slate-300">Tulis bilangan utuh di atas kertas, tulis rumah-rumahnya, lalu tarik garis ke komponennya. <span class='id-lang'>Write the whole number on paper, write the houses, then draw lines to components.</span></p>
+         </div>`},
+        // E4 - MC
+        {type:"E",etype:"mc",
+         q:"Pasangan yang benar untuk \\( 8.235 \\) adalah... <span class='id-lang'>The correct pair for 8,235 is...</span>",
+         o:["\\( 8 + 2 + 3 + 5 \\)","\\( 8.000 + 200 + 30 + 5 \\)","\\( 8.000 + 20 + 35 \\)","\\( 8000 + 2350 \\)"],
+         a:1,
+         h:"Bongkar berdasarkan rumah ribuan, ratusan, puluhan, satuan. <span class='id-lang'>Decompose based on thousands, hundreds, tens, ones houses.</span>"},
+        // E5 - FB
+        {type:"E",etype:"fb",
+         q:"Tuliskan bentuk bongkar dari \\( 9.876 \\). <span class='id-lang'>Write the expanded form of 9,876.</span>",
+         a:"9000+800+70+6||9.000+800+70+6",
+         h:"Bongkar setiap angka sesuai posisinya. <span class='id-lang'>Decompose each digit by its position.</span>"},
+        // E6 - Match
+        {type:"E",etype:"match",
+         q:"Cocokkan bilangan utuh dengan bentuk bongkarannya. <span class='id-lang'>Match whole numbers with their expanded forms.</span>",
+         left:["\\( 4.521 \\)","\\( 1.030 \\)","\\( 6.008 \\)"],
+         right:["\\( 4.000 + 500 + 20 + 1 \\)","\\( 1.000 + 0 + 30 + 0 \\)","\\( 6.000 + 0 + 0 + 8 \\)"],
+         a:[0,1,2],
+         h:"Perhatikan tempat nolnya. <span class='id-lang'>Mind the zero places.</span>"},
+        // T3
+        {type:"T",title:"Membongkar Bilangan dengan Banyak Nol <span class='id-lang'>Decomposing Numbers with Multiple Zeros</span>",
+         body:`<p>Membongkar bilangan seperti \\( 4.001 \\) atau \\( 2.050 \\) butuh ketelitian ekstra. Kita bisa menulisnya dengan menyertakan angka nol, atau hanya menulis komponen yang ada nilainya. <span class='id-lang'>Decomposing numbers like 4,001 or 2,050 requires extra precision. We can write it including zeros, or only write components with values.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">\\( 2.050 \\) bisa dibongkar menjadi \\( 2.000 + 0 + 50 + 0 \\) ATAU \\( 2.000 + 50 \\). Keduanya benar! <span class='id-lang'>2,050 can be decomposed into 2,000 + 0 + 50 + 0 OR 2,000 + 50. Both are correct!</span></p>
+         </div>`},
+        // E7 - MC
+        {type:"E",etype:"mc",
+         q:"Bentuk bongkar yang benar untuk \\( 6.008 \\) adalah... <span class='id-lang'>The correct expanded form for 6,008 is...</span>",
+         o:["\\( 6.000 + 8 \\)","\\( 600 + 8 \\)","\\( 6.000 + 80 \\)","\\( 60 + 08 \\)"],
+         a:0,
+         h:"Ratusan dan puluhan kosong. <span class='id-lang'>Hundreds and tens are empty.</span>"},
+        // E8 - FB
+        {type:"E",etype:"fb",
+         q:"Tuliskan bentuk bongkar dari \\( 2.050 \\). <span class='id-lang'>Write the expanded form of 2,050.</span>",
+         a:"2000+50||2.000+50||2000+0+50+0||2.000+0+50+0",
+         h:"Ada 2 ribuan dan 5 puluhan. <span class='id-lang'>There are 2 thousands and 5 tens.</span>"},
+        // E9 - Ord
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah merakit \\( 5.072 \\) dari komponennya. <span class='id-lang'>Order the steps to assemble 5,072 from its components.</span>",
+         o:["Ambil 5 blok ribuan","Ambil 0 blok ratusan","Ambil 7 blok puluhan","Ambil 2 blok satuan"],
+         a:[0,1,2,3],
+         h:"Urutkan dari ribuan ke satuan. <span class='id-lang'>Order from thousands to ones.</span>"},
+        // E10 - SA
+        {type:"E",etype:"sa",
+         q:"Manakah bentuk yang merupakan bongkaran dari \\( 3.004 \\)? <span class='id-lang'>Which forms are decomposed from 3,004?</span>",
+         o:["\\( 3.000 + 4 \\)","\\( 3.000 + 0 + 0 + 4 \\)","\\( 3000 + 40 \\)","\\( 3 + 4 \\)"],
+         a:[0,1],
+         h:"Hanya ada ribuan dan satuan. <span class='id-lang'>Only thousands and ones exist.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 6 ====================
+    {
+      id:6, title:"Independent Practice <span class='id-lang'>Latihan Mandiri</span>", icon:"fa-user-graduate", color:"#14b8a6", branch:false,
+      lessons:[
+        // T1
+        {type:"T",title:"Misi Membongkar Kode Rahasia <span class='id-lang'>Mission: Decomposing Secret Codes</span>",
+         body:`<p>Sekarang waktunya misi mandiri! Kamu akan menemukan "peti mati" berisi kode rahasia. Tugasmu adalah membongkar 3 kode rahasia ini menjadi bentuk penjumlahan nilai tempatnya. <span class='id-lang'>Now it's time for an independent mission! You will find "treasure chests" with secret codes. Your task is to decompose 3 secret codes into their place value addition forms.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-teal-500/10 border border-teal-500/20">
+           <div class="text-teal-400 font-semibold mb-2">Instruksi <span class='id-lang'>Instructions</span></div>
+           <p class="text-sm text-slate-300">Pisahkan bilangan menjadi \\( Ribu + Ratus + Pulu + Satu \\). Contoh: \\( 4.567 = 4.000 + 500 + 60 + 7 \\). <span class='id-lang'>Separate the number into Thou + Hun + Ten + One. Example: 4,567 = 4,000 + 500 + 60 + 7.</span></p>
+         </div>`},
+        // E1 - FB
+        {type:"E",etype:"fb",
+         q:"Bongkarlah bilangan \\( 4.567 \\) menjadi bentuk penjumlahan nilai tempatnya. <span class='id-lang'>Decompose 4,567 into its place value addition form.</span>",
+         a:"4000+500+60+7||4.000+500+60+7",
+         h:"4 di ribuan, 5 di ratusan, 6 di puluhan, 7 di satuan. <span class='id-lang'>4 in thousands, 5 in hundreds, 6 in tens, 7 in ones.</span>"},
+        // E2 - FB
+        {type:"E",etype:"fb",
+         q:"Bongkarlah bilangan \\( 9.042 \\). Perhatikan posisi yang bernilai nol! <span class='id-lang'>Decompose 9,042. Mind the zero position!</span>",
+         a:"9000+0+40+2||9.000+0+40+2||9000+40+2",
+         h:"Ratusan bernilai 0. <span class='id-lang'>Hundreds is 0.</span>"},
+        // E3 - MC
+        {type:"E",etype:"mc",
+         q:"Bongkarlah bilangan \\( 1.080 \\). <span class='id-lang'>Decompose 1,080.</span>",
+         o:["\\( 1.000 + 80 \\)","\\( 1.000 + 800 \\)","\\( 100 + 80 \\)","\\( 1.000 + 0 + 8 + 0 \\)"],
+         a:0,
+         h:"Ratusan dan satuan 0, puluhan 8. <span class='id-lang'>Hundreds and ones 0, tens 8.</span>"},
+        // T2
+        {type:"T",title:"Membandingkan Dua Kode <span class='id-lang'>Comparing Two Codes</span>",
+         body:`<p>Selain membongkar, kamu juga harus membandingkan 2 pasang kode menggunakan tanda \\( > \\) (lebih besar), \\( < \\) (lebih kecil), atau \\( = \\) (sama dengan). <span class='id-lang'>Besides decomposing, you must also compare 2 pairs of codes using > (greater than), < (less than), or = (equal to).</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Strategi <span class='id-lang'>Strategy</span></div>
+           <p class="text-sm text-slate-300">Bandingkan dari ribuan. Jika sama, bandingkan ratusan. Jika sama, bandingkan puluhan, dst. Contoh: \\( 3.450 \\) vs \\( 3.540 \\). Ribu sama (3), ratusan \\( 4 < 5 \\), jadi \\( 3.450 < 3.540 \\). <span class='id-lang'>Compare from thousands. If same, compare hundreds. If same, compare tens, etc. Example: 3,450 vs 3,540. Thou same (3), hun 4 < 5, so 3,450 < 3,540.</span></p>
+         </div>`},
+        // E4 - MC
+        {type:"E",etype:"mc",
+         q:"Bandingkan: \\( 3.450 \\) ... \\( 3.540 \\). <span class='id-lang'>Compare: 3,450 ... 3,540.</span>",
+         o:["\\( > \\)","\\( < \\)","\\( = \\)","\\( \\ge \\)"],
+         a:1,
+         h:"Bandingkan ratusannya: 4 vs 5. <span class='id-lang'>Compare hundreds: 4 vs 5.</span>"},
+        // E5 - FB
+        {type:"E",etype:"fb",
+         q:"Isi tanda perbandingan yang benar: \\( 2.103 \\) ... \\( 2.130 \\). <span class='id-lang'>Fill in the correct comparison sign: 2,103 ... 2,130.</span>",
+         a:"<",
+         h:"Ratusan sama, bandingkan puluhan: 0 vs 3. <span class='id-lang'>Hundreds same, compare tens: 0 vs 3.</span>"},
+        // E6 - Match
+        {type:"E",etype:"match",
+         q:"Cocokkan pasangan bilangan dengan tanda perbandingan yang tepat. <span class='id-lang'>Match number pairs with the correct comparison sign.</span>",
+         left:["\\( 5.678 \\) dan \\( 5.687 \\)","\\( 1.000 \\) dan \\( 1.000 \\)","\\( 9.999 \\) dan \\( 9.000 \\)"],
+         right:["\\( < \\)","\\( = \\)","\\( > \\)"],
+         a:[0,1,2],
+         h:"Bandingkan digit dari kiri. <span class='id-lang'>Compare digits from the left.</span>"},
+        // T3
+        {type:"T",title:"Analisis Perbandingan Lanjutan <span class='id-lang'>Advanced Comparison Analysis</span>",
+         body:`<p>Kadang, kita harus membandingkan bilangan dalam bentuk bongkarannya. Kita harus merakitnya dulu, atau membandingkan komponennya satu per satu. <span class='id-lang'>Sometimes, we must compare numbers in their expanded forms. We must assemble them first, or compare components one by one.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+           <div class="text-amber-400 font-semibold mb-2">Contoh <span class='id-lang'>Example</span></div>
+           <p class="text-sm text-slate-300">Bandingkan \\( 5000 + 300 + 20 + 8 \\) dengan \\( 5000 + 200 + 120 + 8 \\). Rakit keduanya: 5.328 vs 5.328. Ternyata sama! Atau bisa dilihat dari \\( 300 \\) vs \\( 200 + 120 = 320 \\)? Hati-hati, \\( 300 = 300 \\), \\( 20 = 20 \\), \\( 8 = 8 \\). Jadi sama! <span class='id-lang'>Assemble both: 5,328 vs 5,328. They are equal!</span></p>
+         </div>`},
+        // E7 - MC
+        {type:"E",etype:"mc",
+         q:"Bandingkan: \\( 5.000 + 300 + 20 + 8 \\) ... \\( 5.000 + 200 + 120 + 8 \\). Mana yang lebih besar? <span class='id-lang'>Compare: 5,000 + 300 + 20 + 8 ... 5,000 + 200 + 120 + 8. Which is larger?</span>",
+         o:["Tanda \\( > \\)","Tanda \\( < \\)","Tanda \\( = \\)","Tidak bisa dibandingkan <span class='id-lang'></span>"],
+         a:2,
+         h:"Rakit keduanya terlebih dahulu. <span class='id-lang'>Assemble both first.</span>"},
+        // E8 - FB
+        {type:"E",etype:"fb",
+         q:"Isi tanda yang tepat: \\( 5.000 + 0 + 10 + 4 \\) ... \\( 5.014 \\). <span class='id-lang'>Fill the sign: 5,000 + 0 + 10 + 4 ... 5,014.</span>",
+         a:"=",
+         h:"Rakit sisi kiri, lalu bandingkan. <span class='id-lang'>Assemble left side, then compare.</span>"},
+        // E9 - Ord
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah membandingkan \\( 4.567 \\) dan \\( 4.576 \\). <span class='id-lang'>Order steps to compare 4,567 and 4,576.</span>",
+         o:["Bandingkan ribuan: 4 = 4","Bandingkan ratusan: 5 = 5","Bandingkan puluhan: 7 > 6 (berhenti)","Kesimpulan: 4.576 > 4.567"],
+         a:[0,1,2,3],
+         h:"Bandingkan dari kiri, berhenti saat beda. <span class='id-lang'>Compare from left, stop when different.</span>"},
+        // E10 - SA
+        {type:"E",etype:"sa",
+         q:"Tuliskan sebuah bilangan empat angka di mana angka ribuannya adalah \\( 7 \\) dan angka satuannya adalah dua kali angka ribuannya dikurangi \\( 10 \\). <span class='id-lang'>Write a four-digit number where the thousands digit is 7 and the ones digit is twice the thousands digit minus 10.</span>",
+         o:["\\( 7.124 \\)","\\( 7.004 \\)","\\( 1.234 \\)","\\( 7.994 \\)"],
+         a:[0,1,3],
+         h:"Satuan = (2*7) - 10 = 4. Ratusan dan puluhan bebas. <span class='id-lang'>Ones = (2*7) - 10 = 4. Hundreds and tens are free.</span>"}
+      ]
+    },
+    // ==================== SECTION 7A ====================
+    {
+      id:"7A", title:"Assessment A <span class='id-lang'>Asesmen A</span>", icon:"fa-clipboard-check", color:"#3b82f6", branch:true,
+      lessons:[
+        {type:"E",etype:"mc",
+         q:"Berapakah nilai angka 8 pada bilangan \\( 8.432 \\)? <span class='id-lang'>What is the value of digit 8 in 8,432?</span>",
+         o:["\\( 8 \\)","\\( 80 \\)","\\( 800 \\)","\\( 8.000 \\)"],
+         a:3,
+         h:"Angka 8 di posisi ribuan. <span class='id-lang'>Digit 8 is in the thousands position.</span>"},
+        {type:"E",etype:"fb",
+         q:"Rakitlah komponen berikut: \\( 5.000 + 40 + 2 \\). <span class='id-lang'>Assemble: 5,000 + 40 + 2.</span>",
+         a:"5042||5.042",
+         h:"Ratusannya kosong, jadi isi dengan 0. <span class='id-lang'>Hundreds is empty, so fill with 0.</span>"},
+        {type:"E",etype:"tf",
+         q:"Bilangan \\( 6.789 \\) lebih kecil dari \\( 6.798 \\). <span class='id-lang'>6,789 is smaller than 6,798.</span>",
+         a:true,
+         h:"Bandingkan puluhannya: 8 vs 9. <span class='id-lang'>Compare tens: 8 vs 9.</span>"},
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah membongkar \\( 3.250 \\). <span class='id-lang'>Order the steps to decompose 3,250.</span>",
+         o:["Identifikasi ribuan: 3.000","Identifikasi ratusan: 200","Identifikasi puluhan: 50","Identifikasi satuan: 0"],
+         a:[0,1,2,3],
+         h:"Mulai dari ribuan ke satuan. <span class='id-lang'>Start from thousands to ones.</span>"},
+        {type:"E",etype:"match",
+         q:"Cocokkan bilangan dengan bentuk bongkarannya. <span class='id-lang'>Match numbers with their expanded forms.</span>",
+         left:["\\( 1.203 \\)","\\( 1.230 \\)","\\( 1.032 \\)"],
+         right:["\\( 1.000 + 200 + 30 \\)","\\( 1.000 + 30 + 2 \\)","\\( 1.000 + 200 + 3 \\)"],
+         a:[2,0,1],
+         h:"Perhatikan posisi angka 0. <span class='id-lang'>Mind the position of 0.</span>"},
+        {type:"E",etype:"sa",
+         q:"Manakah yang merupakan bentuk bongkar yang benar untuk \\( 4.005 \\)? <span class='id-lang'>Which are correct expanded forms of 4,005?</span>",
+         o:["\\( 4.000 + 5 \\)","\\( 4.000 + 0 + 0 + 5 \\)","\\( 400 + 5 \\)","\\( 4.000 + 50 \\)"],
+         a:[0,1],
+         h:"Ratusan dan puluhan bernilai 0. <span class='id-lang'>Hundreds and tens are 0.</span>"},
+        {type:"E",etype:"fb",
+         q:"Isi tanda perbandingan yang benar: \\( 8.120 \\) ... \\( 8.012 \\). <span class='id-lang'>Fill the correct comparison sign: 8,120 ... 8,012.</span>",
+         a:">",
+         h:"Bandingkan ratusannya: 1 vs 0. <span class='id-lang'>Compare hundreds: 1 vs 0.</span>"},
+        {type:"E",etype:"mc",
+         q:"Bilangan \\( 4.250 \\) dibaca... <span class='id-lang'>The number 4,250 is read...</span>",
+         o:["empat ribu dua ratus lima puluh <span class='id-lang'></span>","empat ribu dua ratus lima <span class='id-lang'></span>","empat ribu dua puluh lima <span class='id-lang'></span>","empat ratus dua ribu lima puluh <span class='id-lang'></span>"],
+         a:0,
+         h:"Ribu, ratus, pulu, satu. <span class='id-lang'>Thou, hun, ten, one.</span>"},
+        {type:"E",etype:"tf",
+         q:"\\( 9.999 \\) dibongkar menjadi \\( 9.000 + 900 + 90 + 9 \\). <span class='id-lang'>9,999 is decomposed into 9,000 + 900 + 90 + 9.</span>",
+         a:true,
+         h:"Semua posisi diisi angka 9. <span class='id-lang'>All positions are filled with 9.</span>"},
+        {type:"E",etype:"code",
+         q:"Tuliskan hasil rakit dari 2 ribuan, 3 puluhan, dan 5 satuan tanpa spasi (misal: 1234). <span class='id-lang'>Write the assembled result of 2 thousands, 3 tens, and 5 ones without spaces.</span>",
+         a:"2035",
+         h:"Ingat posisi nol di ratusan. <span class='id-lang'>Remember the zero position in hundreds.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 7B ====================
+    {
+      id:"7B", title:"Assessment B <span class='id-lang'>Asesmen B</span>", icon:"fa-clipboard-check", color:"#ef4444", branch:true,
+      lessons:[
+        {type:"E",etype:"fb",
+         q:"Bongkarlah bilangan \\( 7.654 \\) menjadi bentuk penjumlahan nilai tempatnya. <span class='id-lang'>Decompose 7,654 into its place value addition form.</span>",
+         a:"7000+600+50+4||7.000+600+50+4",
+         h:"Bongkar tiap angka sesuai rumahnya. <span class='id-lang'>Decompose each digit by its house.</span>"},
+        {type:"E",etype:"mc",
+         q:"Pada bilangan \\( 5.043 \\), nilai angka 0 adalah... <span class='id-lang'>In 5,043, the value of digit 0 is...</span>",
+         o:["\\( 0 \\)","\\( 10 \\)","\\( 100 \\)","Tidak punya nilai <span class='id-lang'></span>"],
+         a:0,
+         h:"Angka 0 di posisi ratusan tetap bernilai 0. <span class='id-lang'>Digit 0 in hundreds is still worth 0.</span>"},
+        {type:"E",etype:"tf",
+         q:"\\( 4.500 \\) dan \\( 4.050 \\) adalah bilangan yang sama. <span class='id-lang'>4,500 and 4,050 are the same number.</span>",
+         a:false,
+         h:"Posisi 5 berbeda (ratusan vs puluhan). <span class='id-lang'>Position of 5 is different (hundreds vs tens).</span>"},
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah merakit komponen yang diacak: \\( 9 + 200 + 7000 + 10 \\). <span class='id-lang'>Order steps to assemble scrambled components: 9 + 200 + 7,000 + 10.</span>",
+         o:["Urutkan dari terbesar: 7000","Lalu 200, lalu 10","Terakhir 9","Jumlahkan: 7219"],
+         a:[0,1,2,3],
+         h:"Susun dari ribuan ke satuan. <span class='id-lang'>Arrange from thousands to ones.</span>"},
+        {type:"E",etype:"match",
+         q:"Cocokkan pasangan bilangan dengan tanda perbandingan yang benar. <span class='id-lang'>Match number pairs with the correct comparison sign.</span>",
+         left:["\\( 1.999 \\) dan \\( 2.000 \\)","\\( 5.555 \\) dan \\( 5.555 \\)","\\( 8.100 \\) dan \\( 8.010 \\)"],
+         right:["\\( < \\)","\\( = \\)","\\( > \\)"],
+         a:[0,1,2],
+         h:"Bandingkan dari ribuan. <span class='id-lang'>Compare from thousands.</span>"},
+        {type:"E",etype:"sa",
+         q:"Manakah bentuk yang merupakan bongkaran dari \\( 2.090 \\)? <span class='id-lang'>Which forms are decomposed from 2,090?</span>",
+         o:["\\( 2.000 + 90 \\)","\\( 2.000 + 0 + 90 + 0 \\)","\\( 2000 + 900 \\)","\\( 200 + 90 \\)"],
+         a:[0,1],
+         h:"Ratusan dan satuan 0. <span class='id-lang'>Hundreds and ones are 0.</span>"},
+        {type:"E",etype:"fb",
+         q:"Rakitlah komponen ini: \\( 9.000 + 600 + 5 \\). <span class='id-lang'>Assemble: 9,000 + 600 + 5.</span>",
+         a:"9605||9.605",
+         h:"Puluhan kosong, isi dengan 0. <span class='id-lang'>Tens is empty, fill with 0.</span>"},
+        {type:"E",etype:"mc",
+         q:"Manakah bilangan yang lebih besar? <span class='id-lang'>Which number is larger?</span>",
+         o:["\\( 3.456 \\) <span class='id-lang'></span>","\\( 3.465 \\) <span class='id-lang'></span>","\\( 3.645 \\) <span class='id-lang'></span>","\\( 3.546 \\) <span class='id-lang'></span>"],
+         a:2,
+         h:"Bandingkan ratusannya. <span class='id-lang'>Compare hundreds.</span>"},
+        {type:"E",etype:"tf",
+         q:"Nilai angka 9 pada \\( 9.876 \\) adalah 9. <span class='id-lang'>The value of digit 9 in 9,876 is 9.</span>",
+         a:false,
+         h:"9 di posisi ribuan bernilai 9.000. <span class='id-lang'>9 in thousands is worth 9,000.</span>"},
+        {type:"E",etype:"code",
+         q:"Isi komponen yang hilang tanpa spasi: \\( 3.000 + \\_ + 40 + 1 = 3.541 \\). <span class='id-lang'>Fill the missing component without spaces: 3,000 + _ + 40 + 1 = 3,541.</span>",
+         a:"500",
+         h:"Jumlahkan yang diketahui, lalu kurangi dari 3.541. <span class='id-lang'>Add knowns, then subtract from 3,541.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 7C ====================
+    {
+      id:"7C", title:"Assessment C <span class='id-lang'>Asesmen C</span>", icon:"fa-clipboard-check", color:"#a855f7", branch:true,
+      lessons:[
+        {type:"E",etype:"mc",
+         q:"Bentuk bongkar yang benar untuk \\( 1.809 \\) adalah... <span class='id-lang'>The correct expanded form for 1,809 is...</span>",
+         o:["\\( 1.000 + 80 + 9 \\)","\\( 1.000 + 800 + 9 \\)","\\( 1.000 + 800 + 90 \\)","\\( 100 + 80 + 9 \\)"],
+         a:1,
+         h:"Perhatikan posisi 8 dan 0. <span class='id-lang'>Mind the position of 8 and 0.</span>"},
+        {type:"E",etype:"fb",
+         q:"Isi tanda yang tepat: \\( 1.999 \\) ... \\( 2.000 \\). <span class='id-lang'>Fill the correct sign: 1,999 ... 2,000.</span>",
+         a:"<",
+         h:"Bandingkan ribuannya: 1 vs 2. <span class='id-lang'>Compare thousands: 1 vs 2.</span>"},
+        {type:"E",etype:"tf",
+         q:"\\( 7.070 > 7.700 \\). <span class='id-lang'>7,070 > 7,700.</span>",
+         a:false,
+         h:"Ratusan 0 lebih kecil dari 7. <span class='id-lang'>Hundreds 0 is smaller than 7.</span>"},
+        {type:"E",etype:"match",
+         q:"Cocokkan angka pada \\( 3.845 \\) dengan nilainya. <span class='id-lang'>Match digits in 3,845 with their values.</span>",
+         left:["angka 3","angka 8","angka 5"],
+         right:["\\( 5 \\)","\\( 3.000 \\)","\\( 800 \\)"],
+         a:[1,2,0],
+         h:"Kalikan angka dengan nilai tempatnya. <span class='id-lang'>Multiply digit by its place value.</span>"},
+        {type:"E",etype:"sa",
+         q:"Manakah bentuk ekspansi yang sama dengan \\( 6.543 \\)? <span class='id-lang'>Which expanded forms are equal to 6,543?</span>",
+         o:["\\( 6.000 + 500 + 40 + 3 \\)","\\( 6000 + 540 + 3 \\)","\\( 6500 + 43 \\)","\\( 65 + 43 \\)"],
+         a:[0,1,2],
+         h:"Gabungkan beberapa komponen jika perlu. <span class='id-lang'>Combine some components if needed.</span>"},
+        {type:"E",etype:"fb",
+         q:"Tuliskan bilangan dari 9 ribuan, 0 ratusan, 0 puluhan, dan 9 satuan. <span class='id-lang'>Write the number for 9 thousands, 0 hundreds, 0 tens, and 9 ones.</span>",
+         a:"9009||9.009",
+         h:"Tulis angkanya berurutan. <span class='id-lang'>Write digits in order.</span>"},
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah membandingkan \\( 5.000 + 300 + 20 + 8 \\) dan \\( 5.000 + 200 + 120 + 8 \\). <span class='id-lang'>Order steps to compare the two expanded forms.</span>",
+         o:["Rakit keduanya menjadi bilangan utuh","Bandingkan ribuannya","Bandingkan ratusannya","Tarik kesimpulan"],
+         a:[0,1,2,3],
+         h:"Lebih mudah merakit dulu. <span class='id-lang'>Easier to assemble first.</span>"},
+        {type:"E",etype:"mc",
+         q:"Nilai tempat dari angka 4 pada \\( 4.210 \\) adalah... <span class='id-lang'>The place value of digit 4 in 4,210 is...</span>",
+         o:["satuan <span class='id-lang'></span>","puluhan <span class='id-lang'></span>","ratusan <span class='id-lang'></span>","ribuan <span class='id-lang'></span>"],
+         a:3,
+         h:"Posisi paling kiri adalah ribuan. <span class='id-lang'>The leftmost position is thousands.</span>"},
+        {type:"E",etype:"tf",
+         q:"\\( 5.000 + 60 + 2 = 5.602 \\). <span class='id-lang'>5,000 + 60 + 2 = 5,602.</span>",
+         a:false,
+         h:"Tidak ada ratusan, jadi 0. Hasilnya 5.062. <span class='id-lang'>No hundreds, so 0. Result is 5,062.</span>"},
+        {type:"E",etype:"code",
+         q:"Tuliskan bilangan yang membuat perbandingan ini benar tanpa spasi: \\( 4.500 > 4.\\_\\_\\_9 \\). (Isi dengan 1 angka, misal: 4) <span class='id-lang'>Write the number that makes this true without spaces: 4,500 > 4.___9. (Fill with 1 digit, e.g., 4)</span>",
+         a:"4||3||2||1||0",
+         h:"Agar 4._ _ _ 9 lebih kecil dari 4.500, ratusannya harus kurang dari 5. <span class='id-lang'>For 4._ _ _ 9 to be less than 4,500, hundreds must be less than 5.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 7D ====================
+    {
+      id:"7D", title:"Assessment D <span class='id-lang'>Asesmen D</span>", icon:"fa-clipboard-check", color:"#06b6d4", branch:true,
+      lessons:[
+        {type:"E",etype:"fb",
+         q:"Bongkarlah bilangan \\( 2.050 \\). <span class='id-lang'>Decompose 2,050.</span>",
+         a:"2000+50||2.000+50||2000+0+50+0||2.000+0+50+0",
+         h:"Ratusan dan satuan kosong. <span class='id-lang'>Hundreds and ones are empty.</span>"},
+        {type:"E",etype:"mc",
+         q:"Rakitlah komponen berikut: \\( 3000 + 500 + 10 + 8 \\). <span class='id-lang'>Assemble: 3,000 + 500 + 10 + 8.</span>",
+         o:["\\( 3.518 \\)","\\( 3.581 \\)","\\( 3.150 \\)","\\( 3.580 \\)"],
+         a:0,
+         h:"Urunkan dari ribuan ke satuan. <span class='id-lang'>Arrange from thousands to ones.</span>"},
+        {type:"E",etype:"tf",
+         q:"\\( 5.000 + 300 + 20 + 8 \\) sama dengan \\( 5.000 + 200 + 120 + 8 \\). <span class='id-lang'>5,000 + 300 + 20 + 8 is equal to 5,000 + 200 + 120 + 8.</span>",
+         a:true,
+         h:"Rakit keduanya, hasilnya 5.328. <span class='id-lang'>Assemble both, result is 5,328.</span>"},
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah membaca kode paket \\( 6.042 \\). <span class='id-lang'>Order steps to read package code 6,042.</span>",
+         o:["Baca ribuan: enam ribu","Baca ratusan: nol ratus (lewati)","Baca puluhan: empat puluh","Baca satuan: dua"],
+         a:[0,1,2,3],
+         h:"Lewati bagian yang nol. <span class='id-lang'>Skip the zero part.</span>"},
+        {type:"E",etype:"match",
+         q:"Cocokkan ekspresi dengan hasil perbandingannya. <span class='id-lang'>Match expressions with their comparison results.</span>",
+         left:["\\( 1.200 \\) vs \\( 1.020 \\)","\\( 3.045 \\) vs \\( 3.054 \\)","\\( 9.999 \\) vs \\( 9.999 \\)"],
+         right:["\\( > \\)","\\( < \\)","\\( = \\)"],
+         a:[0,1,2],
+         h:"Rakit atau bandingkan langsung. <span class='id-lang'>Assemble or compare directly.</span>"},
+        {type:"E",etype:"sa",
+         q:"Manakah bilangan yang lebih besar dari \\( 3.500 \\) tapi lebih kecil dari \\( 3.550 \\)? <span class='id-lang'>Which numbers are greater than 3,500 but less than 3,550?</span>",
+         o:["\\( 3.515 \\)","\\( 3.505 \\)","\\( 3.555 \\)","\\( 3.450 \\)"],
+         a:[0,1],
+         h:"Cek ratusan dan puluhannya. <span class='id-lang'>Check hundreds and tens.</span>"},
+        {type:"E",etype:"fb",
+         q:"Berapakah nilai angka 1 pada \\( 1.999 \\)? <span class='id-lang'>What is the value of digit 1 in 1,999?</span>",
+         a:"1000||1.000",
+         h:"Posisi paling kiri adalah ribuan. <span class='id-lang'>Leftmost position is thousands.</span>"},
+        {type:"E",etype:"mc",
+         q:"Bandingkan \\( 8.765 \\) dan \\( 8.756 \\). <span class='id-lang'>Compare 8,765 and 8,756.</span>",
+         o:["\\( 8.765 > 8.756 \\) <span class='id-lang'></span>","\\( 8.765 < 8.756 \\) <span class='id-lang'></span>","\\( 8.765 = 8.756 \\) <span class='id-lang'></span>","Tidak bisa <span class='id-lang'></span>"],
+         a:0,
+         h:"Bandingkan puluhannya. <span class='id-lang'>Compare tens.</span>"},
+        {type:"E",etype:"tf",
+         q:"Pada \\( 9.090 \\), angka 9 di kiri bernilai sama dengan angka 9 di kanan. <span class='id-lang'>In 9,090, the left 9 has the same value as the right 9.</span>",
+         a:false,
+         h:"Kiri 9.000, kanan 90. <span class='id-lang'>Left is 9,000, right is 90.</span>"},
+        {type:"E",etype:"code",
+         q:"Rakitlah komponen yang diacak ini tanpa spasi: \\( 3 + 4000 + 500 \\). <span class='id-lang'>Assemble these scrambled components without spaces: 3 + 4,000 + 500.</span>",
+         a:"4503||4.503",
+         h:"Urutkan dulu baru jumlahkan. <span class='id-lang'>Sort first then add.</span>"}
+      ]
+    },
+
+    // ==================== SECTION 7E ====================
+    {
+      id:"7E", title:"Assessment E <span class='id-lang'>Asesmen E</span>", icon:"fa-clipboard-check", color:"#f97316", branch:true,
+      lessons:[
+        {type:"E",etype:"mc",
+         q:"Manakah perbandingan yang benar? <span class='id-lang'>Which comparison is correct?</span>",
+         o:["\\( 5.678 > 5.687 \\) <span class='id-lang'></span>","\\( 5.678 < 5.687 \\) <span class='id-lang'></span>","\\( 5.678 = 5.687 \\) <span class='id-lang'></span>","\\( 5.678 > 5.768 \\) <span class='id-lang'></span>"],
+         a:1,
+         h:"Bandingkan puluhan: 7 vs 8. <span class='id-lang'>Compare tens: 7 vs 8.</span>"},
+        {type:"E",etype:"fb",
+         q:"Rakitlah: 8 ribuan, 4 satuan. <span class='id-lang'>Assemble: 8 thousands, 4 ones.</span>",
+         a:"8004||8.004",
+         h:"Ratusan dan puluhan 0. <span class='id-lang'>Hundreds and tens are 0.</span>"},
+        {type:"E",etype:"tf",
+         q:"\\( 1.000 + 1 = 1.001 \\). <span class='id-lang'>1,000 + 1 = 1,001.</span>",
+         a:true,
+         h:"Tidak ada ratusan dan puluhan. <span class='id-lang'>No hundreds and tens.</span>"},
+        {type:"E",etype:"match",
+         q:"Cocokkan bilangan dengan bacaannya. <span class='id-lang'>Match numbers with their readings.</span>",
+         left:["\\( 2.500 \\)","\\( 2.050 \\)","\\( 2.005 \\)"],
+         right:["dua ribu lima ratus","dua ribu lima puluh","dua ribu lima"],
+         a:[0,1,2],
+         h:"Lihat posisi nolnya. <span class='id-lang'>Look at zero positions.</span>"},
+        {type:"E",etype:"sa",
+         q:"Manakah bentuk yang merupakan bongkaran dari \\( 4.040 \\)? <span class='id-lang'>Which forms are decompositions of 4,040?</span>",
+         o:["\\( 4.000 + 40 \\)","\\( 4.000 + 0 + 40 + 0 \\)","\\( 4000 + 400 \\)","\\( 400 + 40 \\)"],
+         a:[0,1],
+         h:"Ratusan dan satuan 0. <span class='id-lang'>Hundreds and ones are 0.</span>"},
+        {type:"E",etype:"fb",
+         q:"Berapakah nilai angka 5 pada \\( 5.432 \\)? <span class='id-lang'>What is the value of digit 5 in 5,432?</span>",
+         a:"5000||5.000",
+         h:"Angka 5 di posisi ribuan. <span class='id-lang'>Digit 5 is in the thousands position.</span>"},
+        {type:"E",etype:"ord",
+         q:"Urutkan langkah merakit \\( 4 + 900 + 7000 \\). <span class='id-lang'>Order steps to assemble 4 + 900 + 7,000.</span>",
+         o:["Urutkan komponen: 7000","Lalu 900","Lalu 4","Gabungkan: 7904"],
+         a:[0,1,2,3],
+         h:"Urutkan dari ribuan. <span class='id-lang'>Sort from thousands.</span>"},
+        {type:"E",etype:"mc",
+         q:"Manakah bilangan yang tidak memiliki ratusan? <span class='id-lang'>Which number has no hundreds?</span>",
+         o:["\\( 1.234 \\)","\\( 1.034 \\)","\\( 1.203 \\)","\\( 1.004 \\)"],
+         a:3,
+         h:"Tidak ada ratusan berarti posisi ratusan 0. <span class='id-lang'>No hundreds means hundreds position is 0.</span>"},
+        {type:"E",etype:"tf",
+         q:"\\( 6.060 < 6.006 \\). <span class='id-lang'>6,060 < 6,006.</span>",
+         a:false,
+         h:"Puluhan 6 lebih besar dari 0. <span class='id-lang'>Tens 6 is greater than 0.</span>"},
+        {type:"E",etype:"code",
+         q:"Isi komponen yang hilang tanpa spasi: \\( 7.000 + \\_ + 40 + 5 = 7.845 \\). <span class='id-lang'>Fill the missing component without spaces: 7,000 + _ + 40 + 5 = 7,845.</span>",
+         a:"800",
+         h:"Kurangi 7.845 dengan 7.000, 40, dan 5. <span class='id-lang'>Subtract 7,845 by 7,000, 40, and 5.</span>"}
+      ]
+    },
+    // ==================== SECTION 8 ====================
+    {
+      id:8, title:"Consolidation & Reflection <span class='id-lang'>Konsolidasi & Refleksi</span>", icon:"fa-star", color:"#fbbf24", branch:false,
+      lessons:[
+        {type:"T",title:"Refleksi dan Penutup <span class='id-lang'>Reflection and Closing</span>",
+         body:`<p>Luar biasa! Kamu telah berhasil menjadi 'Detektif Bilangan'. Kamu belajar cara merakit dan membongkar bilangan empat angka (ribuan) serta membandingkan nilainya. <span class='id-lang'>Excellent! You have successfully become a 'Number Detective'. You learned how to assemble and disassemble four-digit numbers (thousands) and compare their values.</span></p>
+         <div class="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+           <div class="text-emerald-400 font-semibold mb-2">3 Poin Utama <span class='id-lang'>3 Key Takeaways</span></div>
+           <ul class="space-y-2 text-sm text-slate-300 list-disc list-inside">
+             <li><strong>Merakit:</strong> Menjumlahkan komponen nilai tempat menjadi bilangan utuh. <span class='id-lang'>Assembling: Adding place value components into a whole number.</span></li>
+             <li><strong>Membongkar:</strong> Memisahkan bilangan menjadi ribuan, ratusan, puluhan, satuan. <span class='id-lang'>Disassembling: Separating numbers into thousands, hundreds, tens, ones.</span></li>
+             <li><strong>Membandingkan:</strong> Melihat 'rumah' angkanya dulu dari kiri (ribuan) sebelum menentukan nilai terbesar/terkecil. <span class='id-lang'>Comparing: Looking at the digit's 'house' from the left (thousands) first before determining the largest/smallest value.</span></li>
+           </ul>
+         </div>
+         <p class="mt-4">Ingat, selalu perhatikan posisi angka nol! Sebelum kita tutup, luangkan waktu sejenak untuk memikirkan bagian mana yang paling menantang, dan tulis di buku catatanmu. <span class='id-lang'>Remember, always pay attention to the position of zero! Before we close, take a moment to think about which part was the most challenging, and write it in your notebook.</span></p>
+         <div class="mt-6 p-5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+           <div class="text-amber-400 font-bold text-xl mb-2">Misi Berikutnya <span class='id-lang'>Your Next Mission</span></div>
+           <p class="text-sm text-slate-300 mb-4">Siap untuk tantangan lainnya? Login ke Algonova sekarang! <span class='id-lang'>Ready for more challenges? Login to Algonova now!</span></p>
+           <a href="https://learn.algonova.id/login" target="_blank" class="btn-primary inline-flex">
+             <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Algonova <span class="id-lang" style="color:rgba(11,17,33,0.7); display:inline;">Open Algonova</span>
+           </a>
+         </div>`}
+      ]
+    }
+  ]
+};
+
+// ============================================================
+// STATE APLIKASI
+// ============================================================
+let state = {
+  xp: 0,
+  streak: 0,
+  completed: {},   // { "1-0": true, "1-1": true, ... }  mapIndex-lessonIndex
+  currentView: 'map',
+  currentMap: null,  // index di COURSE.maps
+  currentLesson: null, // index lesson dalam map
+  exerciseState: {},  // state untuk exercise interaktif
+};
+
+// Load dari localStorage
+function loadState() {
+  try {
+    const saved = localStorage.getItem('logicode_state');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state.xp = parsed.xp || 0;
+      state.streak = parsed.streak || 0;
+      state.completed = parsed.completed || {};
+	  state.mapAnswers = parsed.mapAnswers || {};
+    }
+  } catch(e) {}
+}
+function saveState() {
+  try {
+    localStorage.setItem('logicode_state', JSON.stringify({
+      xp: state.xp, streak: state.streak, completed: state.completed, mapAnswers: state.mapAnswers
+    }));
+  } catch(e) {}
+}
+
+function resetProgress() {
+  if (confirm('Apakah kamu yakin ingin menghapus semua progress? Tindakan ini tidak bisa dibatalkan.')) {
+    // Hapus data dari localStorage
+    localStorage.removeItem('logicode_state');
+    
+    // Reset state di memori
+    state.xp = 0;
+    state.streak = 0;
+    state.completed = {};
+    
+    // Render ulang tampilan peta
+    renderMap();
+    
+    // Tampilkan notifikasi
+    showToast('Progress berhasil direset!', 'info');
+  }
+}
+
+// ============================================================
+// HELPER: Cek apakah peta terbuka
+// ============================================================
+function isMapUnlocked(mapIdx) {
+  return true; // Semua peta selalu terbuka
+}
+
+function isMapCompleted(mapIdx) {
+  const map = COURSE.maps[mapIdx];
+  if (!map) return false;
+  return map.lessons.every((_, li) => state.completed[`${mapIdx}-${li}`]);
+}
+
+function isLessonUnlocked(mapIdx, lessonIdx) {
+  return true; // Semua lesson selalu terbuka
+}
+
+function getMapProgress(mapIdx) {
+  const map = COURSE.maps[mapIdx];
+  if (!map) return 0;
+  const done = map.lessons.filter((_, li) => state.completed[`${mapIdx}-${li}`]).length;
+  return Math.round((done / map.lessons.length) * 100);
+}
+
+function getTotalProgress() {
+  let total = 0, done = 0;
+  COURSE.maps.forEach((m, mi) => {
+    m.lessons.forEach((_, li) => {
+      total++;
+      if (state.completed[`${mi}-${li}`]) done++;
+    });
+  });
+  return total > 0 ? Math.round((done / total) * 100) : 0;
+}
+
+// ============================================================
+// RENDER: PETA MAP (halaman utama)
+// ============================================================
+function renderMap() {
+  const container = document.getElementById('mapContainer');
+  let html = '';
+
+	COURSE.maps.forEach((map, mi) => {
+	const unlocked = isMapUnlocked(mi);
+	const completed = isMapCompleted(mi);
+	const progress = getMapProgress(mi);
+	const isBranch = map.branch;
+	const isLastBranch = isBranch && !COURSE.maps[mi+1]?.branch;
+	const isFirstBranch = isBranch && !COURSE.maps[mi-1]?.branch;
+
+	// Node kelas
+	const nodeClass = completed ? 'completed' : unlocked ? 'unlocked' + (progress === 0 ? ' current' : '') : 'locked';
+
+	// --- BRANCH START: Visual dari Peta 6 ke Peta 7A-7E ---
+	if (isFirstBranch) {
+      const peta6Completed = isMapCompleted(mi - 1);
+      // Garis vertikal turun dari Peta 6
+      html += `<div class="map-line ${peta6Completed ? 'done' : ''}"></div>`;
+      // Garis horizontal branch (diperlebar)
+      html += `<div style="height: 3px; width: 95%; max-width: 850px; margin: 0 auto; background: var(--border);"></div>`;
+      // Buka container flex untuk 7A-7E (ditambah flex-wrap agar rapi di HP)
+      html += `<div class="flex flex-wrap justify-center" style="gap: 20px; max-width: 850px; margin: 0 auto;">`;
+    }
+
+	// --- RENDER NODE ---
+	html += `
+	  <div class="flex flex-col items-center" style="${isBranch ? 'min-width: 150px;' : ''}" onclick="${unlocked ? `openPeta(${mi})` : ''}">
+		${isBranch ? `<div style="width: 3px; height: 25px; background: var(--border);"></div>` : ''}
+		<div class="map-node ${nodeClass}" style="${unlocked ? `border-color:${map.color};${completed ? `background:${map.color}` : ''}` : ''}">
+		  ${completed ? '<i class="fa-solid fa-check"></i>' : unlocked ? `<i class="fa-solid ${map.icon}"></i>` : '<i class="fa-solid fa-lock text-sm"></i>'}
+		</div>
+		<div class="mt-2 text-center">
+		  <div class="text-sm font-semibold node-title ${unlocked ? 'text-slate-200' : 'text-slate-600'}">Peta ${map.id}</div>
+		  <div class="text-xs node-title ${unlocked ? 'text-slate-400' : 'text-slate-600'}">${map.title}</div>
+		  ${unlocked && !completed ? `<div class="mt-1 w-16 mx-auto"><div class="prog-bar"><div class="prog-fill" style="width:${progress}%;background:${map.color}"></div></div></div>` : ''}
+		</div>
+		${isBranch ? `<div style="width: 3px; height: 25px; background: var(--border);"></div>` : ''}
+	  </div>
+	`;
+
+	// --- BRANCH END: Visual dari Peta 7A-7E ke Peta 8 ---
+	if (isLastBranch) {
+      // Tutup container flex 7A-7E
+      html += `</div>`;
+      // Garis horizontal merge (diperlebar)
+      html += `<div style="height: 3px; width: 95%; max-width: 850px; margin: 0 auto; background: var(--border);"></div>`;
+      // Garis vertikal turun ke Peta 8
+      html += `<div class="map-line"></div>`;
+    }
+
+	// --- GARIS VERTIKAL NORMAL (Peta 1-5) ---
+	if (!isBranch && mi < COURSE.maps.length - 1 && !COURSE.maps[mi+1]?.branch) {
+	  html += `<div class="map-line ${completed ? 'done' : ''}"></div>`;
+	}
+	});
+
+  container.innerHTML = html;
+
+  // Update header stats
+  document.getElementById('headerXP').textContent = state.xp;
+  document.getElementById('headerStreak').textContent = state.streak;
+  document.getElementById('totalProgress').textContent = getTotalProgress() + '%';
+  document.getElementById('totalProgFill').style.width = getTotalProgress() + '%';
+}
+
+// ============================================================
+// RENDER: PETA DETAIL (daftar lesson)
+// ============================================================
+function openPeta(mapIdx) {
+  state.currentMap = mapIdx;
+  showView('peta');
+  const map = COURSE.maps[mapIdx];
+  document.getElementById('petaTitle').innerHTML = `Peta ${map.id}: ${map.title}`;
+  const totalLessons = map.lessons.length;
+  const doneLessons = map.lessons.filter((_, li) => state.completed[`${mapIdx}-${li}`]).length;
+  document.getElementById('petaSubtitle').textContent = `${doneLessons}/${totalLessons} selesai`;
+
+  const container = document.getElementById('lessonContainer');
+  let html = '<div class="stagger-in flex flex-col items-center">';
+
+  map.lessons.forEach((lesson, li) => {
+    const unlocked = isLessonUnlocked(mapIdx, li);
+    const completed = state.completed[`${mapIdx}-${li}`] === true;
+    const isTheory = lesson.type === 'T';
+    const isCurrent = unlocked && !completed;
+
+    const nodeClass = completed ? 'completed' : unlocked ? 'unlocked' : 'locked';
+    const shapeClass = isTheory ? 'theory' : 'exercise';
+
+    html += `
+      <div class="flex flex-col items-center">
+        <div class="lesson-node ${shapeClass} ${nodeClass} ${isCurrent ? 'current' : ''}"
+             style="${unlocked ? `border-color:${map.color};${completed ? `background:${map.color}` : ''}` : ''}"
+             onclick="${unlocked ? `openLesson(${mapIdx},${li})` : ''}">
+          ${completed ? '<i class="fa-solid fa-check text-sm"></i>' : isTheory ? '<i class="fa-solid fa-book text-sm"></i>' : '<i class="fa-solid fa-dumbbell text-sm"></i>'}
+        </div>
+        <div class="mt-1 text-center">
+          <div class="text-xs node-title ${unlocked ? 'text-slate-300' : 'text-slate-600'}">${isTheory ? lesson.title : `Exercise ${li+1}`}</div>
+        </div>
+      </div>
+    `;
+
+    // Koneksi ke lesson berikutnya
+    if (li < map.lessons.length - 1) {
+      const connDone = completed;
+      html += `<div class="lesson-connector ${connDone ? 'done' : ''}"></div>`;
+    }
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ============================================================
+// RENDER: LESSON (teori atau exercise)
+// ============================================================
+function openLesson(mapIdx, lessonIdx) {
+  state.currentMap = mapIdx;
+  state.currentLesson = lessonIdx;
+  state.exerciseState = {};
+  showView('lesson');
+
+  const map = COURSE.maps[mapIdx];
+  const lesson = map.lessons[lessonIdx];
+  const total = map.lessons.length;
+
+  document.getElementById('lessonCounter').textContent = `${lessonIdx+1}/${total}`;
+  const done = map.lessons.filter((_, li) => state.completed[`${mapIdx}-${li}`] || li < lessonIdx).length;
+  document.getElementById('lessonProgFill').style.width = `${(done/total)*100}%`;
+
+  if (lesson.type === 'T') {
+    renderTheory(lesson);
+  } else {
+    renderExercise(lesson, mapIdx, lessonIdx);
+  }
+}
+
+function renderTheory(lesson) {
+  const content = document.getElementById('lessonContent');
+  content.innerHTML = `
+    <div class="stagger-in">
+      <div class="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">
+        <i class="fa-solid fa-book-open mr-1"></i> Theory <span class="id-lang" style="display:inline; color:#64748b;">Teori</span>
+      </div>
+      <h2 class="text-2xl font-bold mb-6">${lesson.title}</h2>
+      <div class="text-slate-300 leading-relaxed space-y-3">
+        ${lesson.body}
+      </div>
+      <div class="mt-8 flex justify-end">
+        <button id="nextBtn" class="btn-primary" onclick="completeAndNext()">
+          Next <span class="id-lang" style="color:rgba(11,17,33,0.7); display:inline;">Lanjut</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderExercise(lesson, mapIdx, lessonIdx) {
+  const content = document.getElementById('lessonContent');
+  const etype = lesson.etype;
+  let exerciseHTML = '';
+
+  switch(etype) {
+    case 'mc': exerciseHTML = renderMC(lesson); break;
+    case 'tf': exerciseHTML = renderTF(lesson); break;
+    case 'fb': exerciseHTML = renderFB(lesson); break;
+    case 'ord': exerciseHTML = renderOrd(lesson); break;
+    case 'match': exerciseHTML = renderMatch(lesson); break;
+    case 'sa': exerciseHTML = renderSA(lesson); break;
+    case 'code': exerciseHTML = renderCode(lesson); break;
+    default: exerciseHTML = '<p>Tipe exercise tidak dikenal</p>';
+  }
+
+  content.innerHTML = `
+    <div class="stagger-in">
+      <div class="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">
+        <i class="fa-solid fa-dumbbell mr-1"></i> Exercise <span class="id-lang" style="display:inline; color:#64748b;">Latihan</span>
+      </div>
+      <h2 class="text-xl font-bold mb-6">${lesson.q}</h2>
+      ${lesson.code ? `<div class="code-block mb-6">${escapeHTML(lesson.code)}</div>` : ''}
+      <div id="exerciseArea">${exerciseHTML}</div>
+      <div id="feedbackArea" class="mt-4"></div>
+      <div class="mt-6 flex items-center justify-between flex-wrap gap-3">
+        <div class="flex gap-2">
+          <button class="btn-secondary text-sm" onclick="showHint()" id="hintBtn">
+            <i class="fa-solid fa-lightbulb mr-1"></i> Hint <span class="id-lang" style="display:inline;">Petunjuk</span>
+          </button>
+          <button class="btn-secondary text-sm" onclick="resetExercise()" id="resetBtn">
+            <i class="fa-solid fa-rotate-left mr-1"></i> Reset <span class="id-lang" style="display:inline;">Atur Ulang</span>
+          </button>
+        </div>
+        <button class="btn-primary" id="checkBtn" onclick="checkAnswer()" disabled>
+          Check <span class="id-lang" style="display:inline;">Periksa</span> <i class="fa-solid fa-check"></i>
+        </button>
+      </div>
+      <div id="hintArea" class="mt-4 hidden">
+        <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-200">
+          <i class="fa-solid fa-lightbulb text-amber-400 mr-2"></i>${lesson.h || 'Tidak ada petunjuk'}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Fungsi baru untuk mereset exercise
+function resetExercise() {
+  if (state.exerciseState.answered) return; // Tidak bisa reset jika sudah di-check
+  const lesson = COURSE.maps[state.currentMap].lessons[state.currentLesson];
+  renderExercise(lesson, state.currentMap, state.currentLesson);
+  // Panggil KaTeX setelah HTML dirender ulang
+  setTimeout(() => renderKatexInElement(document.getElementById('lessonContent')), 50);
+}
+
+// ============================================================
+// EXERCISE RENDERERS
+// ============================================================
+
+// Multiple Choice
+function renderMC(lesson) {
+  const labels = ['A','B','C','D','E','F'];
+  return `<div class="space-y-3" id="mcOptions">
+    ${lesson.o.map((opt, i) => `
+      <div class="opt-card" data-idx="${i}" onclick="selectMC(${i})">
+        <span class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-sm font-bold flex-shrink-0">${labels[i]}</span>
+        <span>${opt}</span>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function selectMC(idx) {
+  if (state.exerciseState.answered) return;
+  state.exerciseState.selected = idx;
+  document.querySelectorAll('#mcOptions .opt-card').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('checkBtn').disabled = false;
+}
+
+// True/False
+function renderTF(lesson) {
+  return `<div class="flex gap-4" id="tfOptions">
+    <div class="opt-card flex-1 justify-center text-center text-lg" onclick="selectTF(true)" data-val="true">
+      <i class="fa-solid fa-check text-emerald-400 mr-2"></i> True <span class="id-lang">Benar</span>
+    </div>
+    <div class="opt-card flex-1 justify-center text-center text-lg" onclick="selectTF(false)" data-val="false">
+      <i class="fa-solid fa-xmark text-red-400 mr-2"></i> False <span class="id-lang">Salah</span>
+    </div>
+  </div>`;
+}
+
+function selectTF(val) {
+  if (state.exerciseState.answered) return;
+  state.exerciseState.selected = val;
+  document.querySelectorAll('#tfOptions .opt-card').forEach(el => {
+    el.classList.toggle('selected', el.dataset.val === String(val));
+  });
+  document.getElementById('checkBtn').disabled = false;
+}
+
+// Fill Blank
+function renderFB(lesson) {
+  return `<div>
+    <input type="text" class="ex-input" id="fbInput" placeholder="Ketik jawaban..." autocomplete="off" oninput="onFBInput()">
+  </div>`;
+}
+
+function onFBInput() {
+  const val = document.getElementById('fbInput').value.trim();
+  document.getElementById('checkBtn').disabled = val.length === 0;
+}
+
+// Order
+function renderOrd(lesson) {
+  // Tampilkan item dalam urutan acak
+  const shuffled = lesson.o.map((item, i) => ({text: item, origIdx: i}));
+  // Shuffle
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  state.exerciseState.ordOrder = [];
+  state.exerciseState.ordItems = shuffled;
+
+  return `<div>
+	<div class="text-sm text-slate-400 mb-3">Click items in the correct order: <span class="id-lang">Klik item dalam urutan yang benar:</span></div>
+    <div class="space-y-2" id="ordList">
+      ${shuffled.map((item, i) => `
+        <div class="order-item flex items-center gap-3" data-orig="${item.origIdx}" onclick="selectOrd(this,${item.origIdx})">
+          <span class="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold ord-num"></span>
+          <span>${item.text}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="mt-3 text-xs text-slate-500" id="ordStatus">Urutan terpilih: (belum ada)</div>
+  </div>`;
+}
+
+function selectOrd(el, origIdx) {
+  if (state.exerciseState.answered) return;
+  if (el.classList.contains('ordered')) return;
+
+  const order = state.exerciseState.ordOrder;
+  order.push(origIdx);
+  el.classList.add('ordered');
+  const numEl = el.querySelector('.ord-num');
+  numEl.textContent = order.length;
+
+  document.getElementById('ordStatus').textContent = `Urutan terpilih: ${order.length}/${state.exerciseState.ordItems.length}`;
+  document.getElementById('checkBtn').disabled = order.length < state.exerciseState.ordItems.length;
+}
+
+// Match
+function renderMatch(lesson) {
+  state.exerciseState.matchLeft = null;
+  state.exerciseState.matchPairs = [];
+  state.exerciseState.matchedLeft = new Set();
+  state.exerciseState.matchedRight = new Set();
+
+  // Shuffle right column
+  const rightShuffled = [...lesson.right];
+  for (let i = rightShuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rightShuffled[i], rightShuffled[j]] = [rightShuffled[j], rightShuffled[i]];
+  }
+  state.exerciseState.rightShuffled = rightShuffled;
+
+  return `<div>
+    <div class="text-sm text-slate-400 mb-3">Klik item kiri, lalu item kanan untuk mencocokkan:</div>
+    <div class="grid grid-cols-2 gap-3" id="matchGrid">
+      <div class="space-y-2" id="matchLeft">
+        ${lesson.left.map((item, i) => `
+          <div class="match-item" data-side="left" data-idx="${i}" onclick="selectMatch('left',${i})">${item}</div>
+        `).join('')}
+      </div>
+      <div class="space-y-2" id="matchRight">
+        ${rightShuffled.map((item, i) => `
+          <div class="match-item" data-side="right" data-idx="${i}" data-val="${item}" onclick="selectMatch('right',${i})">${item}</div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function selectMatch(side, idx) {
+  if (state.exerciseState.answered) return;
+  const es = state.exerciseState;
+
+  if (side === 'left') {
+    if (es.matchedLeft.has(idx)) return;
+    // Highlight
+    document.querySelectorAll('#matchLeft .match-item').forEach(el => el.classList.remove('active'));
+    const el = document.querySelector(`#matchLeft .match-item[data-idx="${idx}"]`);
+    el.classList.add('active');
+    es.matchLeft = idx;
+  } else {
+    if (es.matchedRight.has(idx)) return;
+    if (es.matchLeft === null) {
+      showToast('Pilih item kiri terlebih dahulu', 'info');
+      return;
+    }
+    // Create pair
+    const lesson = COURSE.maps[state.currentMap].lessons[state.currentLesson];
+    const leftIdx = es.matchLeft;
+    const rightVal = es.rightShuffled[idx];
+    es.matchPairs.push({leftIdx, rightVal, rightShuffledIdx: idx});
+    es.matchedLeft.add(leftIdx);
+    es.matchedRight.add(idx);
+
+    // Visual
+    const leftEl = document.querySelector(`#matchLeft .match-item[data-idx="${leftIdx}"]`);
+    const rightEl = document.querySelector(`#matchRight .match-item[data-idx="${idx}"]`);
+    leftEl.classList.remove('active');
+    leftEl.classList.add('matched');
+    rightEl.classList.add('matched');
+
+    es.matchLeft = null;
+
+    document.getElementById('checkBtn').disabled = es.matchPairs.length < lesson.left.length;
+  }
+}
+
+// Select All
+function renderSA(lesson) {
+  state.exerciseState.selectedSet = new Set();
+  return `<div>
+    <div class="text-sm text-slate-400 mb-3">Pilih semua jawaban yang benar:</div>
+    <div class="space-y-2" id="saOptions">
+      ${lesson.o.map((opt, i) => `
+        <div class="opt-card" data-idx="${i}" onclick="toggleSA(${i})">
+          <span class="w-6 h-6 rounded border-2 border-slate-600 flex items-center justify-center flex-shrink-0 sa-check"></span>
+          <span>${opt}</span>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function toggleSA(idx) {
+  if (state.exerciseState.answered) return;
+  const set = state.exerciseState.selectedSet;
+  if (set.has(idx)) set.delete(idx); else set.add(idx);
+  document.querySelectorAll('#saOptions .opt-card').forEach((el, i) => {
+    const check = el.querySelector('.sa-check');
+    if (set.has(i)) {
+      el.classList.add('selected');
+      check.innerHTML = '<i class="fa-solid fa-check text-emerald-400 text-xs"></i>';
+      check.style.borderColor = '#10b981';
+    } else {
+      el.classList.remove('selected');
+      check.innerHTML = '';
+      check.style.borderColor = '';
+    }
+  });
+  document.getElementById('checkBtn').disabled = set.size === 0;
+}
+
+// Code Output
+function renderCode(lesson) {
+  return `<div>
+    <div class="text-sm text-slate-400 mb-3">Tulis output yang akan ditampilkan:</div>
+    <input type="text" class="ex-input font-mono" id="codeInput" placeholder="Ketik output..." autocomplete="off" oninput="onCodeInput()">
+  </div>`;
+}
+
+function onCodeInput() {
+  const val = document.getElementById('codeInput').value.trim();
+  document.getElementById('checkBtn').disabled = val.length === 0;
+}
+
+// ============================================================
+// CHECK ANSWER
+// ============================================================
+function checkAnswer() {
+  if (state.exerciseState.answered) return;
+  state.exerciseState.answered = true;
+
+  // Sembunyikan tombol Hint dan Reset
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) resetBtn.style.display = 'none';
+
+  const lesson = COURSE.maps[state.currentMap].lessons[state.currentLesson];
+  const etype = lesson.etype;
+  let correct = false;
+  let correctAnswer = '';
+
+  switch(etype) {
+    case 'mc': {
+      const sel = state.exerciseState.selected;
+      correct = sel === lesson.a;
+      document.querySelectorAll('#mcOptions .opt-card').forEach((el, i) => {
+        el.classList.add('disabled');
+        if (i === lesson.a) el.classList.add('correct');
+        if (i === sel && !correct) el.classList.add('wrong');
+      });
+      correctAnswer = lesson.o[lesson.a];
+      break;
+    }
+    case 'tf': {
+      const sel = state.exerciseState.selected;
+      correct = sel === lesson.a;
+      document.querySelectorAll('#tfOptions .opt-card').forEach(el => {
+        el.classList.add('disabled');
+        if (String(lesson.a) === el.dataset.val) el.classList.add('correct');
+        if (String(sel) === el.dataset.val && !correct) el.classList.add('wrong');
+      });
+            correctAnswer = lesson.a ? 'True <span class="id-lang">Benar</span>' : 'False <span class="id-lang">Salah</span>';
+      break;
+    }
+    case 'fb': {
+      const input = document.getElementById('fbInput').value.trim();
+      // Normalisasi: hapus semua spasi dan ubah jadi huruf kecil
+      const normalize = str => str
+        .replace(/[\u200B-\u200D\u2060-\u206F\uFEFF]/g, '') // Hapus karakter tak terlihat (Zero-width, function apply, BOM)
+        .replace(/[（﹝]/g, '(') // Ubah kurung buka full-width ke setengah
+        .replace(/[）﹞]/g, ')') // Ubah kurung tutup full-width ke setengah
+        .replace(/\s+/g, '')    // Hapus semua spasi
+        .toLowerCase();         // Jadiin huruf kecil
+      // Terima beberapa jawaban yang benar (dipisah /)
+      const answers = lesson.a.split('||');
+      correct = answers.some(a => normalize(input) === normalize(a));
+      document.getElementById('fbInput').classList.add(correct ? 'correct' : 'wrong');
+      document.getElementById('fbInput').disabled = true;
+      correctAnswer = lesson.a;
+      break;
+    }
+    case 'ord': {
+      const order = state.exerciseState.ordOrder;
+      correct = order.length === lesson.a.length && order.every((v, i) => v === lesson.a[i]);
+      correctAnswer = lesson.a.map(i => lesson.o[i]).join(' → ');
+      break;
+    }
+    case 'match': {
+      const pairs = state.exerciseState.matchPairs;
+      const lesson_data = lesson;
+      correct = pairs.length === lesson_data.a.length && pairs.every((p, i) => {
+        // Cek apakah leftIdx-i cocok dengan right yang benar
+        const expectedRightVal = lesson_data.right[lesson_data.a[p.leftIdx]];
+        return p.rightVal === expectedRightVal;
+      });
+      correctAnswer = lesson_data.left.map((l, i) => `${l} ↔ ${lesson_data.right[lesson_data.a[i]]}`).join(', ');
+      break;
+    }
+    case 'sa': {
+      const selected = [...state.exerciseState.selectedSet].sort();
+      const expected = [...lesson.a].sort();
+      correct = selected.length === expected.length && selected.every((v, i) => v === expected[i]);
+      document.querySelectorAll('#saOptions .opt-card').forEach((el, i) => {
+        el.classList.add('disabled');
+        if (lesson.a.includes(i)) el.classList.add('correct');
+        if (selected.includes(i) && !lesson.a.includes(i)) el.classList.add('wrong');
+      });
+      correctAnswer = lesson.a.map(i => lesson.o[i]).join(', ');
+      break;
+    }
+    case 'code': {
+      const input = document.getElementById('codeInput').value.trim();
+      // Normalisasi: hapus semua spasi dan ubah jadi huruf kecil
+      const normalize = str => str
+        .replace(/[\u200B-\u200D\u2060-\u206F\uFEFF]/g, '') // Hapus karakter tak terlihat
+        .replace(/[（﹝]/g, '(') // Standar kurung buka
+        .replace(/[）﹞]/g, ')') // Standar kurung tutup
+        .replace(/\s+/g, '')    // Hapus spasi
+        .toLowerCase();         // Huruf kecil
+      const answers = lesson.a.split('||');
+      correct = answers.some(a => normalize(input) === normalize(a));
+      document.getElementById('codeInput').classList.add(correct ? 'correct' : 'wrong');
+      document.getElementById('codeInput').disabled = true;
+      correctAnswer = lesson.a;
+      break;
+    }
+  }
+
+  // Simpan jawaban untuk Print Result
+  const mi = state.currentMap;
+  const li = state.currentLesson;
+  let studentAnswerText = "";
+  let correctAnswerText = "";
+
+  switch(etype) {
+    case 'mc':
+      studentAnswerText = state.exerciseState.selected !== undefined ? lesson.o[state.exerciseState.selected] : "-";
+      correctAnswerText = lesson.o[lesson.a];
+      break;
+    case 'tf':
+      studentAnswerText = state.exerciseState.selected !== null ? (state.exerciseState.selected ? "True" : "False") : "-";
+      correctAnswerText = lesson.a ? "True" : "False";
+      break;
+    case 'fb':
+      studentAnswerText = document.getElementById('fbInput').value.trim() || "-";
+      correctAnswerText = lesson.a;
+      break;
+    case 'code':
+      studentAnswerText = document.getElementById('codeInput').value.trim() || "-";
+      correctAnswerText = lesson.a;
+      break;
+    case 'ord':
+      studentAnswerText = state.exerciseState.ordOrder.map(i => lesson.o[i]).join(' → ') || "-";
+      correctAnswerText = lesson.a.map(i => lesson.o[i]).join(' → ');
+      break;
+    case 'match':
+      studentAnswerText = "Matched pairs";
+      correctAnswerText = lesson.left.map((l, i) => `${l} ↔ ${lesson.right[lesson.a[i]]}`).join('; ');
+      break;
+    case 'sa':
+      studentAnswerText = [...state.exerciseState.selectedSet].sort().map(i => lesson.o[i]).join(', ') || "-";
+      correctAnswerText = lesson.a.map(i => lesson.o[i]).join(', ');
+      break;
+  }
+
+  if (!state.mapAnswers) state.mapAnswers = {};
+  if (!state.mapAnswers[mi]) state.mapAnswers[mi] = {};
+  state.mapAnswers[mi][li] = {
+    q: lesson.q,
+    studentAnswer: studentAnswerText,
+    correctAnswer: correctAnswerText,
+    isCorrect: correct
+  };
+  saveState();
+
+  // Tampilkan feedback
+  const feedback = document.getElementById('feedbackArea');
+  if (correct) {
+    feedback.innerHTML = `
+      <div class="feedback-bar correct-fb">
+        <i class="fa-solid fa-check-circle text-2xl"></i>
+        <div>
+          <div class="text-lg">Correct! Excellent! <span class="id-lang">Benar! Hebat!</span></div>
+          ${correctAnswer ? `<div class="text-sm opacity-80 mt-1">Answer: ${correctAnswer}</div>` : ''}
+        </div>
+      </div>
+    `;
+    // Tambah XP
+    state.xp += 10;
+    state.streak += 1;
+    showXPPopup(10);
+    spawnConfetti();
+  } else {
+    feedback.innerHTML = `
+      <div class="feedback-bar wrong-fb">
+        <i class="fa-solid fa-times-circle text-2xl"></i>
+        <div>
+            <div class="text-lg">Incorrect <span class="id-lang">Belum tepat</span></div>
+            <div class="text-sm opacity-80 mt-1">Answer: ${correctAnswer}</div>
+        </div>
+      </div>
+    `;
+    state.streak = 0;
+  }
+  
+  renderKatexInElement(feedback);
+  
+  // Update header
+  document.getElementById('headerXP').textContent = state.xp;
+  document.getElementById('headerStreak').textContent = state.streak;
+
+  // Ganti tombol check menjadi lanjut
+  const checkBtn = document.getElementById('checkBtn');
+  checkBtn.textContent = 'Lanjut ';
+  checkBtn.innerHTML = 'Next <span class="id-lang" style="color:rgba(11,17,33,0.7); display:inline;">Lanjut</span> <i class="fa-solid fa-arrow-right"></i>';
+  checkBtn.disabled = false;
+  checkBtn.onclick = () => completeAndNext();
+
+  saveState();
+}
+
+// ============================================================
+// PRINT RESULT UNTUK ASSESSMENT
+// ============================================================
+function showPrintResultForm(mapIdx) {
+  const map = COURSE.maps[mapIdx];
+  const totalLessons = map.lessons.length;
+  let correctCount = 0;
+  
+  if (state.mapAnswers && state.mapAnswers[mapIdx]) {
+    for (let i = 0; i < totalLessons; i++) {
+      if (state.mapAnswers[mapIdx][i] && state.mapAnswers[mapIdx][i].isCorrect) {
+        correctCount++;
+      }
+    }
+  }
+  
+  const score = Math.round((correctCount / totalLessons) * 100);
+
+  const content = document.getElementById('lessonContent');
+  content.innerHTML = `
+    <div class="stagger-in text-center">
+      <div class="text-5xl mb-4">🎉</div>
+      <h2 class="text-2xl font-bold mb-2">Assessment Completed! <span class="id-lang">Asesmen Selesai!</span></h2>
+      <p class="text-slate-400 mb-6">You scored <span class="text-emerald-400 font-bold text-xl">${score}%</span> (${correctCount}/${totalLessons})</p>
+      
+      <div class="max-w-md mx-auto text-left space-y-4 mb-8">
+        <div>
+          <label class="text-sm text-slate-400 block mb-1">Name / <span class="id-lang">Nama</span></label>
+          <input type="text" id="printName" class="ex-input" placeholder="Enter your name / Masukkan nama">
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 block mb-1">Date / <span class="id-lang">Tanggal</span></label>
+          <input type="date" id="printDate" class="ex-input" value="${new Date().toISOString().split('T')[0]}">
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 block mb-1">Assessment / <span class="id-lang">Asesmen</span></label>
+          <input type="text" class="ex-input" value="Assessment ${map.id}" disabled style="opacity:0.6">
+        </div>
+        <div>
+          <label class="text-sm text-slate-400 block mb-1">Score / <span class="id-lang">Skor</span></label>
+          <input type="text" class="ex-input" value="${score}%" disabled style="opacity:0.6">
+        </div>
+      </div>
+
+      <button class="btn-primary text-lg" onclick="generatePrintout(${mapIdx})">
+        <i class="fa-solid fa-print mr-2"></i> Print Result <span class="id-lang" style="color:rgba(11,17,33,0.7); display:inline;">Cetak Hasil</span>
+      </button>
+      
+      <div class="mt-4">
+        <button class="btn-secondary" onclick="openPeta(${mapIdx})">
+          Back to Map <span class="id-lang">Kembali ke Peta</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function generatePrintout(mapIdx) {
+  const map = COURSE.maps[mapIdx];
+  const studentName = document.getElementById('printName').value || '-';
+  const printDate = document.getElementById('printDate').value || '-';
+  
+  let correctCount = 0;
+  let tableRows = '';
+  
+  for (let i = 0; i < map.lessons.length; i++) {
+    const ansData = (state.mapAnswers && state.mapAnswers[mapIdx] && state.mapAnswers[mapIdx][i]) ? state.mapAnswers[mapIdx][i] : null;
+    // Hapus tag id-lang dari pertanyaan agar printout lebih bersih (hanya bahasa Inggris)
+    const qText = map.lessons[i].q.replace(/<span class='id-lang'>.*?<\/span>/g, '');
+    const studentAns = ansData ? ansData.studentAnswer : '-';
+    const correctAns = ansData ? ansData.correctAnswer : '-';
+    const isCorrect = ansData ? ansData.isCorrect : false;
+    
+    if (isCorrect) correctCount++;
+    
+    const noteSymbol = isCorrect ? '✓' : '✗';
+    const noteColor = isCorrect ? 'green' : 'red';
+    
+    tableRows += `
+      <tr>
+        <td style="text-align:center; width: 40px;">${i + 1}</td>
+        <td>${qText}</td>
+        <td>${studentAns}</td>
+        <td>${correctAns}</td>
+        <td style="text-align:center; color: ${noteColor}; font-weight:bold; font-size:1.2rem;">${noteSymbol}</td>
+      </tr>
+    `;
+  }
+  
+  const score = Math.round((correctCount / map.lessons.length) * 100);
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+      <meta charset="UTF-8">
+      <title>Assessment Result - ${map.id}</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+      <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"><\/script>
+      <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left: '\\\\(', right: '\\\\)', display: false},{left: '\\\\[', right: '\\\\]', display: true}], throwOnError: false}); setTimeout(function(){window.print();}, 1000);"><\/script>
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; color: #333; line-height: 1.5; }
+        h1 { text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px; }
+        .header-info { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; }
+        .header-info p { margin: 5px 0; font-size: 14px; }
+        .header-info strong { margin-right: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: left; vertical-align: top; }
+        th { background: #f0f0f0; font-weight: bold; text-align: center; }
+        @media print {
+          body { padding: 0; }
+          .header-info { border: none; padding: 0; }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Assessment Result</h1>
+      <div class="subtitle">Merakit dan Membongkar Bilangan Empat Angka</div>
+      
+      <div class="header-info">
+        <div style="flex:1; min-width: 200px;">
+          <p><strong>Name:</strong> ${studentName}</p>
+          <p><strong>Date:</strong> ${printDate}</p>
+        </div>
+        <div style="flex:1; min-width: 200px;">
+          <p><strong>Assessment:</strong> ${map.id}</p>
+          <p><strong>Score:</strong> ${score}% (${correctCount}/${map.lessons.length})</p>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Question</th>
+            <th>Student Answer</th>
+            <th>Correct Answer</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
+// ============================================================
+// COMPLETE & NEXT
+// ============================================================
+function completeAndNext() {
+  const mi = state.currentMap;
+  const li = state.currentLesson;
+  state.completed[`${mi}-${li}`] = true;
+  saveState();
+
+  const map = COURSE.maps[mi];
+  const isLastLesson = li + 1 >= map.lessons.length;
+  const isAssessment = map.branch; // Peta 7A-7E adalah branch: true
+
+  // Jika ini exercise terakhir di Assessment, tampilkan form Print
+  if (isAssessment && isLastLesson) {
+    showPrintResultForm(mi);
+  } else if (li + 1 < map.lessons.length && isLessonUnlocked(mi, li + 1)) {
+    openLesson(mi, li + 1);
+  } else {
+    openPeta(mi);
+  }
+}
+
+// ============================================================
+// NAVIGASI
+// ============================================================
+function showView(viewName) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(viewName + 'View').classList.add('active');
+  state.currentView = viewName;
+  window.scrollTo(0, 0);
+}
+
+function showMap() {
+  showView('map');
+  renderMap();
+}
+
+function closeLesson() {
+  openPeta(state.currentMap);
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showXPPopup(amount) {
+  document.getElementById('xpAmount').textContent = amount;
+  const popup = document.getElementById('xpPopup');
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 1500);
+}
+
+function spawnConfetti() {
+  const colors = ['#10b981','#f59e0b','#ec4899','#8b5cf6','#06b6d4','#ef4444'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.width = (Math.random() * 8 + 4) + 'px';
+    c.style.height = (Math.random() * 8 + 4) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
+    c.style.animationDelay = (Math.random() * 0.5) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+
+function showHint() {
+  document.getElementById('hintArea').classList.remove('hidden');
+  document.getElementById('hintBtn').disabled = true;
+}
+
+function escapeHTML(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// --- FUNGSI UNTUK MODAL RULES ---
+function openRules() {
+  document.getElementById('rulesModal').classList.add('active');
+}
+
+function closeRules() {
+  document.getElementById('rulesModal').classList.remove('active');
+}
+
+// ============================================================
+// KATEX RENDERING
+// ============================================================
+function renderKatexInElement(el) {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(el, {
+      delimiters: [
+        {left: '\\(', right: '\\)', display: false},  //
+        {left: '\\[', right: '\\]', display: true}    //
+      ],
+      throwOnError: false
+    });
+  }
+}
+
+// Override showView untuk render KaTeX setiap pindah halaman
+const originalShowView = showView;
+showView = function(viewName) {
+  originalShowView(viewName);
+  setTimeout(() => renderKatexInElement(document.body), 100);
+};
+
+// Override openLesson untuk render KaTeX di konten lesson
+const originalOpenLesson = openLesson;
+openLesson = function(mapIdx, lessonIdx) {
+  originalOpenLesson(mapIdx, lessonIdx);
+  setTimeout(() => renderKatexInElement(document.body), 100);
+};
+
+// ============================================================
+// INISIALISASI APLIKASI
+// ============================================================
+loadState();
+renderMap();
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  // Tekan Escape untuk menutup lesson
+  if (e.key === 'Escape' && state.currentView === 'lesson') {
+    closeLesson();
+  }
+  
+  // Tekan Enter untuk memeriksa jawaban / lanjut ke soal berikutnya
+  if (e.key === 'Enter' && state.currentView === 'lesson') {
+    const checkBtn = document.getElementById('checkBtn');
+    // Pastikan tombol ada dan tidak dalam keadaan disabled
+    if (checkBtn && !checkBtn.disabled) {
+      e.preventDefault(); 
+      checkBtn.click();   // Untuk halaman Exercise
+    } else if (nextBtn) {
+      e.preventDefault();
+      nextBtn.click();    // Untuk halaman Teori
+    }
+  }
+});
+</script>
+</body>
+</html>
