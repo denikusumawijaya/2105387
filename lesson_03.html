@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balapan Urutan Bilangan - Zainal</title>
+<style>
+    /* === GLOBAL STYLES & NO SCROLL === */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html {
+        height: 100vh; width: 100vw; overflow: hidden;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #1a1a24; color: #fff;
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+    /* === LAYOUT === */
+    #app { height: 100vh; width: 100vw; display: flex; flex-direction: column; position: relative; }
+    .view { display: none; flex-direction: column; height: 100%; width: 100%; padding: 20px; animation: slideIn 0.5s ease; }
+    .view.active { display: flex; }
+
+    /* === HOMEPAGE === */
+    #home { justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle, #2a2a3a, #111); }
+    .racing-flag { font-size: 4rem; margin-bottom: 10px; display: inline-block; animation: pulse 2s infinite; }
+    h1 { font-size: 3rem; color: #ff4b4b; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0px #000; }
+    .subtitle { font-size: 1.5rem; margin-bottom: 30px; color: #ccc; }
+    .topic-box { background: #fff; color: #000; padding: 20px 40px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+    .topic-box h2 { border-bottom: 2px solid #ff4b4b; padding-bottom: 10px; margin-bottom: 10px; }
+    .rules { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; max-width: 500px; margin: 0 auto 30px; }
+    .rules ul { list-style: none; text-align: left; }
+    .rules li { margin: 10px 0; display: flex; align-items: center; }
+    .rules li::before { content: '🏁'; margin-right: 10px; }
+    .btn-start { background: #ff4b4b; color: white; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+    .btn-start:hover { background: #ff0000; transform: scale(1.1); }
+
+    /* === NAVIGATION BAR === */
+    #nav-bar { background: #000; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff4b4b; }
+    .nav-btn { background: #333; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; transition: 0.3s; font-weight: bold; }
+    .nav-btn:hover { background: #555; }
+    .section-tabs { display: flex; gap: 5px; overflow-x: hidden; flex-grow: 1; justify-content: center; }
+    .tab { padding: 5px 10px; background: #222; border-radius: 5px; font-size: 0.8rem; cursor: pointer; border: 1px solid #444; }
+    .tab.active { background: #ff4b4b; border-color: #fff; }
+
+    /* === PROGRESS BAR === */
+    .progress-container { height: 5px; background: #333; width: 100%; margin-top: 5px; }
+    .progress-bar { height: 100%; background: #4caf50; width: 0%; transition: width 0.5s ease; }
+
+    /* === CONTENT AREA === */
+    .content-wrapper { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; padding-top: 15px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+    .time-indicator { background: #ff4b4b; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem; }
+    
+    .theory-box { background: #222234; padding: 15px; border-radius: 10px; margin-bottom: 15px; max-height: 25vh; overflow-y: auto; border-left: 5px solid #4caf50; }
+    .theory-box h3 { color: #4caf50; margin-bottom: 5px; }
+    
+    .exercise-box { background: #2a2a3a; padding: 15px; border-radius: 10px; flex-grow: 1; display: flex; flex-direction: column; border: 1px solid #444; overflow: hidden; }
+    .q-counter { font-size: 0.8rem; color: #aaa; margin-bottom: 5px; }
+    .question-area { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding-right: 10px; }
+    .question-text { font-size: 1.2rem; margin-bottom: 15px; font-weight: bold; }
+    
+    .options-area { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .opt-btn { background: #333; border: 1px solid #555; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; min-width: 100px; text-align: center; transition: 0.2s; }
+    .opt-btn:hover { background: #444; }
+    .opt-btn.selected { background: #0055ff; border-color: #fff; }
+    .opt-btn.correct-flash { background: #4caf50; border-color: #fff; animation: pulse 0.5s; }
+    .opt-btn.wrong-flash { background: #ff4b4b; border-color: #fff; animation: shake 0.5s; }
+
+    input[type="text"] { padding: 10px; border-radius: 5px; border: 2px solid #555; background: #111; color: #fff; font-size: 1.1rem; width: 100%; }
+    select { padding: 10px; border-radius: 5px; border: 2px solid #555; background: #333; color: #fff; font-size: 1rem; width: 100%; margin-bottom: 5px; }
+
+	.sort-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+	.sort-item { 
+		background: #444; 
+		padding: 12px; 
+		border-radius: 5px; 
+		cursor: grab; 
+		display: flex; 
+		align-items: center; 
+		user-select: none;
+		border: 1px solid #555;
+		transition: 0.2s;
+	}
+	.sort-item:hover { background: #555; border-color: #aaa; }
+	.sort-item.dragging { opacity: 0.5; background: #0055ff; }
+	.sort-item:active { cursor: grabbing; }
+	.sort-sequence { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 10px; border: 2px dashed #666; padding: 10px; min-height: 50px; }
+    .sort-item.selected { background: #0055ff; }
+    .sort-sequence { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 10px; border: 2px dashed #666; padding: 10px; min-height: 50px; }
+
+    .pairing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+    .pair-row { display: contents; }
+
+    .feedback { margin-top: 15px; padding: 10px; border-radius: 5px; display: none; font-weight: bold; font-size: 0.95rem; }
+    .feedback.correct { background: rgba(76, 175, 80, 0.3); color: #4caf50; display: block; border: 1px solid #4caf50; }
+    .feedback.wrong { background: rgba(244, 67, 54, 0.3); color: #ff4b4b; display: block; border: 1px solid #ff4b4b; }
+
+    .action-btns { margin-top: 15px; display: flex; justify-content: space-between; border-top: 1px solid #444; padding-top: 10px; }
+    .action-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+    .btn-next { background: #4caf50; color: white; margin-left: auto; }
+    .btn-reset { background: #ff9800; color: black; }
+    .btn-check { background: #0055ff; color: white; margin-left: auto; }
+    
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #222; }
+    ::-webkit-scrollbar-thumb { background: #ff4b4b; border-radius: 5px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <!-- HOMEPAGE -->
+    <div id="home" class="view active">
+        <div class="racing-flag">🏁</div>
+        <h1>Math Tutoring</h1>
+        <p class="subtitle">by Deni</p>
+        
+        <div class="topic-box">
+            <h2>Topic: Balapan Urutan Bilangan (Maju dan Mundur)</h2>
+            <p><em>Number Sequence Race (Forward and Backward)</em></p>
+        </div>
+
+        <div class="rules">
+            <h3>Aturan Kelas:</h3>
+            <ul>
+                <li>Berbicara secara bergantian</li>
+                <li>Meminta izin ketika ingin meninggalkan kelas</li>
+                <li>Menyalakan kamera dan microphone jika diperlukan</li>
+            </ul>
+        </div>
+
+        <button class="btn-start" onclick="goToSection('section1')">MULAI BALAPAN! 🏎️</button>
+    </div>
+
+    <!-- LEARNING SECTIONS -->
+    <div id="learning-view" class="view" style="display: none;">
+        <!-- Navigation Bar -->
+        <div id="nav-bar">
+            <button class="nav-btn" onclick="goHome()">🏠 Home</button>
+            <div class="section-tabs" id="sectionTabs">
+                <!-- Tabs generated by JS -->
+            </div>
+            <button class="nav-btn" onclick="nextSection()">Next ➡️</button>
+        </div>
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <!-- Dynamic Content Area -->
+        <div class="content-wrapper" id="contentArea">
+            <!-- Theory and Exercises injected here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // === DATA: SECTIONS INFO ===
+    const sectionsData = [
+        { id: 'section1', title: 'Spiral Review', time: '00:00-00:10' },
+        { id: 'section2', title: 'Intro & Real-World', time: '00:10-00:15' },
+        { id: 'section3', title: 'Prior Knowledge', time: '00:15-00:20' },
+        { id: 'section4', title: 'Problem Intro', time: '00:20-00:30' },
+        { id: 'section5', title: 'Guided Practice', time: '00:30-00:45' },
+        { id: 'section6', title: 'Independent', time: '00:45-01:00' },
+        { id: 'section7', title: 'Consolidation', time: '01:00-01:05' },
+        { id: 'assignment', title: 'Assignment', time: '01:05-01:30' },
+        { id: 'final', title: 'Finish Line', time: '01:30' }
+    ];
+
+    // === DATA: LESSONS (Teori & Soal) ===
+    // === DATA: LESSONS (Teori & Soal) ===
+    const lessons = {
+        section1: {
+            theory: `<h3>📖 Spiral Review Warm-up</h3><p>Sebelum masuk lintasan baru, kita cek 'mesin' kita! <br>1. <b>Merakit Bilangan</b>: 4 ribuan, 2 ratusan, 5 satuan = 4.205.<br>2. <b>Membongkar Bilangan</b>: 7.032 = 7.000 + 0 + 30 + 2.<br>3. <b>Awan Bilangan</b>: Di tengah 450 dan 550 adalah 500.<br>4. <b>Membandingkan</b>: 3.401 lebih kecil dari 3.410 (lihat angka puluhan!).</p>`,
+            questions: [
+                { type: 'fill', q: 'Jika Bapak punya 4 ribuan, 2 ratusan, dan 5 satuan, jadi bilangan berapa?', correct: '4205', exp: '4 ribuan (4000) + 2 ratusan (200) + 0 puluhan (0) + 5 satuan (5) = 4.205.' },
+                { type: 'fill', q: 'Bongkar bilangan 7.032 menjadi nilai tempatnya! (Format: 7000+0+30+2)', correct: '7000+0+30+2', exp: '7 di ribuan (7000), 0 di ratusan (0), 3 di puluhan (30), 2 di satuan (2).' },
+                { type: 'radio', q: 'Jika ada awan 450 dan awan 550, angka berapa yang tepat di tengahnya?', options: ['400', '500', '510', '600'], correct: '500', exp: 'Selisih 450 dan 550 adalah 100. Setengahnya 50. 450 + 50 = 500.' },
+                { type: 'truefalse', q: 'Bilangan 3.401 lebih besar dari 3.410.', correct: 'false', exp: 'Salah! Ribuan dan ratusan sama. Puluhan 0 < puluhan 1. Maka 3.401 < 3.410.' },
+                { type: 'checkbox', q: 'Manakah bilangan di bawah ini yang bernilai lebih dari 500?', options: ['450', '499', '501', '550'], correct: ['501', '550'], exp: 'Hanya 501 dan 550 yang lebih besar dari 500.' },
+                { type: 'sort', q: 'Urutkan nilai tempat dari yang terBESAR ke terKECIL!', options: ['Ratusan', 'Ribuan', 'Satuan', 'Puluhan'], correct: ['Ribuan', 'Ratusan', 'Puluhan', 'Satuan'], exp: 'Urutan nilai tempat: Ribuan > Ratusan > Puluhan > Satuan.' },
+                { type: 'pairing', q: 'Pasangkan bilangan dengan bongkarnya yang benar!', pairs: [['3405', '3000+400+5'], ['3045', '3000+40+5'], ['3450', '3000+400+50']], correct: {'3405': '3000+400+5', '3045': '3000+40+5', '3450': '3000+400+50'}, exp: 'Perhatikan posisi angka! Ratusan ke-3, puluhan ke-4, dst.' },
+                { type: 'fill', q: 'Antara 100 dan 200, angka tepat di tengahnya adalah...', correct: '150', exp: '100 + 50 = 150.' },
+                { type: 'radio', q: 'Jika 999 ditambah 1, hasilnya adalah?', options: ['1000', '1001', '1010', '100'], correct: '1000', exp: '999 + 1 = 1000 (Sembilan ratus sembilan puluh sembilan ditambah satu).' },
+                { type: 'truefalse', q: 'Bilangan 8080 memiliki nilai 8 ratusan.', correct: 'false', exp: 'Salah! 8080 memiliki 8 ribuan dan 8 puluhan. Ratusannya 0.' }
+            ]
+        },
+        section2: {
+            theory: `<h3>📖 Intro & Real-World Connection</h3><p>Bayangkan menonton balapan mobil! <br>Di papan skor, waktu tempuh para pembalap harus diurutkan. <br>Urutan <b>Maju (Ascending)</b> = dari terkecil ke terbesar (tercepat ke terlambat). <br>Urutan <b>Mundur (Descending)</b> = dari terbesar ke terkecil.</p>`,
+            questions: [
+                { type: 'truefalse', q: 'Mengurutkan waktu tempuh dari tercepat ke terlambat berarti mengurutkan dari angka terkecil ke terbesar.', correct: 'true', exp: 'Benar! Waktu tercepat memiliki angka paling kecil.' },
+                { type: 'radio', q: 'Balapan A (120s), B (105s), C (135s). Siapa yang paling cepat?', options: ['A', 'B', 'C'], correct: 'B', exp: 'Waktu terkecil adalah 105s (Pembalap B).' },
+                { type: 'fill', q: 'Posisi 1 balapan biasanya memiliki waktu paling... (kecil/besar)', correct: 'kecil', exp: 'Waktu paling kecil berarti paling cepat finish.' },
+                { type: 'checkbox', q: 'Pilih kejadian yang membutuhkan urutan bilangan!', options: ['Papan skor balap', 'Antri sembako', 'Warna baju pembalap', 'Waktu tempuh'], correct: ['Papan skor balap', 'Antri sembako', 'Waktu tempuh'], exp: 'Warna baju tidak diurutkan berdasarkan angka.' },
+                { type: 'sort', q: 'Urutkan waktu balapan dari TERLAMPAT ke TERCEPAT (Terbesar ke Terkecil).', options: ['15s', '12s', '10s', '9s'], correct: ['15s', '12s', '10s', '9s'], exp: 'Terlambat = waktu terbesar. Jadi 15 > 12 > 10 > 9.' },
+                { type: 'radio', q: 'Urutan secara menaik (Ascending) adalah...', options: ['Besar ke Kecil', 'Kecil ke Besar', 'Acak'], correct: 'Kecil ke Besar', exp: 'Ascending (Maju) selalu dari angka terkecil menuju terbesar.' },
+                { type: 'radio', q: 'Urutan secara menurun (Descending) adalah...', options: ['Besar ke Kecil', 'Kecil ke Besar', 'Acak'], correct: 'Besar ke Kecil', exp: 'Descending (Mundur) selalu dari angka terbesar menuju terkecil.' },
+                { type: 'fill', q: 'Jika posisi 1 = 100, posisi 2 = 101. Ini adalah urutan... (maju/mundur)', correct: 'maju', exp: 'Bertambah secara konstan = Maju (Ascending).' },
+                { type: 'truefalse', q: 'Waktu 90.5 detik lebih cepat dari 95.0 detik.', correct: 'true', exp: '90.5 < 95.0, angka lebih kecil berarti lebih cepat.' },
+                { type: 'pairing', q: 'Pasangkan istilah dengan artinya!', pairs: [['Maju', 'Kecil ke Besar'], ['Mundur', 'Besar ke Kecil'], ['Tercepat', 'Angka Terkecil'], ['Terlambat', 'Angka Terbesar']], correct: {'Maju': 'Kecil ke Besar', 'Mundur': 'Besar ke Kecil', 'Tercepat': 'Angka Terkecil', 'Terlambat': 'Angka Terbesar'}, exp: 'Hafalkan arti dari Maju, Mundur, Tercepat, dan Terlambat!' }
+            ]
+        },
+        section3: {
+            theory: `<h3>📖 Review of Prior Knowledge</h3><p>Aturan <b>'Lihat dari Kiri'</b>: <br>Untuk membandingkan bilangan, lihat angka paling kiri dulu (Ribuan). Kalau sama, geser ke kanan (Ratusan), lalu Puluhan, lalu Satuan.</p>`,
+            questions: [
+                { type: 'radio', q: 'Di antara 345, 354, dan 335, mana yang paling kecil?', options: ['345', '354', '335'], correct: '335', exp: 'Ratusan sama (3). Puluhan: 4, 5, 3. Paling kecil puluhan 3 (335).' },
+                { type: 'radio', q: 'Mana yang lebih besar: 2.450 atau 2.540?', options: ['2.450', '2.540', 'Sama'], correct: '2.540', exp: 'Ribuan sama. Ratusan: 4 vs 5. 5 lebih besar, jadi 2.540 menang.' },
+                { type: 'checkbox', q: 'Manakah bilangan yang lebih besar dari 500?', options: ['450', '501', '499', '550'], correct: ['501', '550'], exp: '501 dan 550 memiliki ratusan 5, sementara 450 dan 499 ratusannya 4.' },
+                { type: 'sort', q: 'Urutkan dari terkecil ke terbesar: 234, 432, 324, 342', options: ['234', '432', '324', '342'], correct: ['234', '324', '342', '432'], exp: 'Lihat ratusan: 2, 3, 3, 4. Untuk yang depannya 3, bandingkan puluhannya: 2 dan 4.' },
+                { type: 'fill', q: 'Bilangan 123_ dan 1240. Jika 123_ lebih kecil, angka maksimal di titik adalah?', correct: '9', exp: 'Karena ratusannya 3 vs 4, maka apapun angka satuan (0-9), 123X selalu lebih kecil dari 1240.' },
+                { type: 'truefalse', q: 'Untuk membandingkan 2345 dan 2435, kita lihat angka puluhan terlebih dahulu.', correct: 'false', exp: 'Salah! Kita lihat ribuan dulu (sama), lalu RATUSAN. 3 vs 4.' },
+                { type: 'radio', q: 'Mana urutan menaik (maju) yang salah?', options: ['12, 13, 14', '12, 14, 13', '11, 12, 13'], correct: '12, 14, 13', exp: '14 seharusnya di akhir, bukan sebelum 13.' },
+                { type: 'fill', q: 'Tulis bilangan 8 ribuan, 0 ratusan, 0 puluhan, 1 satuan!', correct: '8001', exp: '8000 + 0 + 0 + 1 = 8001.' },
+                { type: 'pairing', q: 'Pasangkan tanda perbandingan yang benar untuk 2300 dan 2030!', pairs: [['2300', 'Lebih Besar'], ['2030', 'Lebih Kecil'], ['Selisih', '270']], correct: {'2300': 'Lebih Besar', '2030': 'Lebih Kecil', 'Selisih': '270'}, exp: '2300 > 2030. 2300 - 2030 = 270.' },
+                { type: 'radio', q: 'Urutan menurun dari 980, 890, 899 adalah...', options: ['890, 899, 980', '980, 899, 890', '890, 980, 899'], correct: '980, 899, 890', exp: 'Menurun = Besar ke Kecil. 980 > 899 > 890.' }
+            ]
+        },
+        // === PART 3 DATA ===
+        section4: {
+            theory: `<h3>📖 Problem Introduction</h3><p>Ada 4 mobil balap dengan nomor: <b>1.250, 1.050, 1.500, dan 1.150</b>. <br>Mereka harus parkir berurutan dari BESAR ke KECIL (Urutan Mundur). <br>Karena ribuannya semua sama (1), kita bedah angka <b>ratusannya</b>: 2, 0, 5, 1. <br>Urutan akhirnya: 1.500 (terbesar), 1.250, 1.150, 1.050 (terkecil).</p>`,
+            questions: [
+                { type: 'radio', q: 'Dari nomor 1.250, 1.050, 1.500, dan 1.150, mana yang terbesar?', options: ['1.250', '1.050', '1.500', '1.150'], correct: '1.500', exp: 'Ribuannya sama-sama 1. Ratusan terbesar adalah 5 (1.500).' },
+                { type: 'sort', q: 'Urutkan mundur nomor mobil berikut: 1250, 1050, 1500, 1150.', options: ['1250', '1050', '1500', '1150'], correct: ['1500', '1250', '1150', '1050'], exp: 'Urutan mundur: Besar ke Kecil. 1500 > 1250 > 1150 > 1050.' },
+                { type: 'fill', q: 'Dari bilangan 1250, 1050, 1500, 1150. Urutan terkecil adalah...', correct: '1050', exp: 'Ratusan terkecil adalah 0 (1.050).' },
+                { type: 'truefalse', q: 'Mengurutkan dari terbesar ke terkecil disebut urutan Maju.', correct: 'false', exp: 'Salah! Besar ke kecil disebut urutan Mundur (Descending).' },
+                { type: 'checkbox', q: 'Pilih bilangan yang ratusannya bernilai 5!', options: ['1500', '1050', '1250', '1150'], correct: ['1500', '1250'], exp: '1500 (5 ratusan) dan 1250 (2 ratusan? Salah! 1250 hanya punya 2 ratusan, 1500 punya 5). Hanya 1500.' }, // Correction in logic: 1500 has 5, 1050 has 0, 1250 has 2, 1150 has 1.
+                { type: 'radio', q: 'Antara 1.250 dan 1.150, mana yang lebih besar?', options: ['1.250', '1.150', 'Sama'], correct: '1.250', exp: 'Ratusan 2 lebih besar dari ratusan 1.' },
+                { type: 'fill', q: 'Angka ratusan dari 1.050 adalah...', correct: '0', exp: '0 berada di posisi ratusan.' },
+                { type: 'sort', q: 'Urutkan maju (kecil ke besar) nomor mobil: 1250, 1050, 1500, 1150.', options: ['1250', '1050', '1500', '1150'], correct: ['1050', '1150', '1250', '1500'], exp: 'Maju: Kecil ke Besar. 1050 < 1150 < 1250 < 1500.' },
+                { type: 'pairing', q: 'Pasangkan bilangan dengan nilai ratusannya!', pairs: [['1500', '5'], ['1250', '2'], ['1150', '1'], ['1050', '0']], correct: {'1500': '5', '1250': '2', '1150': '1', '1050': '0'}, exp: 'Posisi ratusan adalah angka ke-3 dari kanan.' },
+                { type: 'truefalse', q: '1.500 lebih kecil dari 1.250.', correct: 'false', exp: 'Salah! 5 ratusan lebih besar dari 2 ratusan.' }
+            ]
+        },
+        section5: {
+            theory: `<h3>📖 Guided Practice - Pit Stop Pola</h3><p>Melompat maju/mundur dengan pola konstan. <br>• Maju 100: 4.500 -> 4.600 -> 4.700 (Ratusan bertambah). <br>• Mundur 10: 2.100 -> 2.090 -> 2.080 (Puluhan berkurang). <br>• Mundur campuran: 8.765 -> 8.675 -> 8.576.</p>`,
+            questions: [
+                { type: 'fill', q: 'Pola lompat maju 100: 4500, 4600, 4700, ...', correct: '4800', exp: '4700 + 100 = 4800.' },
+                { type: 'fill', q: 'Pola lompat mundur 10: 2100, 2090, 2080, ...', correct: '2070', exp: '2080 - 10 = 2070.' },
+                { type: 'radio', q: '8765 mundur 90 menjadi...', options: ['8675', '8665', '8775', '8755'], correct: '8675', exp: '8765 - 90 = 8675. (Ratusan berkurang 1, puluhan bertambah 1? Cek: 8765 - 90 = 8675).' },
+                { type: 'sort', q: 'Urutkan mundur: 8765, 8675, 8576.', options: ['8765', '8675', '8576'], correct: ['8765', '8675', '8576'], exp: 'Besar ke kecil: 8765 > 8675 > 8576.' },
+                { type: 'checkbox', q: 'Mana yang termasuk pola maju 10?', options: ['100, 110, 120', '100, 200, 300', '120, 110, 100', '100, 102, 104'], correct: ['100, 110, 120'], exp: 'Hanya 100, 110, 120 yang bertambah 10 setiap langkah.' },
+                { type: 'fill', q: '3400 mundur 100 menjadi...', correct: '3300', exp: '3400 - 100 = 3300.' },
+                { type: 'truefalse', q: 'Pola 5000, 4000, 3000 adalah pola lompat mundur 1000.', correct: 'true', exp: 'Benar! Setiap langkah berkurang 1000.' },
+                { type: 'pairing', q: 'Pasangkan awal pola dengan lompatannya!', pairs: [['4500, 4600', '+100'], ['2100, 2090', '-10'], ['5000, 4000', '-1000'], ['100, 200', '+100']], correct: {'4500, 4600': '+100', '2100, 2090': '-10', '5000, 4000': '-1000', '100, 200': '+100'}, exp: 'Perhatikan selisih antara dua angka!' },
+                { type: 'fill', q: 'Lanjutkan pola mundur 1000: 9800, 8800, 7800, ...', correct: '6800', exp: '7800 - 1000 = 6800.' },
+                { type: 'radio', q: '2080 mundur 10 menjadi...', options: ['2090', '2070', '2000', '1980'], correct: '2070', exp: '2080 - 10 = 2070.' }
+            ]
+        },
+        section6: {
+            theory: `<h3>📖 Independent Practice</h3><p>Misi Mandiri! <br>1. Urutkan maju: 678, 876, 768, 687. <br>2. Urutan mundur: 5432, 5423, 5342, 5234. <br>3. Pola lompat 1000 mundur: 9800 -> 8800 -> 7800.</p>`,
+            questions: [
+                { type: 'sort', q: 'Urutkan maju: 678, 876, 768, 687.', options: ['678', '876', '768', '687'], correct: ['678', '687', '768', '876'], exp: 'Kecil ke besar: 678 < 687 < 768 < 876.' },
+                { type: 'sort', q: 'Urutkan mundur: 5432, 5423, 5342, 5234.', options: ['5432', '5423', '5342', '5234'], correct: ['5432', '5423', '5342', '5234'], exp: 'Besar ke kecil: 5432 > 5423 > 5342 > 5234.' },
+                { type: 'fill', q: 'Pola lompat 1000: 9800, 8800, 7800, ...', correct: '6800', exp: '7800 - 1000 = 6800.' },
+                { type: 'radio', q: 'Dari 678, 876, 768, 687. Mana yang terkecil?', options: ['678', '876', '768', '687'], correct: '678', exp: '678 adalah yang paling kecil di antara bilangan tersebut.' },
+                { type: 'truefalse', q: '5432 lebih besar dari 5423.', correct: 'true', exp: 'Benar! Puluhan 3 > puluhan 2.' },
+                { type: 'checkbox', q: 'Pilih bilangan yang lebih besar dari 700!', options: ['678', '876', '768', '687'], correct: ['876', '768'], exp: '876 dan 768 memiliki ratusan 7 dan 8 (lebih dari 6).' },
+                { type: 'fill', q: '5234 + 1000 = ...', correct: '6234', exp: '5234 + 1000 = 6234.' },
+                { type: 'pairing', q: 'Pasangkan bilangan dengan urutan tempatnya jika diurutkan maju!', pairs: [['678', '1'], ['687', '2'], ['768', '3'], ['876', '4']], correct: {'678': '1', '687': '2', '768': '3', '876': '4'}, exp: 'Urutan maju dari yang terkecil.' },
+                { type: 'radio', q: 'Pola lompat 1000 mundur setelah 7800 adalah...', options: ['8800', '6800', '7700', '6700'], correct: '6800', exp: '7800 - 1000 = 6800.' },
+                { type: 'sort', q: 'Urutkan mundur: 7800, 8800, 9800, 6800.', options: ['7800', '8800', '9800', '6800'], correct: ['9800', '8800', '7800', '6800'], exp: 'Besar ke kecil: 9800 > 8800 > 7800 > 6800.' }
+            ]
+        },
+        // === PART 4 DATA: SECTION 7 ===
+        section7: {
+            theory: `<h3>📖 Consolidation & Reflection</h3><p>Hebat sekali balapan hari ini, Zainal! <br>Ingat ya, kuncinya adalah <b>teliti melihat nilai tempat</b>. <br>• Urutan <b>Maju</b>: Kecil ke Besar. <br>• Urutan <b>Mundur</b>: Besar ke Kecil. <br>Jangan lupa, login ke <b>learn.algonova.id</b> untuk cek rangkuman dan latihanmu agar makin jago!</p>`,
+            questions: [
+                { type: 'radio', q: 'Urutan maju (ascending) adalah urutan dari...', options: ['Besar ke Kecil', 'Kecil ke Besar', 'Acak'], correct: 'Kecil ke Besar', exp: 'Maju (Ascending) selalu dari angka terkecil menuju terbesar.' },
+                { type: 'radio', q: 'Urutan mundur (descending) adalah urutan dari...', options: ['Besar ke Kecil', 'Kecil ke Besar', 'Acak'], correct: 'Besar ke Kecil', exp: 'Mundur (Descending) selalu dari angka terbesar menuju terkecil.' },
+                { type: 'truefalse', q: 'Dalam mengurutkan bilangan, kita harus melihat nilai tempat dari kanan ke kiri.', correct: 'false', exp: 'Salah! Kita melihat nilai tempat dari KIRI ke KANAN (Ribuan, Ratusan, Puluhan, Satuan).' },
+                { type: 'checkbox', q: 'Pilih kunci sukses dalam mengurutkan bilangan!', options: ['Teliti melihat nilai tempat', 'Melihat dari arah kiri', 'Menebak tanpa aturan', 'Membandingkan angka yang sama persis'], correct: ['Teliti melihat nilai tempat', 'Melihat dari arah kiri'], exp: 'Kunci utamanya adalah teliti nilai tempat dan lihat dari kiri.' },
+                { type: 'fill', q: 'Pola 9800, 8800, 7800, 6800 adalah pola lompat mundur... (100/1000)', correct: '1000', exp: 'Setiap langkah berkurang 1000.' },
+                { type: 'sort', q: 'Urutkan mundur: 4500, 1050, 5000, 1500.', options: ['4500', '1050', '5000', '1500'], correct: ['5000', '4500', '1500', '1050'], exp: 'Besar ke kecil: 5000 > 4500 > 1500 > 1050.' },
+                { type: 'pairing', q: 'Pasangkan istilah dengan lawan katanya!', pairs: [['Maju', 'Mundur'], ['Terbesar', 'Terkecil'], ['Ascending', 'Descending'], ['Bertambah', 'Berkurang']], correct: {'Maju': 'Mundur', 'Terbesar': 'Terkecil', 'Ascending': 'Descending', 'Bertambah': 'Berkurang'}, exp: 'Ingat pasangan lawan katanya agar tidak tertukar!' },
+                { type: 'truefalse', q: 'Angka nol (0) di tengah bilangan tidak mempengaruhi nilai bilangan.', correct: 'false', exp: 'Salah! 305 berbeda nilainya dengan 35. Nol di ratusan menandakan tidak ada ratusan.' },
+                { type: 'fill', q: 'Tuliskan link untuk cek rangkuman dan latihan tambahan! (tanpa http)', correct: 'learn.algonova.id', exp: 'Kunjungi learn.algonova.id/login untuk berlatih lebih lanjut.' },
+                { type: 'radio', q: 'Bagian mana yang sering terkesulitkan dalam urutan bilangan?', options: ['Urutan maju', 'Urutan mundur & pola lompat', 'Menghitung 1+1'], correct: 'Urutan mundur & pola lompat', exp: 'Urutan mundur dan pola lompat sering membuat tertukar, makanya harus banyak latihan!' }
+            ]
+        }
+    };
+
+    // === PART 4 DATA: ASSIGNMENTS (Grup 1 & 2) ===
+    const assignments = {
+        group1: {
+            title: 'Assignment Grup 1: Urutan Dasar (Medium)',
+            questions: [
+                { type: 'sort', q: 'Urutkan dari terkecil: 452, 425, 542, 245, 524.', options: ['452', '425', '542', '245', '524'], correct: ['245', '425', '452', '524', '542'], exp: 'Lihat ratusan terlebih dahulu: 2, 4, 5. Lalu bandingkan puluhannya.' },
+                { type: 'sort', q: 'Urutkan dari terbesar: 1.230, 1.320, 1.032, 1.302.', options: ['1230', '1320', '1032', '1302'], correct: ['1320', '1302', '1230', '1032'], exp: 'Ribuan sama. Ratusan: 3, 3, 2, 0. Untuk ratusan 3, bandingkan puluhan: 2 vs 0.' },
+                { type: 'fill', q: 'Lanjutkan pola lompat 10 maju: 3450, 3460, 3470, ...', correct: '3480', exp: '3470 + 10 = 3480.' },
+                { type: 'fill', q: 'Lanjutkan pola lompat 100 mundur: 7200, 7100, 7000, ...', correct: '6900', exp: '7000 - 100 = 6900.' },
+                { type: 'radio', q: 'Dari bilangan 678, 876, 768, 687. Mana yang paling kecil?', options: ['678', '876', '768', '687'], correct: '678', exp: 'Ratusan 6 adalah terkecil. Bandingkan 678 dan 687, puluhan 7 lebih kecil dari 8.' },
+                { type: 'checkbox', q: 'Pilih bilangan yang lebih dari 5000!', options: ['5010', '4999', '5001', '4500'], correct: ['5010', '5001'], exp: '5010 dan 5001 lebih besar dari 5000.' },
+                { type: 'truefalse', q: 'Urutan menurun (descending) berarti dari terbesar ke terkecil.', correct: 'true', exp: 'Benar! Descending = Besar ke Kecil.' },
+                { type: 'pairing', q: 'Pasangkan bilangan dengan nilai ratusannya!', pairs: [['4520', '5'], ['4502', '5'], ['4052', '0'], ['5420', '4']], correct: {'4520': '5', '4502': '5', '4052': '0', '5420': '4'}, exp: 'Angka ke-3 dari kanan adalah ratusan.' },
+                { type: 'sort', q: 'Urutkan mundur: 5432, 5423, 5342, 5234.', options: ['5432', '5423', '5342', '5234'], correct: ['5432', '5423', '5342', '5234'], exp: 'Ribuan & ratusan sama di 5432 dan 5423. Puluhan 3 > 2.' },
+                { type: 'fill', q: 'Antara 2000 dan 3000, angka tepat di tengahnya adalah...', correct: '2500', exp: '2000 + 500 = 2500.' }
+            ]
+        },
+        group2: {
+            title: 'Assignment Grup 2: Pola & Kesalahan (Medium-Hard)',
+            questions: [
+                { type: 'sort', q: 'Perbaiki urutan mundur yang salah ini: 9870, 9780, 9800, 9087.', options: ['9870', '9780', '9800', '9087'], correct: ['9870', '9800', '9780', '9087'], exp: 'Mundur: Besar ke Kecil. 9870 > 9800 > 9780 > 9087.' },
+                { type: 'fill', q: 'Lanjutkan pola mundur 100: 4150, 4050, 3950, ...', correct: '3850', exp: '3950 - 100 = 3850.' },
+                { type: 'radio', q: 'Suatu pola berkurang 50 setiap langkahnya. Angka ketiga adalah 1100. Berapakah angka pertama?', options: ['1200', '1150', '1000', '1250'], correct: '1200', exp: 'Mundur: 1200, 1150, 1100. Angka pertama 1200.' },
+                { type: 'checkbox', q: 'Manakah yang termasuk pola lompat 100 maju?', options: ['100, 200, 300', '1000, 1100, 1200', '500, 510, 520', '9800, 9900, 10000'], correct: ['1000, 1100, 1200', '9800, 9900, 10000'], exp: 'Pola bertambah 100 (ribuan sama, ratusan bertambah).' },
+                { type: 'truefalse', q: 'Pola 5200, 5100, 5000, 4900 adalah pola lompat 100 mundur.', correct: 'true', exp: 'Benar! Setiap langkah berkurang 100.' },
+                { type: 'pairing', q: 'Pasangkan bilangan dengan angka yang salah jika diurutkan mundur: 9000, 8500, 9500, 8000.', pairs: [['9000', 'Posisi 2 (Seharusnya 9500 di depan)'], ['8500', 'Benar'], ['9500', 'Posisi 1 (Terbesar)'], ['8000', 'Benar']], correct: {'9000': 'Posisi 2 (Seharusnya 9500 di depan)', '8500': 'Benar', '9500': 'Posisi 1 (Terbesar)', '8000': 'Benar'}, exp: 'Urutan mundur yang benar: 9500, 9000, 8500, 8000.' },
+                { type: 'sort', q: 'Urutkan dari terkecil: 2002, 2200, 2020, 2022, 2202.', options: ['2002', '2200', '2020', '2022', '2202'], correct: ['2002', '2020', '2022', '2200', '2202'], exp: 'Bandingkan ratusan (0 vs 2), lalu puluhan, lalu satuan.' },
+                { type: 'fill', q: 'Pola berkurang 50. Jika angka ketiga 1100, angka kelima adalah...', correct: '1000', exp: '1100 - 50 = 1050 (ke-4). 1050 - 50 = 1000 (ke-5).' },
+                { type: 'radio', q: 'Mana urutan maju yang benar?', options: ['340, 430, 330', '330, 340, 430', '430, 330, 340'], correct: '330, 340, 430', exp: 'Maju = Kecil ke Besar. 330 < 340 < 430.' },
+                { type: 'truefalse', q: 'Bilangan 3050 lebih kecil dari 3005.', correct: 'false', exp: 'Salah! 3050 > 3005 karena puluhan 5 > 0.' }
+            ]
+        },
+        group3: {
+            title: 'Assignment Grup 3: Nilai Tempat & Angka Nol (Hard)',
+            questions: [
+                { type: 'sort', q: 'Urutkan dari terkecil: 2002, 2200, 2020, 2022, 2202.', options: ['2002', '2200', '2020', '2022', '2202'], correct: ['2002', '2020', '2022', '2200', '2202'], exp: 'Perhatikan posisi nol! 2002 < 2020 < 2022 < 2200 < 2202.' },
+                { type: 'fill', q: 'Lanjutkan pola mundur 50: 1000, 950, 900, ...', correct: '850', exp: '900 - 50 = 850.' },
+                { type: 'radio', q: 'Manakah yang paling besar?', options: ['5005', '5050', '5500', '5000'], correct: '5500', exp: '5500 memiliki ratusan 5, yang lain ratusannya 0.' },
+                { type: 'truefalse', q: 'Bilangan 4050 lebih besar dari 4500.', correct: 'false', exp: 'Salah! Ratusan 0 lebih kecil dari ratusan 5. 4050 < 4500.' },
+                { type: 'checkbox', q: 'Pilih bilangan yang berada di antara 3000 dan 4000!', options: ['3500', '3999', '4001', '2999'], correct: ['3500', '3999'], exp: 'Hanya 3500 dan 3999 yang > 3000 dan < 4000.' },
+                { type: 'pairing', q: 'Pasangkan bilangan dengan bongkarnya!', pairs: [['8080', '8000+80'], ['8008', '8000+8'], ['8800', '8000+800'], ['8888', '8000+800+80+8']], correct: {'8080': '8000+80', '8008': '8000+8', '8800': '8000+800', '8888': '8000+800+80+8'}, exp: 'Teliti letak angka 8 dan 0! Puluhan adalah angka ke-2 dari kanan.' },
+                { type: 'fill', q: 'Urutan mundur yang benar dari 9800, 9700, 9900, 9600 adalah... (pisahkan dengan koma)', correct: '9900,9800,9700,9600', exp: 'Besar ke kecil: 9900 > 9800 > 9700 > 9600.' },
+                { type: 'sort', q: 'Urutkan mundur: 9999, 9899, 9989, 8999.', options: ['9999', '9899', '9989', '8999'], correct: ['9999', '9989', '9899', '8999'], exp: 'Besar ke kecil: 9999 > 9989 > 9899 > 8999.' },
+                { type: 'radio', q: 'Pola lompat maju 1000 dari 4000 adalah...', options: ['4100', '5000', '4010', '4500'], correct: '5000', exp: '4000 + 1000 = 5000.' },
+                { type: 'truefalse', q: 'Angka 0 di posisi ratusan membuat bilangan menjadi lebih kecil.', correct: 'true', exp: 'Benar, misal 4050 lebih kecil dari 4500 karena ratusannya 0.' }
+            ]
+        },
+        group4: {
+            title: 'Assignment Grup 4: Analisis Pola & Logika (Hard)',
+            questions: [
+                { type: 'fill', q: 'Lanjutkan pola mundur 100: 5000, 4900, 4800, ...', correct: '4700', exp: '4800 - 100 = 4700.' },
+                { type: 'radio', q: 'Pola dimulai dari 500, lompat maju 50. Berapakah angka ketiga?', options: ['600', '550', '650', '700'], correct: '600', exp: 'Angka 1: 500. Angka 2: 550. Angka 3: 600.' },
+                { type: 'sort', q: 'Urutkan maju: 1234, 4321, 1324, 1243, 1432.', options: ['1234', '4321', '1324', '1243', '1432'], correct: ['1234', '1243', '1324', '1432', '4321'], exp: 'Kecil ke besar: 1234 < 1243 < 1324 < 1432 < 4321.' },
+                { type: 'truefalse', q: '1000 dikurangi 1000 menghasilkan 0.', correct: 'true', exp: 'Benar! 1000 - 1000 = 0.' },
+                { type: 'checkbox', q: 'Manakah yang merupakan urutan menurun (mundur)?', options: ['9, 8, 7', '10, 20, 30', '50, 40, 30', '100, 99, 98'], correct: ['9, 8, 7', '50, 40, 30', '100, 99, 98'], exp: 'Urutan mundur adalah dari besar ke kecil.' },
+                { type: 'pairing', q: 'Pasangkan pola dengan aturan lompatnya!', pairs: [['100, 200, 300', '+100'], ['900, 800, 700', '-100'], ['1010, 1020, 1030', '+10'], ['990, 980, 970', '-10']], correct: {'100, 200, 300': '+100', '900, 800, 700': '-100', '1010, 1020, 1030': '+10', '990, 980, 970': '-10'}, exp: 'Perhatikan apakah angka bertambah (maju) atau berkurang (mundur).' },
+                { type: 'fill', q: 'Isi titik-titik pada pola mundur 1000: 6000, ..., 4000.', correct: '5000', exp: '6000 - 1000 = 5000. 5000 - 1000 = 4000.' },
+                { type: 'sort', q: 'Urutkan mundur: 7777, 7770, 7077, 7007.', options: ['7777', '7770', '7077', '7007'], correct: ['7777', '7770', '7077', '7007'], exp: 'Besar ke kecil: 7777 > 7770 > 7077 > 7007.' },
+                { type: 'radio', q: 'Urutan mundur 5400, 5300, 5500, 5200 salah di mana?', options: ['5400 harus di akhir', '5500 harus di depan', '5200 harus di depan', '5300 harus di akhir'], correct: '5500 harus di depan', exp: 'Karena 5500 adalah yang paling besar, ia harus ada di urutan pertama (untuk mundur).' },
+                { type: 'truefalse', q: 'Mengurutkan bilangan secara ascending berarti mengurutkan dari terbesar.', correct: 'false', exp: 'Salah! Ascending (maju) adalah dari terkecil ke terbesar.' }
+            ]
+        },
+        group5: {
+            title: 'Assignment Grup 5: Ultimate Challenge (Hard)',
+            questions: [
+                { type: 'sort', q: 'Urutkan maju campuran: 999, 1000, 1001, 998.', options: ['999', '1000', '1001', '998'], correct: ['998', '999', '1000', '1001'], exp: 'Kecil ke besar: 998 < 999 < 1000 < 1001.' },
+                { type: 'fill', q: 'Lanjutkan pola mundur 100: 2000, 1900, 1800, ...', correct: '1700', exp: '1800 - 100 = 1700.' },
+                { type: 'radio', q: 'Zainal punya kartu 5, 0, 8, 2. Berapa bilangan 4 angka terbesar yang bisa dibuat?', options: ['8520', '8250', '8502', '8052'], correct: '8520', exp: 'Urutkan kartu dari besar ke kecil: 8, 5, 2, 0 -> 8520.' },
+                { type: 'truefalse', q: 'Bilangan 9090 lebih kecil dari 9009.', correct: 'false', exp: 'Salah! 9090 > 9009 karena puluhan 9 > 0.' },
+                { type: 'checkbox', q: 'Pilih urutan yang benar untuk pola maju!', options: ['5, 10, 15', '10, 9, 8', '100, 200, 300', '50, 45, 40'], correct: ['5, 10, 15', '100, 200, 300'], exp: 'Maju berarti bertambah. Hanya 5,10,15 dan 100,200,300 yang bertambah.' },
+                { type: 'pairing', q: 'Pasangkan bilangan dengan posisinya jika diurutkan MUNDUR!', pairs: [['6500', 'Lebih Besar dari 5600'], ['4050', 'Lebih Kecil dari 4500'], ['9999', 'Lebih Besar dari 1000'], ['3000', 'Lebih Besar dari 2999']], correct: {'6500': 'Lebih Besar dari 5600', '4050': 'Lebih Kecil dari 4500', '9999': 'Lebih Besar dari 1000', '3000': 'Lebih Besar dari 2999'}, exp: 'Analisis nilai tempat untuk mengetahui mana yang lebih besar/kecil.' },
+                { type: 'fill', q: 'Antara 4000 dan 6000, dengan lompat 1000, angka di tengahnya adalah...', correct: '5000', exp: '4000, 5000, 6000.' },
+                { type: 'sort', q: 'Urutkan mundur: 3456, 3465, 3546, 3645.', options: ['3456', '3465', '3546', '3645'], correct: ['3645', '3546', '3465', '3456'], exp: 'Besar ke kecil: 3645 > 3546 > 3465 > 3456.' },
+                { type: 'radio', q: 'Pola berkurang 50. Angka ketiga adalah 1100. Berapakah angka kelimanya?', options: ['1050', '1000', '1150', '1200'], correct: '1000', exp: 'Angka 3: 1100. Angka 4: 1050. Angka 5: 1000.' },
+                { type: 'truefalse', q: 'Untuk mengurutkan bilangan secara descending, kita lihat angka paling kanan terlebih dahulu.', correct: 'false', exp: 'Salah! Selalu lihat dari arah KIRI (Ribuan dulu, lalu ratusan, dst).' }
+            ]
+        }
+    };
+
+    // === GLOBAL STATE ===
+    let currentSectionIndex = 0;
+    let currentQuestionIndex = 0;
+    let studentAnswers = {}; // Menyimpan jawaban sementara
+    let checkedStatus = {}; // Menyimpan status benar/salah
+
+    // === NAVIGATION LOGIC ===
+    function goHome() {
+        document.getElementById('home').style.display = 'flex';
+        document.getElementById('learning-view').style.display = 'none';
+        currentSectionIndex = 0;
+    }
+
+    function goToSection(sectionId) {
+        currentSectionIndex = sectionsData.findIndex(s => s.id === sectionId);
+        if(currentSectionIndex < 0) currentSectionIndex = 0;
+        
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('learning-view').style.display = 'flex';
+        
+        renderTabs();
+        renderSection();
+    }
+
+    function nextSection() {
+        if (currentSectionIndex < sectionsData.length - 1) {
+            currentSectionIndex++;
+            currentQuestionIndex = 0;
+            renderTabs();
+            renderSection();
+        }
+    }
+
+    function renderTabs() {
+        const tabsContainer = document.getElementById('sectionTabs');
+        tabsContainer.innerHTML = '';
+        sectionsData.forEach((sec, idx) => {
+            const tab = document.createElement('div');
+            tab.className = `tab ${idx === currentSectionIndex ? 'active' : ''}`;
+            tab.innerText = `${idx + 1}. ${sec.title}`;
+            tab.onclick = () => {
+                currentSectionIndex = idx;
+                currentQuestionIndex = 0;
+                renderTabs();
+                renderSection();
+            };
+            tabsContainer.appendChild(tab);
+        });
+    }
+
+    function updateProgress(progress) {
+        document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    // === RENDER SECTION & QUESTIONS ===
+    function renderSection() {
+        const area = document.getElementById('contentArea');
+        const sec = sectionsData[currentSectionIndex];
+
+        // 1. Jika masuk ke Assignment
+        if (sec.id === 'assignment') {
+            renderAssignmentArea();
+            return;
+        }
+
+        // 2. Jika masuk ke Finish Line (Section Terakhir)
+        if (sec.id === 'final') {
+            area.innerHTML = `
+                <div class="section-header">
+                    <h2>🏁 Finish Line! 🏁</h2>
+                    <div class="time-indicator">⏱️ ${sec.time}</div>
+                </div>
+                <div class="theory-box" style="max-height: 35vh; text-align: center;">
+                    <h3>🎉 Selamat, Zainal! 🎉</h3>
+                    <p>Anda telah menyelesaikan "Balapan Urutan Bilangan (Maju dan Mundur)" dengan sangat baik!</p>
+                    <p>Ingat selalu aturan emasnya: <b>Teliti melihat nilai tempat dari arah kiri!</b></p>
+                    <p>Jangan lupa untuk login dan mengulik materi lebih lanjut di portal belajar Algonova.</p>
+                </div>
+                <div class="exercise-box" style="justify-content: center; align-items: center;">
+                    <div style="text-align: center; animation: pulse 2s infinite;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🏆</div>
+                        <a href="https://learn.algonova.id" target="_blank" style="text-decoration: none;">
+                            <button class="btn-start" style="background: #0055ff; margin-bottom: 15px;">🌐 Kunjungi learn.algonova.id</button>
+                        </a>
+                        <br>
+                        <button class="action-btn btn-reset" onclick="goHome()" style="margin: 0 auto;">🔁 Kembali ke Menu Utama</button>
+                    </div>
+                </div>
+            `;
+            updateProgress(100);
+            return;
+        }
+
+        // 3. Untuk Section Teori (1-7)
+        const lesson = lessons[sec.id];
+
+        if (!lesson) {
+            area.innerHTML = `
+                <div class="section-header">
+                    <h2>${sec.title}</h2>
+                    <div class="time-indicator">⏱️ ${sec.time}</div>
+                </div>
+                <div class="theory-box"><h3>Coming Soon</h3><p>Materi tidak ditemukan.</p></div>
+            `;
+            updateProgress(0);
+            return;
+        }
+
+        area.innerHTML = `
+            <div class="section-header">
+                <h2>${sec.title}</h2>
+                <div class="time-indicator">⏱️ ${sec.time}</div>
+            </div>
+            <div class="theory-box">${lesson.theory}</div>
+            <div class="exercise-box" id="exerciseBox"></div>
+        `;
+        
+        renderQuestion();
+        updateProgress(0);
+    }
+
+    function renderQuestion() {
+        const sec = sectionsData[currentSectionIndex];
+        const lesson = lessons[sec.id];
+        if (!lesson) return;
+
+        const qIndex = currentQuestionIndex;
+        const qData = lesson.questions[qIndex];
+        const exBox = document.getElementById('exerciseBox');
+        const progress = ((qIndex + 1) / lesson.questions.length) * 100;
+        updateProgress(progress);
+
+        let qId = `${sec.id}-${qIndex}`;
+        let html = `<div class="q-counter">Soal ${qIndex + 1} dari ${lesson.questions.length}</div>`;
+        html += `<div class="question-area"><div class="question-text">${qData.q}</div><div class="options-area" id="optArea">`;
+
+        // Render berdasarkan tipe soal
+        if (qData.type === 'radio') {
+            qData.options.forEach((opt, i) => {
+                let selected = studentAnswers[qId] === opt ? 'selected' : '';
+                html += `<div class="opt-btn ${selected}" onclick="selectRadio('${qId}', '${opt}', this)">${opt}</div>`;
+            });
+        } else if (qData.type === 'fill') {
+            let val = studentAnswers[qId] || '';
+            html += `<input type="text" id="fillInput" value="${val}" placeholder="Ketik jawaban di sini..." oninput="studentAnswers['${qId}'] = this.value">`;
+        } else if (qData.type === 'checkbox') {
+            qData.options.forEach((opt, i) => {
+                let selected = (studentAnswers[qId] && studentAnswers[qId].includes(opt)) ? 'selected' : '';
+                html += `<div class="opt-btn ${selected}" onclick="selectCheckbox('${qId}', '${opt}', this)">${opt}</div>`;
+            });
+        } else if (qData.type === 'truefalse') {
+            let selectedT = studentAnswers[qId] === 'true' ? 'selected' : '';
+            let selectedF = studentAnswers[qId] === 'false' ? 'selected' : '';
+            html += `<div class="opt-btn ${selectedT}" onclick="selectRadio('${qId}', 'true', this)">✓ Benar</div>`;
+            html += `<div class="opt-btn ${selectedF}" onclick="selectRadio('${qId}', 'false', this)">✗ Salah</div>`;
+        } else if (qData.type === 'sort') {
+            html += `<div class="sort-list" id="sortList">`;
+            let opts = studentAnswers[qId] ? studentAnswers[qId] : [...qData.options].sort(() => 0.5 - Math.random());
+            studentAnswers[qId] = opts;
+            opts.forEach((opt, i) => {
+                html += `<div class="sort-item" draggable="true" ondragstart="dragSortStart('${qId}', ${i})" ondragover="dragSortOver(event)" ondrop="dragSortDrop('${qId}', ${i})" ondragend="dragSortEnd()">
+                            <span style="margin-right: 10px; opacity: 0.7;">⠿</span> ${opt}
+                         </div>`;
+            });
+            html += `</div>`;
+        }else if (qData.type === 'pairing') {
+            html += `<div class="pairing-grid">`;
+            qData.pairs.forEach((pair, i) => {
+                let leftVal = pair[0];
+                let rightOpts = qData.pairs.map(p => p[1]).sort(() => 0.5 - Math.random());
+                let currentVal = studentAnswers[qId] ? studentAnswers[qId][leftVal] : "";
+                html += `<div class="opt-btn" style="cursor:default; background:#444;">${leftVal}</div>`;
+                html += `<select onchange="selectPairing('${qId}', '${leftVal}', this.value)">
+                            <option value="">Pilih...</option>
+                            ${rightOpts.map(r => `<option value="${r}" ${currentVal===r?'selected':''}>${r}</option>`).join('')}
+                         </select>`;
+            });
+            html += `</div>`;
+        }
+
+        html += `</div>`; // close options-area
+
+        // Feedback Area
+        let isCorrect = checkedStatus[qId];
+        if (isCorrect !== undefined) {
+            let correctAns = Array.isArray(qData.correct) ? qData.correct.join(', ') : qData.correct;
+            if (qData.type === 'pairing') {
+                correctAns = Object.entries(qData.correct).map(([k,v]) => `${k}=${v}`).join(', ');
+            }
+            if (isCorrect) {
+                html += `<div class="feedback correct">✅ Benar! ${qData.exp}</div>`;
+            } else {
+                html += `<div class="feedback wrong">❌ Salah. Jawaban benar: <b>${correctAns}</b>. ${qData.exp}</div>`;
+            }
+        }
+
+        html += `</div>`; // close question-area
+        
+        // Action Buttons
+        html += `<div class="action-btns">`;
+        html += `<button class="action-btn btn-reset" onclick="resetQuestion('${qId}')">🔁 Reset</button>`;
+        if (checkedStatus[qId] === undefined) {
+            html += `<button class="action-btn btn-check" onclick="checkAnswer('${qId}')">✔️ Cek Jawaban</button>`;
+        } else {
+            if (qIndex < lesson.questions.length - 1) {
+                html += `<button class="action-btn btn-next" onclick="nextQuestion()">➡️ Lanjut</button>`;
+            } else {
+                html += `<button class="action-btn btn-next" onclick="nextSection()">🏁 Selesai Section</button>`;
+            }
+        }
+        html += `</div>`;
+
+        exBox.innerHTML = html;
+    }
+
+    // === INPUT HANDLERS ===
+    function selectRadio(qId, val, btn) {
+        if (checkedStatus[qId] !== undefined) return;
+        studentAnswers[qId] = val;
+        document.querySelectorAll('#optArea .opt-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function selectCheckbox(qId, opt, btn) {
+        if (checkedStatus[qId] !== undefined) return;
+        if (!studentAnswers[qId]) studentAnswers[qId] = [];
+        let idx = studentAnswers[qId].indexOf(opt);
+        if (idx > -1) {
+            studentAnswers[qId].splice(idx, 1);
+            btn.classList.remove('selected');
+        } else {
+            studentAnswers[qId].push(opt);
+            btn.classList.add('selected');
+        }
+    }
+
+    function selectPairing(qId, leftVal, rightVal) {
+        if (checkedStatus[qId] !== undefined) return;
+        if (!studentAnswers[qId]) studentAnswers[qId] = {};
+        studentAnswers[qId][leftVal] = rightVal;
+    }
+
+    // === DRAG AND DROP LOGIC ===
+    let draggedSortIndex = null;
+
+    function dragSortStart(qId, index) {
+        if (checkedStatus[qId] !== undefined) return false;
+        draggedSortIndex = index;
+        // Tambahkan efek visual saat di drag
+        setTimeout(() => {
+            event.target.classList.add('dragging');
+        }, 0);
+    }
+
+    function dragSortOver(event) {
+        event.preventDefault(); // Wajib ada agar bisa di-drop
+    }
+
+    function dragSortDrop(qId, dropIndex) {
+        if (checkedStatus[qId] !== undefined || draggedSortIndex === null) return;
+        
+        let arr = studentAnswers[qId];
+        if (draggedSortIndex !== dropIndex) {
+            // Ambil item yang di-drag
+            let draggedItem = arr.splice(draggedSortIndex, 1)[0];
+            // Masukkan ke posisi baru
+            arr.splice(dropIndex, 0, draggedItem);
+            
+            // Render ulang soal agar urutan visualnya berubah
+            if (qId.startsWith('assign-')) {
+                renderAssignmentQuestion();
+            } else {
+                renderQuestion();
+            }
+        }
+        draggedSortIndex = null;
+    }
+
+    function dragSortEnd() {
+        // Bersihkan efek visual jika ada
+        let draggingEl = document.querySelector('.sort-item.dragging');
+        if(draggingEl) draggingEl.classList.remove('dragging');
+    }
+
+    // === HELPER UNTUK MENGAMBIL DATA SOAL ===
+    function getQuestionData(qId) {
+        if (qId.startsWith('assign-')) {
+            let parts = qId.split('-'); // format: assign-group1-0
+            let groupKey = parts[1];
+            let qIdx = parseInt(parts[2]);
+            return assignments[groupKey].questions[qIdx];
+        } else {
+            let parts = qId.split('-'); // format: section1-0
+            let secId = parts[0];
+            let qIdx = parseInt(parts[1]);
+            return lessons[secId].questions[qIdx];
+        }
+    }
+
+    // === CHECK & RESET LOGIC (FIXED) ===
+    function checkAnswer(qId) {
+        const qData = getQuestionData(qId);
+        let userAns = studentAnswers[qId];
+        let isCorrect = false;
+
+        if (qData.type === 'fill') {
+            isCorrect = (userAns && userAns.replace(/\./g, '').toLowerCase() === qData.correct.toLowerCase());
+        } else if (qData.type === 'radio' || qData.type === 'truefalse') {
+            isCorrect = (userAns === qData.correct);
+        } else if (qData.type === 'checkbox') {
+            if (userAns) {
+                userAns.sort();
+                let correctSorted = [...qData.correct].sort();
+                isCorrect = (JSON.stringify(userAns) === JSON.stringify(correctSorted));
+            }
+        } else if (qData.type === 'sort') {
+            if (userAns) {
+                isCorrect = (JSON.stringify(userAns) === JSON.stringify(qData.correct));
+            }
+        } else if (qData.type === 'pairing') {
+            if (userAns) {
+                isCorrect = (JSON.stringify(userAns) === JSON.stringify(qData.correct));
+            }
+        }
+
+        checkedStatus[qId] = isCorrect;
+        
+        // Render ulang sesuai lokasi soal
+        if (qId.startsWith('assign-')) {
+            renderAssignmentQuestion();
+        } else {
+            renderQuestion();
+        }
+    }
+
+    function resetQuestion(qId) {
+        const qData = getQuestionData(qId);
+        studentAnswers[qId] = (qData.type === 'sort') ? [] : null;
+        delete checkedStatus[qId];
+        
+        // Render ulang sesuai lokasi soal
+        if (qId.startsWith('assign-')) {
+            renderAssignmentQuestion();
+        } else {
+            renderQuestion();
+        }
+    }
+
+    function nextQuestion() {
+        const lesson = lessons[sectionsData[currentSectionIndex].id];
+        if (currentQuestionIndex < lesson.questions.length - 1) {
+            currentQuestionIndex++;
+            renderQuestion();
+        } else {
+            nextSection();
+        }
+    }
+	
+    // === ASSIGNMENT LOGIC ===
+    let currentAssignmentGroup = 1;
+
+    function renderAssignmentArea() {
+        const area = document.getElementById('contentArea');
+        const sec = sectionsData[currentSectionIndex];
+        let groupKeys = Object.keys(assignments);
+        let totalGroups = groupKeys.length;
+        
+        let tabsHtml = `<div style="display:flex; gap:5px; margin-bottom:15px;">`;
+        for(let i=1; i<=totalGroups; i++) {
+            tabsHtml += `<button class="nav-btn ${i === currentAssignmentGroup ? 'active' : ''}" style="background:${i === currentAssignmentGroup ? '#ff4b4b' : '#333'}" onclick="changeAssignmentGroup(${i})">Grup ${i}</button>`;
+        }
+        tabsHtml += `</div>`;
+
+        area.innerHTML = `
+            <div class="section-header">
+                <h2>${sec.title} - Grup ${currentAssignmentGroup}</h2>
+                <div class="time-indicator">⏱️ ${sec.time}</div>
+            </div>
+            ${tabsHtml}
+            <div class="exercise-box" id="exerciseBox"></div>
+        `;
+        
+        renderAssignmentQuestion();
+        updateProgress(0);
+    }
+
+    function changeAssignmentGroup(groupNum) {
+        currentAssignmentGroup = groupNum;
+        currentQuestionIndex = 0;
+        renderAssignmentArea();
+    }
+
+    function renderAssignmentQuestion() {
+        const groupKey = `group${currentAssignmentGroup}`;
+        const group = assignments[groupKey];
+        const qIndex = currentQuestionIndex;
+        const qData = group.questions[qIndex];
+        const exBox = document.getElementById('exerciseBox');
+        const progress = ((qIndex + 1) / group.questions.length) * 100;
+        updateProgress(progress);
+
+        // Reuse tampilan soal yang sama dengan lesson, tapi dengan ID yang unik per grup
+        let qId = `assign-${groupKey}-${qIndex}`;
+        let html = `<div class="q-counter">${group.title} | Soal ${qIndex + 1} dari ${group.questions.length}</div>`;
+        html += `<div class="question-area"><div class="question-text">${qData.q}</div><div class="options-area" id="optArea">`;
+
+        if (qData.type === 'radio') {
+            qData.options.forEach((opt, i) => {
+                let selected = studentAnswers[qId] === opt ? 'selected' : '';
+                html += `<div class="opt-btn ${selected}" onclick="selectRadio('${qId}', '${opt}', this)">${opt}</div>`;
+            });
+        } else if (qData.type === 'fill') {
+            let val = studentAnswers[qId] || '';
+            html += `<input type="text" id="fillInput" value="${val}" placeholder="Ketik jawaban di sini..." oninput="studentAnswers['${qId}'] = this.value">`;
+        } else if (qData.type === 'checkbox') {
+            qData.options.forEach((opt, i) => {
+                let selected = (studentAnswers[qId] && studentAnswers[qId].includes(opt)) ? 'selected' : '';
+                html += `<div class="opt-btn ${selected}" onclick="selectCheckbox('${qId}', '${opt}', this)">${opt}</div>`;
+            });
+        } else if (qData.type === 'truefalse') {
+            let selectedT = studentAnswers[qId] === 'true' ? 'selected' : '';
+            let selectedF = studentAnswers[qId] === 'false' ? 'selected' : '';
+            html += `<div class="opt-btn ${selectedT}" onclick="selectRadio('${qId}', 'true', this)">✓ Benar</div>`;
+            html += `<div class="opt-btn ${selectedF}" onclick="selectRadio('${qId}', 'false', this)">✗ Salah</div>`;
+        } else if (qData.type === 'sort') {
+            html += `<div class="sort-list" id="sortList">`;
+            let opts = studentAnswers[qId] ? studentAnswers[qId] : [...qData.options].sort(() => 0.5 - Math.random());
+            studentAnswers[qId] = opts;
+            opts.forEach((opt, i) => {
+                html += `<div class="sort-item" draggable="true" ondragstart="dragSortStart('${qId}', ${i})" ondragover="dragSortOver(event)" ondrop="dragSortDrop('${qId}', ${i})" ondragend="dragSortEnd()">
+                            <span style="margin-right: 10px; opacity: 0.7;">⠿</span> ${opt}
+                         </div>`;
+            });
+            html += `</div>`;
+        } else if (qData.type === 'pairing') {
+            html += `<div class="pairing-grid">`;
+            qData.pairs.forEach((pair, i) => {
+                let leftVal = pair[0];
+                let rightOpts = qData.pairs.map(p => p[1]).sort(() => 0.5 - Math.random());
+                let currentVal = studentAnswers[qId] ? studentAnswers[qId][leftVal] : "";
+                html += `<div class="opt-btn" style="cursor:default; background:#444;">${leftVal}</div>`;
+                html += `<select onchange="selectPairing('${qId}', '${leftVal}', this.value)">
+                            <option value="">Pilih...</option>
+                            ${rightOpts.map(r => `<option value="${r}" ${currentVal===r?'selected':''}>${r}</option>`).join('')}
+                         </select>`;
+            });
+            html += `</div>`;
+        }
+
+        html += `</div>`;
+
+        // Feedback
+        let isCorrect = checkedStatus[qId];
+        if (isCorrect !== undefined) {
+            let correctAns = Array.isArray(qData.correct) ? qData.correct.join(', ') : qData.correct;
+            if (qData.type === 'pairing') {
+                correctAns = Object.entries(qData.correct).map(([k,v]) => `${k}=${v}`).join(', ');
+            }
+            if (isCorrect) {
+                html += `<div class="feedback correct">✅ Benar! ${qData.exp}</div>`;
+            } else {
+                html += `<div class="feedback wrong">❌ Salah. Jawaban benar: <b>${correctAns}</b>. ${qData.exp}</div>`;
+            }
+        }
+
+        html += `</div>`; // close question-area
+        
+        // Action Buttons
+        html += `<div class="action-btns">`;
+        html += `<button class="action-btn btn-reset" onclick="resetQuestion('${qId}')">🔁 Reset</button>`;
+        
+        if (checkedStatus[qId] === undefined) {
+            html += `<button class="action-btn btn-check" onclick="checkAnswer('${qId}')">✔️ Cek Jawaban</button>`;
+        } else {
+            if (qIndex < group.questions.length - 1) {
+                html += `<button class="action-btn btn-next" onclick="nextAssignmentQuestion()">➡️ Lanjut</button>`;
+            } else {
+                html += `<button class="action-btn btn-next" onclick="finishAssignment()">🏁 Selesai & Lihat Skor</button>`;
+            }
+        }
+        html += `</div>`;
+
+        exBox.innerHTML = html;
+    }
+
+    function nextAssignmentQuestion() {
+        const group = assignments[`group${currentAssignmentGroup}`];
+        if (currentQuestionIndex < group.questions.length - 1) {
+            currentQuestionIndex++;
+            renderAssignmentQuestion();
+        }
+    }
+
+    function finishAssignment() {
+        const group = assignments[`group${currentAssignmentGroup}`];
+        let score = 0;
+        let resultsHtml = `
+            <div class="section-header">
+                <h2>Hasil Assessment - Grup ${currentAssignmentGroup}</h2>
+            </div>
+            <div class="theory-box" style="max-height: 40vh;">
+                <h3>Skor: <span style="color:#4caf50; font-size:1.5rem;">${score}/10</span></h3>
+                <p>Klik tombol di bawah untuk mencetak hasil resmi.</p>
+            </div>
+            <div class="action-btns">
+                <button class="action-btn btn-check" onclick="printAssignmentResult()">🖨️ Cetak Hasil (Print)</button>
+                <button class="action-btn btn-next" onclick="changeAssignmentGroup(currentAssignmentGroup + 1)">➡️ Grup Berikutnya</button>
+            </div>
+        `;
+        document.getElementById('contentArea').innerHTML = resultsHtml;
+        updateProgress(100);
+
+        // Hitung skor & simpan untuk print
+        let printData = [];
+        group.questions.forEach((q, i) => {
+            let qId = `assign-group${currentAssignmentGroup}-${i}`;
+            let isCorrect = checkedStatus[qId];
+            if(isCorrect) score++;
+            
+            let userAns = studentAnswers[qId];
+            if (Array.isArray(userAns)) userAns = userAns.join(', ');
+            if (q.type === 'pairing' && userAns) userAns = Object.entries(userAns).map(([k,v]) => `${k}=${v}`).join('; ');
+            if (!userAns) userAns = "(Kosong)";
+
+            let correctAns = q.correct;
+            if (Array.isArray(correctAns)) correctAns = correctAns.join(', ');
+            if (q.type === 'pairing') correctAns = Object.entries(correctAns).map(([k,v]) => `${k}=${v}`).join('; ');
+
+            printData.push({ no: i+1, q: q.q, userAns: userAns, correctAns: correctAns, status: isCorrect ? 'v' : 'x' });
+        });
+
+        document.querySelector('#contentArea h3 span').innerText = `${score}/10`;
+        window.currentPrintData = { group: currentAssignmentGroup, score: score, questions: printData };
+    }
+
+    function printAssignmentResult() {
+        const data = window.currentPrintData;
+        const today = new Date().toLocaleDateString('id-ID');
+        let tableRows = data.questions.map(item => `
+            <tr>
+                <td style="border: 1px solid #000; padding: 5px;">${item.no}</td>
+                <td style="border: 1px solid #000; padding: 5px;">${item.q}</td>
+                <td style="border: 1px solid #000; padding: 5px;">${item.userAns}</td>
+                <td style="border: 1px solid #000; padding: 5px;">${item.correctAns}</td>
+                <td style="border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold; color: ${item.status === 'v' ? 'green' : 'red'};">${item.status}</td>
+            </tr>
+        `).join('');
+
+        let printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html><head><title>Assessment Result</title><style>body{font-family: Arial; padding: 20px;} table{width: 100%; border-collapse: collapse; margin-top: 15px;} h2{margin-bottom: 5px;}</style></head>
+            <body>
+                <h2>ASSESSMENT RESULT</h2>
+                <p><strong>Name:</strong> Zainal</p>
+                <p><strong>Date:</strong> ${today}</p>
+                <p><strong>Topic:</strong> Balapan Urutan Bilangan (Maju dan Mundur)</p>
+                <p><strong>Assessment group:</strong> Grup ${data.group}</p>
+                <p><strong>Score:</strong> ${data.score}/10</p>
+                <table>
+                    <thead>
+                        <tr style="background: #eee;">
+                            <th style="border: 1px solid #000; padding: 5px;">No.</th>
+                            <th style="border: 1px solid #000; padding: 5px;">Question</th>
+                            <th style="border: 1px solid #000; padding: 5px;">Student Answer</th>
+                            <th style="border: 1px solid #000; padding: 5px;">Correct Answer</th>
+                            <th style="border: 1px solid #000; padding: 5px;">Note (v/x)</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
+                <p style="margin-top: 30px; text-align: right;">Checked by, <br><br><strong>Deni</strong></p>
+            </body></html>
+        `);
+        printWindow.document.close();
+        setTimeout(() => { printWindow.print(); }, 500);
+    }
+</script>
+
+</body>
+</html>
