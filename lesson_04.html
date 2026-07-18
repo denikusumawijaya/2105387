@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lapangan Perkalian - Visual Array</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#0a1f0a;--bg2:#112211;--card:rgba(20,50,20,0.85);--card2:rgba(30,65,30,0.7);--accent:#f97316;--accent2:#22c55e;--accent3:#fbbf24;--text:#ecfdf5;--muted:#86efac;--danger:#ef4444;--border:rgba(34,197,94,0.3)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--bg1);color:var(--text)}
+h1,h2,h3,h4{font-family:'Fredoka',sans-serif}
+#app{height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.bg-scene{position:fixed;inset:0;z-index:0;background:linear-gradient(135deg,#0a1f0a 0%,#112211 40%,#1a3a1a 70%,#0d260d 100%)}
+.bg-grid{position:fixed;inset:0;z-index:1;background-image:linear-gradient(rgba(34,197,94,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,0.06) 1px,transparent 1px);background-size:40px 40px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:40px 40px}}
+.float-shape{position:fixed;border-radius:50%;opacity:0.08;z-index:1;animation:floatUp linear infinite}
+@keyframes floatUp{0%{transform:translateY(100vh) rotate(0deg)}100%{transform:translateY(-100px) rotate(360deg)}}
+.page{display:none;flex-direction:column;height:100vh;position:relative;z-index:10}
+.page.active{display:flex}
+.glass{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:16px}
+.glass2{background:var(--card2);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:12px}
+.btn{padding:10px 24px;border-radius:12px;font-weight:700;cursor:pointer;border:none;transition:all .25s;font-family:'Nunito',sans-serif;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.btn:active{transform:scale(0.95)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 15px rgba(249,115,22,0.4)}
+.btn-primary:hover{background:#ea580c;box-shadow:0 6px 20px rgba(249,115,22,0.5)}
+.btn-secondary{background:var(--accent2);color:#fff;box-shadow:0 4px 15px rgba(34,197,94,0.3)}
+.btn-secondary:hover{background:#16a34a}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(34,197,94,0.1);color:var(--text)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#dc2626}
+.btn-sm{padding:6px 16px;font-size:12px;border-radius:8px}
+.tab-btn{padding:8px 20px;border-radius:10px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .3s;background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-size:13px}
+.tab-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2);box-shadow:0 2px 10px rgba(34,197,94,0.4)}
+.tab-btn:hover:not(.active){background:rgba(34,197,94,0.15)}
+.progress-bar{height:6px;background:rgba(34,197,94,0.15);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent3));border-radius:3px;transition:width .4s ease}
+.q-option{padding:10px 16px;border-radius:10px;border:2px solid var(--border);cursor:pointer;transition:all .25s;background:rgba(20,50,20,0.5);font-size:14px}
+.q-option:hover{border-color:var(--accent2);background:rgba(34,197,94,0.1)}
+.q-option.selected{border-color:var(--accent);background:rgba(249,115,22,0.15);color:var(--accent)}
+.q-option.correct{border-color:var(--accent2);background:rgba(34,197,94,0.2);color:var(--accent2)}
+.q-option.wrong{border-color:var(--danger);background:rgba(239,68,68,0.15);color:var(--danger)}
+.input-blank{background:rgba(10,31,10,0.8);border:2px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;width:120px;text-align:center;transition:border-color .3s}
+.input-blank:focus{outline:none;border-color:var(--accent2)}
+.collapse-trigger{cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:rgba(34,197,94,0.1);border:1px solid var(--border);transition:all .3s;font-weight:700;font-size:13px;color:var(--accent2)}
+.collapse-trigger:hover{background:rgba(34,197,94,0.2)}
+.collapse-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.collapse-body.open{max-height:600px}
+.visual-array{display:inline-grid;gap:5px}
+.array-cell{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;animation:popIn .3s ease backwards}
+@keyframes popIn{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.pair-item{padding:8px 14px;border-radius:8px;border:2px solid var(--border);cursor:pointer;transition:all .25s;font-size:13px;text-align:center;user-select:none}
+.pair-item:hover{border-color:var(--accent2)}
+.pair-item.sel{border-color:var(--accent);background:rgba(249,115,22,0.2);color:var(--accent)}
+.pair-item.matched{border-color:var(--accent2);background:rgba(34,197,94,0.2);color:var(--accent2);opacity:0.7;pointer-events:none}
+.order-item{padding:10px 16px;border-radius:8px;border:2px solid var(--border);cursor:pointer;transition:all .25s;font-size:13px;user-select:none;display:flex;align-items:center;gap:8px}
+.order-item:hover{border-color:var(--accent2)}
+.order-item.ordered{border-color:var(--accent3);background:rgba(251,191,36,0.15)}
+.order-num{width:22px;height:22px;border-radius:50%;background:var(--accent3);color:#000;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.fade-in{animation:fadeIn .4s ease}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+.slide-in{animation:slideIn .4s ease}
+@keyframes slideIn{0%{opacity:0;transform:translateX(30px)}100%{opacity:1;transform:translateX(0)}}
+.score-ring{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;border:6px solid var(--accent2)}
+.home-title{font-size:clamp(2rem,5vw,3.5rem);background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.rule-card{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:rgba(34,197,94,0.08);border:1px solid var(--border)}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:rgba(34,197,94,0.3);transition:all .3s;cursor:pointer}
+.nav-dot.active{background:var(--accent);transform:scale(1.3)}
+.nav-dot.done{background:var(--accent2)}
+@media(max-width:768px){.array-cell{width:22px;height:22px;font-size:12px}.input-blank{width:80px}}
+</style>
+</head>
+<body>
+<div class="bg-scene"></div>
+<div class="bg-grid"></div>
+<div id="floats"></div>
+<div id="app"></div>
+
+<script>
+/* ========== UTILITAS ========== */
+function renderMath(el){
+  if(typeof renderMathInElement==='function'){
+    renderMathInElement(el||document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+  }
+}
+function rm(text){
+  if(!text)return '';
+  text=String(text);
+  try{
+    text=text.replace(/\$\$(.*?)\$\$/g,(m,p)=>katex.renderToString(p,{displayMode:true,throwOnError:false}));
+    text=text.replace(/\$(.*?)\$/g,(m,p)=>katex.renderToString(p,{displayMode:false,throwOnError:false}));
+  }catch(e){}
+  return text;
+}
+function makeArray(rows,cols,emoji='🟠'){
+  let h=`<div class="visual-array" style="grid-template-columns:repeat(${cols},1fr)">`;
+  for(let i=0;i<rows*cols;i++) h+=`<div class="array-cell" style="animation-delay:${i*40}ms;background:${emoji==='🟠'?'#f97316':emoji==='🍎'?'#ef4444':emoji==='🤖'?'#6366f1':emoji==='✈️'?'#3b82f6':emoji==='⭐'?'#eab308':'#22c55e'};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px">${emoji}</div>`;
+  return h+'</div>';
+}
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ========== DATA SECTION ========== */
+const SECTIONS=[
+  /* ========== SECTIONS DATA ========== */
+  {
+    title:'Pemanasan Spiral',
+    time:'00:00 - 00:10',
+    icon:'fa-fire',
+    theory:`
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-cubes"></i> Merakit & Membongkar Bilangan</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Setiap bilangan empat angka tersusun dari <strong style="color:var(--accent3)">Ribuan</strong>, <strong style="color:var(--accent3)">Ratusan</strong>, <strong style="color:var(--accent3)">Puluhan</strong>, dan <strong style="color:var(--accent3)">Satuan</strong>.<br>
+          Contoh: <strong style="color:var(--text)">3.502</strong> = 3 ribuan + 5 ratusan + 0 puluhan + 2 satuan<br>
+          $3 \\times 1000 + 5 \\times 100 + 0 \\times 10 + 2 \\times 1 = 3502$         </p>
+      </div>
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-cloud"></i> Awan Bilangan - Perbandingan & Urutan</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Untuk membandingkan dua bilangan, lihat digit dari <strong style="color:var(--accent3)">kiri ke kanan</strong>.<br>
+          Contoh: $4560 > 4506$ (karena digit puluhan 6 > 0)<br>
+          Mengurutkan: mulai dari nilai tempat tertinggi. $1020 < 1200 < 2100$         </p>
+      </div>
+      <div style="text-align:center;margin-top:10px">${makeArray(2,4,'🟢')}</div>
+    `,
+    questions:[
+      {t:'fill',q:'3 ribuan + 5 ratusan + 0 puluhan + 2 satuan = $\\underline{\\quad\\quad}$',a:'3502',e:'Karena $3\\times1000+5\\times100+0\\times10+2\\times1=3502$'},
+      {t:'fill',q:'Bongkarlah 7.048 = ___ ribuan + ___ ratusan + ___ puluhan + ___ satuan',a:['7','0','4','8'],e:'7 ribuan + 0 ratusan + 4 puluhan + 8 satuan, karena $7\\times1000+0\\times100+4\\times10+8\\times1=7048$'},
+      {t:'radio',q:'Mana yang lebih besar: 4.560 atau 4.506?',o:['4.560','4.506','Sama besar','Tidak bisa ditentukan'],a:0,e:'Bandingkan dari kiri: ribuan dan ratusan sama (4 dan 5), lihat puluhan: 6 > 0, jadi 4.560 lebih besar'},
+      {t:'order',q:'Urutkan dari yang terkecil:',i:['1.200','1.020','2.100'],a:[1,0,2],e:'Urutan: 1.020 < 1.200 < 2.100. Bandingkan digit dari kiri.'},
+      {t:'tf',q:'Bilangan 9.876 lebih besar dari 9.867',a:true,e:'Benar! Pada digit puluhan: 7 > 6, jadi $9876>9867$'},
+      {t:'fill',q:'6 ribuan + 0 ratusan + 5 puluhan + 9 satuan = ___',a:'6059',e:'$6\\times1000+0\\times100+5\\times10+9\\times1=6059$'},
+      {t:'radio',q:'Nilai angka 4 pada bilangan 4.321 adalah...',o:['4','40','400','4.000'],a:3,e:'Angka 4 berada di tempat ribuan, jadi nilainya $4\\times1000=4000$'},
+      {t:'tf',q:'Bilangan 2.200 lebih besar dari 2.020',a:true,e:'Benar! Pada digit ratusan: 2 > 0, jadi $2200>2020$'},
+      {t:'check',q:'Pilih bilangan yang LEBIH BESAR dari 3.500:',o:['3.501','3.499','4.000','3.500'],a:[0,2],e:'3.501 > 3.500 dan 4.000 > 3.500. Sedangkan 3.499 < 3.500 dan 3.500 tidak lebih besar dari dirinya sendiri.'},
+      {t:'order',q:'Urutkan dari yang TERBESAR:',i:['2.000','2.002','2.020','2.200'],a:[3,2,1,0],e:'Urutan terbesar: 2.200 > 2.020 > 2.002 > 2.000'}
+    ]
+  },
+  {
+    title:'Pengenalan & Koneksi Dunia Nyata',
+    time:'00:10 - 00:15',
+    icon:'fa-lightbulb',
+    theory:`
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-grip"></i> Apa itu Array (Larik)?</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          <strong style="color:var(--text)">Array/Larik</strong> adalah susunan benda-benda yang tersusun rapi dalam <strong style="color:var(--accent3)">baris</strong> (horizontal/ke samping) dan <strong style="color:var(--accent3)">kolom</strong> (vertikal/ke bawah).<br><br>
+          Dengan array, kita bisa menghitung jumlah benda secara <em>cepat</em> tanpa menghitung satu per satu!
+        </p>
+      </div>
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-eye"></i> Contoh Array di Sekitar Kita</h3>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px">
+          <div style="text-align:center"><div style="font-size:28px">🍩</div><div style="font-size:11px;color:var(--muted)">Kotak Donat</div></div>
+          <div style="text-align:center"><div style="font-size:28px">🪑</div><div style="font-size:11px;color:var(--muted)">Barisan Kursi</div></div>
+          <div style="text-align:center"><div style="font-size:28px">🔲</div><div style="font-size:11px;color:var(--muted)">Ubin Lantai</div></div>
+          <div style="text-align:center"><div style="font-size:28px">🥚</div><div style="font-size:11px;color:var(--muted)">Kotak Telur</div></div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:8px">
+        <p style="font-size:12px;color:var(--accent3);margin-bottom:6px">Contoh: 3 baris × 4 kolom = 12 donat</p>
+        ${makeArray(3,4,'🟠')}
+      </div>
+    `,
+    questions:[
+      {t:'radio',q:'Manakah yang termasuk contoh array?',o:['Tumpukan buku acak','Kotak donat tersusun rapi','Bola dalam karung','Pensil dalam tas'],a:1,e:'Kotak donat tersusun rapi dalam baris dan kolom, itulah array!'},
+      {t:'tf',q:'Array adalah susunan benda dalam baris dan kolom yang rapi',a:true,e:'Benar! Array = susunan benda dalam baris (horizontal) dan kolom (vertikal) yang teratur.'},
+      {t:'fill',q:'Susunan benda dalam baris dan kolom disebut ___',a:'Array',e:'Array (larik) adalah nama untuk susunan rapi dalam baris dan kolom.'},
+      {t:'check',q:'Pilih yang merupakan contoh array dalam kehidupan sehari-hari:',o:['Ubin lantai','Tumpukan buku acak','Kotak telur','Bola dalam keranjang'],a:[0,2],e:'Ubin lantai dan kotak telur tersusun rapi dalam baris dan kolom.'},
+      {t:'radio',q:'Jika donat tersusun 3 baris dan 4 kolom, berapa total donat?',o:['7','10','12','16'],a:2,e:'Total = baris × kolom = $3\\times4=12$ donat'},
+      {t:'tf',q:'Susunan buku yang ditumpuk acak di meja termasuk array',a:false,e:'Salah! Array harus tersusun rapi dalam baris dan kolom, bukan acak.'},
+      {t:'fill',q:'Baris bersifat ___ (horizontal/vertikal)',a:'horizontal',e:'Baris tersusun mendatar/horizontal (ke samping), sedangkan kolom vertikal (ke bawah).'},
+      {t:'pair',q:'Cocokkan istilah dengan artinya:',l:['Baris','Kolom','Array','Larik'],r:['Horizontal/Mendatar','Vertikal/Tegak','Susunan rapi','Bahasa Indonesia dari Array'],a:[0,1,2,3],e:'Baris=horizontal, Kolom=vertikal, Array=susunan rapi, Larik=terjemahan Array'},
+      {t:'radio',q:'Apa keuntungan menggunakan array untuk menghitung?',o:['Lebih rumit','Bisa menghitung cepat tanpa hitung satu per satu','Tidak bisa menghitung','Hanya untuk dekorasi'],a:1,e:'Dengan array, kita cukup mengalikan baris × kolom untuk mendapat total, tidak perlu menghitung satu per satu!'},
+      {t:'tf',q:'Dalam array, setiap baris harus memiliki jumlah benda yang sama',a:true,e:'Benar! Agar bisa dihitung dengan perkalian, setiap baris harus berisi jumlah benda yang sama.'}
+    ]
+  },
+  {
+    title:'Review Pengetahuan Sebelumnya',
+    time:'00:15 - 00:20',
+    icon:'fa-rotate-left',
+    theory:`
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-plus"></i> Dari Penjumlahan Berulang ke Perkalian</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Penjumlahan berulang bisa ditulis dalam bentuk <strong style="color:var(--accent3)">perkalian</strong>!<br><br>
+          Contoh:<br>
+          $3 + 3 = 2 \\times 3 = 6$ &nbsp;(ada 2 angka 3 yang dijumlahkan)<br>
+          $4 + 4 + 4 = 3 \\times 4 = 12$ &nbsp;(ada 3 angka 4 yang dijumlahkan)<br><br>
+          <strong style="color:var(--text)">Rumus:</strong> Jika ada $n$ kelompok yang masing-masing berisi $k$ benda, maka total = $n \\times k$         </p>
+      </div>
+      <div style="text-align:center;margin-top:10px">
+        <p style="font-size:12px;color:var(--accent3);margin-bottom:6px">$2 + 2 + 2 = 3$ kelompok × 2 = $3 \\times 2 = 6$</p>
+        ${makeArray(3,2,'⭐')}
+      </div>
+    `,
+    questions:[
+      {t:'fill',q:'$3 + 3 =$ ___ $\\times 3$',a:'2',e:'Ada 2 angka 3 yang dijumlahkan, jadi $2\\times3$'},
+      {t:'fill',q:'$4 + 4 + 4 =$ ___ $\\times$ ___',a:['3','4'],e:'Ada 3 angka 4 yang dijumlahkan, jadi $3\\times4$'},
+      {t:'radio',q:'$2 + 2 + 2 + 2$ sama dengan perkalian mana?',o:['$2 \\times 4$','$4 \\times 2$','$4 \\times 4$','$2 \\times 2$'],a:1,e:'Ada 4 angka 2, jadi $4\\times2=8$. $2\\times4$ juga benar nilainya tapi penjumlahan berulangnya $4+4$.'},
+      {t:'tf',q:'$5 + 5 + 5 = 3 \\times 5$',a:true,e:'Benar! Ada 3 angka 5, jadi $3\\times5=15$'},
+      {t:'fill',q:'$3 \\times 6 = 6 + 6 +$ ___',a:'6',e:'$3\\times6$ artinya 3 kelompok masing-masing 6, jadi $6+6+6=18$'},
+      {t:'check',q:'Pilih penjumlahan berulang yang sama dengan $4 \\times 3$:',o:['$3+3+3+3$','$4+4+4$','$3 \\times 4$','$4+3$'],a:[0,1,2],e:'$4\\times3$ artinya 4 kelompok berisi 3 = $3+3+3+3$, ATAU 3 kelompok berisi 4 = $4+4+4$. $3\\times4$ juga sama.'},
+      {t:'pair',q:'Cocokkan penjumlahan berulang dengan perkalian:',l:['$2+2$','$5+5+5$','$1+1+1+1$','$3+3+3+3+3$'],r:['$2 \\times 2$','$3 \\times 5$','$4 \\times 1$','$5 \\times 3$'],a:[0,1,2,3],e:'Hitung jumlah angka yang dijumlahkan untuk mendapat perkalian.'},
+      {t:'radio',q:'Jika ada 4 kelompok masing-masing berisi 2 benda, penjumlahan berulangnya adalah...',o:['$2 + 2 + 2 + 2$','$4 + 4$','$4 + 2$','$2 + 4$'],a:0,e:'4 kelompok × 2 benda = $2+2+2+2=8$'},
+      {t:'tf',q:'$6 \\times 1 = 1 + 1 + 1 + 1 + 1 + 1$',a:true,e:'Benar! $6\\times1$ artinya 6 kelompok masing-masing berisi 1, jadi $1+1+1+1+1+1=6$'},
+      {t:'fill',q:'$7 + 7 + 7 + 7 =$ ___ $\\times 7 =$ ___',a:['4','28'],e:'Ada 4 angka 7, jadi $4\\times7=28$'}
+    ]
+  },
+  {
+    title:'Pengenalan Masalah - Konsep Array',
+    time:'00:20 - 00:30',
+    icon:'fa-magnifying-glass',
+    theory:`
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-table-cells"></i> Membaca Array - Baris & Kolom</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Saat kita melihat sebuah array, kita bisa langsung menuliskan <strong style="color:var(--accent3)">kalimat matematika</strong>-nya:<br><br>
+          <strong style="color:var(--text)">Baris × Kolom = Total</strong><br><br>
+          Contoh: Array 3 baris × 4 kolom → $3 \\times 4 = 12$<br>
+          Angka pertama = jumlah baris, angka kedua = jumlah kolom
+        </p>
+      </div>
+      <div style="text-align:center;margin-top:8px">
+        <p style="font-size:12px;color:var(--accent3);margin-bottom:6px">3 baris × 4 kolom = $3 \\times 4 = 12$</p>
+        ${makeArray(3,4,'🟠')}
+      </div>
+      <div class="glass2" style="padding:16px;margin-top:12px">
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          <strong style="color:var(--accent2)">Sifat Komutatif:</strong> $3 \\times 4 = 4 \\times 3 = 12$<br>
+          Meskipun bentuk arraynya berbeda (3×4 vs 4×3), hasilnya tetap sama!
+        </p>
+      </div>
+    `,
+    questions:[
+      {t:'fill',q:'Array dengan 3 baris dan 4 kolom: ___ $\\times$ ___ = ___',a:['3','4','12'],e:'Baris dulu baru kolom: $3\\times4=12$',visual:[3,4,'🟠']},
+      {t:'radio',q:'Pada array $2 \\times 5$, angka 2 menunjukkan...',o:['Jumlah kolom','Jumlah total','Jumlah baris','Jumlah seluruh benda'],a:2,e:'Pada penulisan $2\\times5$, angka pertama (2) menunjukkan jumlah baris.'},
+      {t:'tf',q:'Array $3 \\times 4$ dan $4 \\times 3$ memiliki hasil yang sama',a:true,e:'Benar! Sifat komutatif: $3\\times4=12$ dan $4\\times3=12$. Hasilnya sama meskipun bentuk berbeda.'},
+      {t:'fill',q:'Kalimat matematika untuk 5 baris dan 3 kolom: ___ $\\times$ ___ = ___',a:['5','3','15'],e:'5 baris × 3 kolom = $5\\times3=15$'},
+      {t:'pair',q:'Cocokkan array dengan hasilnya:',l:['$2 \\times 3$','$4 \\times 2$','$3 \\times 3$','$5 \\times 2$'],r:['6','8','9','10'],a:[0,1,2,3],e:'$2\\times3=6$, $4\\times2=8$, $3\\times3=9$, $5\\times2=10$'},
+      {t:'radio',q:'Berapa total benda pada array $4 \\times 5$?',o:['9','16','20','25'],a:2,e:'$4\\times5=20$'},
+      {t:'tf',q:'Dalam array, kolom bersifat vertikal (ke bawah)',a:true,e:'Benar! Kolom tersusun vertikal/tegak (dari atas ke bawah), baris horizontal/mendatar.'},
+      {t:'check',q:'Pilih kalimat matematika yang benar untuk array 3 baris × 5 kolom:',o:['$3 \\times 5 = 15$','$5 \\times 3 = 15$','$3 + 5 = 15$','$3 \\times 5 = 8$'],a:[0,1],e:'$3\\times5=15$ (baris×kolom) dan $5\\times3=15$ (sifat komutatif) keduanya benar.'},
+      {t:'fill',q:'Array $2 \\times 4$ memiliki ___ baris dan ___ kolom, total = ___',a:['2','4','8'],e:'2 baris, 4 kolom, total = $2\\times4=8$'},
+      {t:'order',q:'Urutkan dari hasil terkecil:',i:['$5 \\times 3$','$2 \\times 3$','$4 \\times 3$','$3 \\times 3$'],a:[1,3,2,0],e:'Hasil: $2\\times3=6$, $3\\times3=9$, $4\\times3=12$, $5\\times3=15$'}
+    ]
+  },
+  {
+    title:'Latihan Terbimbing',
+    time:'00:30 - 00:45',
+    icon:'fa-hand-holding-heart',
+    theory:`
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-pen-ruler"></i> Membuat Model Array</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Mari kita belajar membuat array sendiri!<br><br>
+          <strong style="color:var(--text)">Langkah-langkah:</strong><br>
+          1. Tentukan jumlah baris<br>
+          2. Tentukan jumlah benda per baris (kolom)<br>
+          3. Susun benda secara rapi<br>
+          4. Tulis kalimat matematika: <strong style="color:var(--accent3)">Baris × Kolom = Total</strong>
+        </p>
+      </div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:10px">
+        <div style="text-align:center">
+          <p style="font-size:11px;color:var(--accent3);margin-bottom:4px">$2 \\times 5 = 10$</p>
+          ${makeArray(2,5,'🟠')}
+        </div>
+        <div style="text-align:center">
+          <p style="font-size:11px;color:var(--accent3);margin-bottom:4px">$4 \\times 2 = 8$</p>
+          ${makeArray(4,2,'🍎')}
+        </div>
+        <div style="text-align:center">
+          <p style="font-size:11px;color:var(--accent3);margin-bottom:4px">$3 \\times 3 = 9$</p>
+          ${makeArray(3,3,'⭐')}
+        </div>
+      </div>
+    `,
+    questions:[
+      {t:'fill',q:'Buat array 2 baris, masing-masing 5 kancing. Total = ___',a:'10',e:'$2\\times5=10$ kancing'},
+      {t:'radio',q:'Array $4 \\times 2$ menunjukkan...',o:['2 baris masing-masing 4 benda','4 baris masing-masing 2 benda','4 baris dan 4 kolom','2 baris dan 2 kolom'],a:1,e:'$4\\times2$ artinya 4 baris, masing-masing berisi 2 benda.'},
+      {t:'fill',q:'3 baris × 3 kolom = ___ × ___ = ___',a:['3','3','9'],e:'$3\\times3=9$'},
+      {t:'tf',q:'Pada array $2 \\times 5$, jika ditukar menjadi $5 \\times 2$, hasilnya berbeda',a:false,e:'Salah! $2\\times5=10$ dan $5\\times2=10$. Hasilnya sama (sifat komutatif).'},
+      {t:'pair',q:'Cocokkan perkalian dengan hasilnya:',l:['$2 \\times 5$','$4 \\times 2$','$3 \\times 3$','$1 \\times 5$'],r:['10','8','9','5'],a:[0,1,2,3],e:'$2\\times5=10$, $4\\times2=8$, $3\\times3=9$, $1\\times5=5$'},
+      {t:'check',q:'Array mana yang hasilnya 12?',o:['$3 \\times 4$','$4 \\times 3$','$2 \\times 6$','$5 \\times 2$'],a:[0,1,2],e:'$3\\times4=12$, $4\\times3=12$, $2\\times6=12$. $5\\times2=10$ (bukan 12).'},
+      {t:'fill',q:'Jika ada 3 baris dan setiap baris ada 4 bintang ⭐, total = ___',a:'12',e:'$3\\times4=12$ bintang'},
+      {t:'radio',q:'Model array untuk $5 \\times 3$ adalah...',o:['5 baris, 3 kolom','3 baris, 5 kolom','5 baris, 5 kolom','3 baris, 3 kolom'],a:0,e:'$5\\times3$ artinya 5 baris, masing-masing 3 kolom.'},
+      {t:'tf',q:'$2 \\times 5$ dan $5 \\times 2$ menghasilkan jawaban yang sama',a:true,e:'Benar! Sifat komutatif: $2\\times5=10$ dan $5\\times2=10$.'},
+      {t:'fill',q:'Array $4 \\times 4 =$ ___',a:'16',e:'$4\\times4=16$'}
+    ]
+  },
+  {
+    title:'Latihan Mandiri',
+    time:'00:45 - 01:00',
+    icon:'fa-person-running',
+    theory:`
+      <div class="glass2" style="padding:20px;margin-bottom:12px">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-rocket"></i> Misi Mandiri: Pasukan & Kebun</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Sekarang saatnya kamu mencoba sendiri menggunakan imajinasimu!<br><br>
+          🤖 <strong style="color:var(--text)">Pasukan Robot 5×3</strong>: 5 baris robot, tiap baris 3 robot → $5 \\times 3 = 15$ robot<br>
+          🍎 <strong style="color:var(--text)">Kebun Apel 4×4</strong>: 4 baris pohon, tiap baris 4 pohon → $4 \\times 4 = 16$ pohon<br>
+          ✈️ <strong style="color:var(--text)">Formasi Pesawat 2×4</strong>: 2 baris pesawat, tiap baris 4 pesawat → $2 \\times 4 = 8$ pesawat<br><br>
+          Ingat: Hitung cepat dengan <strong style="color:var(--accent3)">Baris × Kolom</strong>, tidak perlu hitung satu per satu!
+        </p>
+      </div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:10px">
+        <div style="text-align:center"><p style="font-size:11px;color:var(--accent3);margin-bottom:4px">🤖 Pasukan 5×3</p>${makeArray(5,3,'🤖')}</div>
+        <div style="text-align:center"><p style="font-size:11px;color:var(--accent3);margin-bottom:4px">🍎 Kebun 4×4</p>${makeArray(4,4,'🍎')}</div>
+      </div>
+    `,
+    questions:[
+      {t:'fill',q:'Pasukan Robot: 5 baris × 3 kolom = $\\underline{\\quad\\quad}$ robot',a:'15',e:'$5\\times3=15$ robot',visual:[5,3,'🤖']},
+      {t:'fill',q:'Kebun Apel: 4 baris × 4 kolom = $\\underline{\\quad\\quad}$ pohon',a:'16',e:'$4\\times4=16$ pohon',visual:[4,4,'🍎']},
+      {t:'fill',q:'Formasi Pesawat: 2 baris × 4 kolom = $\\underline{\\quad\\quad}$ pesawat',a:'8',e:'$2\\times4=8$ pesawat',visual:[2,4,'✈️']},
+      {t:'radio',q:'Jika Pasukan Robot diubah menjadi 3 baris × 5 kolom, berapa totalnya?',o:['8','15','20','10'],a:1,e:'Sifat komutatif: $3\\times5=15$. Hasilnya sama dengan $5\\times3$!'},
+      {t:'tf',q:'Kebun Apel 4×4 membentuk array berbentuk persegi',a:true,e:'Benar! Karena jumlah baris dan kolom sama (4×4), array berbentuk persegi.'},
+      {t:'check',q:'Pilih bentuk array yang hasilnya 8:',o:['$2 \\times 4$','$4 \\times 2$','$1 \\times 8$','$3 \\times 3$'],a:[0,1,2],e:'$2\\times4=8$, $4\\times2=8$, $1\\times8=8$. Sedangkan $3\\times3=9$.'},
+      {t:'pair',q:'Cocokkan formasi dengan totalnya:',l:['5×3','4×4','2×4','3×3'],r:['15','16','8','9'],a:[0,1,2,3],e:'$5\\times3=15$, $4\\times4=16$, $2\\times4=8$, $3\\times3=9$'},
+      {t:'fill',q:'Jika ada 3 baris pesawat dan totalnya 12 pesawat, berapa pesawat di setiap baris? ___',a:'4',e:'$3 \\times ? = 12$, jadi $3 \\times 4 = 12$ pesawat per baris.'},
+      {t:'radio',q:'Mana yang totalnya paling banyak?',o:['5×3','4×4','2×4','3×3'],a:1,e:'Hasil: $5\\times3=15$, $4\\times4=16$, $2\\times4=8$, $3\\times3=9$. Paling banyak 16.'},
+      {t:'order',q:'Urutkan formasi dari total paling sedikit:',i:['5×3','2×4','3×3','4×4'],a:[1,2,0,3],e:'$2\\times4=8$, $3\\times3=9$, $5\\times3=15$, $4\\times4=16$'}
+    ]
+  }
+];
+
+/* ========== ASSIGNMENT DATA (5 Groups x 10 Questions) ========== */
+const ASSIGNMENT_DATA=[
+  // GRUP 1
+  [
+    {t:'fill',q:'2 baris × 5 kolom = ___',a:'10',e:'$2\\times5=10$'},
+    {t:'radio',q:'Manakah yang merupakan model array?',o:['Buku ditumpuk','Kursi baris 3×4','Bola berserakan','Pensil dalam tas'],a:1,e:'Kursi baris 3×4 tersusun rapi dalam baris dan kolom.'},
+    {t:'tf',q:'$3 \\times 4 = 4 \\times 3$',a:true,e:'Benar, ini adalah sifat komutatif perkalian.'},
+    {t:'check',q:'Pilih perkalian yang hasilnya 12:',o:['$3 \\times 4$','$2 \\times 6$','$5 \\times 2$','$4 \\times 3$'],a:[0,1,3],e:'$3\\times4=12$, $2\\times6=12$, $4\\times3=12$. $5\\times2=10$.'},
+    {t:'pair',q:'Cocokkan perkalian dengan hasilnya:',l:['$4 \\times 2$','$3 \\times 3$','$5 \\times 2$','$1 \\times 4$'],r:['8','9','10','4'],a:[0,1,2,3],e:'$4\\times2=8$, $3\\times3=9$, $5\\times2=10$, $1\\times4=4$'},
+    {t:'order',q:'Urutkan dari hasil terkecil:',i:['$4 \\times 3$','$2 \\times 2$','$5 \\times 2$','$3 \\times 1$'],a:[3,1,0,2],e:'Hasil: $3\\times1=3$, $2\\times2=4$, $4\\times3=12$, $5\\times2=10$ (urutan benar: 3,4,10,12)'},
+    {t:'fill',q:'Penjumlahan berulang dari $4 \\times 3$ adalah $3+3+3+$ ___',a:'3',e:'$4\\times3$ artinya 4 kelompok dari 3, jadi $3+3+3+3=12$.'},
+    {t:'radio',q:'Sebuah array memiliki 3 baris dan 5 kolom. Berapa total bendanya?',o:['8','15','35','9'],a:1,e:'Total = baris × kolom = $3\\times5=15$.'},
+    {t:'tf',q:'Array 3×4 dan 4×3 memiliki bentuk yang sama persis',a:false,e:'Salah! Hasilnya sama (12), tapi bentuknya beda. 3×4 (3 baris 4 kolom), 4×3 (4 baris 3 kolom).'},
+    {t:'fill',q:'5 baris, 5 kolom = ___ × ___ = ___',a:['5','5','25'],e:'$5\\times5=25$'}
+  ],
+  // GRUP 2
+  [
+    {t:'fill',q:'$4 \\times 3 =$ ___',a:'12',e:'$4\\times3=12$'},
+    {t:'tf',q:'$5+5+5 = 3 \\times 5$',a:true,e:'Benar! 3 kelompok dari 5 = $3\\times5=15$.'},
+    {t:'radio',q:'Array dengan 3 baris dan 2 kolom ditulis sebagai...',o:['$3 \\times 2$','$2 \\times 3$','$3 + 2$','$6 \\times 1$'],a:0,e:'Baris dulu, kolom kemudian: 3 baris × 2 kolom = $3\\times2$.'},
+    {t:'check',q:'Pilih yang hasilnya 12:',o:['$2 \\times 6$','$3 \\times 4$','$4 \\times 5$','$6 \\times 2$'],a:[0,1,3],e:'$2\\times6=12$, $3\\times4=12$, $6\\times2=12$. $4\\times5=20$.'},
+    {t:'order',q:'Urutkan dari hasil terbesar:',i:['$1 \\times 5$','$3 \\times 4$','$5 \\times 5$','$2 \\times 2$'],a:[2,1,0,3],e:'Hasil: $5\\times5=25$, $3\\times4=12$, $1\\times5=5$, $2\\times2=4$.'},
+    {t:'pair',q:'Cocokkan penjumlahan berulang dengan perkalian:',l:['$2+2+2$','$4+4$','$5+5+5+5$','$1+1+1$'],r:['$3 \\times 2$','$2 \\times 4$','$4 \\times 5$','$3 \\times 1$'],a:[0,1,2,3],e:'Hitung jumlah angka yang dijumlahkan untuk mendapatkan perkalian.'},
+    {t:'fill',q:'5 baris × 4 kolom = ___',a:'20',e:'$5\\times4=20$'},
+    {t:'tf',q:'$2 \\times 7 = 7 \\times 2$',a:true,e:'Benar! Sifat komutatif perkalian.'},
+    {t:'radio',q:'Di sebuah kelas ada 4 baris kursi, setiap baris 3 kursi. Berapa total kursi?',o:['7','12','10','14'],a:1,e:'Total = $4 \\times 3 = 12$ kursi.'},
+    {t:'fill',q:'___ $\\times 4 = 16$',a:'4',e:'$4\\times4=16$'}
+  ],
+  // GRUP 3
+  [
+    {t:'radio',q:'Ada 15 kancing. Bagaimana cara menyusunnya menjadi array?',o:['3×5 atau 5×3','4×4','2×7','3×4'],a:0,e:'$3\\times5=15$ dan $5\\times3=15$, keduanya menghasilkan 15.'},
+    {t:'tf',q:'Di loyang 5×4 ada 20 kue. Jika 3 dimakan, sisa 17 kue',a:true,e:'Total awal $5\\times4=20$. Sisa $20-3=17$ kue.'},
+    {t:'fill',q:'Lapangan 3×4 dan 2×6 memiliki total yang sama, yaitu ___',a:'12',e:'$3\\times4=12$ dan $2\\times6=12$.'},
+    {t:'check',q:'Pilih model array yang menghasilkan 10:',o:['2 baris 5 kolom','5 baris 2 kolom','1 baris 10 kolom','3 baris 3 kolom'],a:[0,1,2],e:'$2\\times5=10$, $5\\times2=10$, $1\\times10=10$. $3\\times3=9$.'},
+    {t:'pair',q:'Cocokkan masalah dengan kalimat matematikanya:',l:['4 baris, 3 kursi','5 loyang, 4 kue','2 kotak, 6 pensil','3 rak, 5 buku'],r:['$4 \\times 3$','$5 \\times 4$','$2 \\times 6$','$3 \\times 5$'],a:[0,1,2,3],e:'Baris/kelompok dikali jumlah isi per baris/kelompok.'},
+    {t:'order',q:'Urutkan dari total paling sedikit:',i:['5×3','2×4','4×4','1×5'],a:[1,3,0,2],e:'Hasil: $2\\times4=8$, $1\\times5=5$, $5\\times3=15$, $4\\times4=16$ (Urutan benar: 5,8,15,16)'},
+    {t:'fill',q:'Array 3×5 ditambah 1 baris lagi menjadi 4×5 = ___',a:'20',e:'Awalnya $3\\times5=15$. Ditambah 1 baris jadi $4\\times5=20$.'},
+    {t:'tf',q:'$2 \\times 7 = 7 \\times 2 = 14$',a:true,e:'Benar! Sifat komutatif berlaku pada semua perkalian.'},
+    {t:'radio',q:'Sebuah array memiliki 5 kolom dan 3 baris. Jika ditambah 1 baris, berapa totalnya?',o:['15','20','16','25'],a:1,e:'Awalnya $3\\times5=15$. Ditambah 1 baris jadi $4\\times5=20$.'},
+    {t:'fill',q:'4 baris × 5 kolom = ___',a:'20',e:'$4\\times5=20$'}
+  ],
+  // GRUP 4
+  [
+    {t:'fill',q:'5 baris × 2 kolom = ___',a:'10',e:'$5\\times2=10$'},
+    {t:'radio',q:'Pada array $3 \\times 4$, berapa jumlah kolom?',o:['3','4','7','12'],a:1,e:'Pada $3\\times4$, angka kedua (4) menunjukkan jumlah kolom.'},
+    {t:'tf',q:'$1 \\times 5 = 5$',a:true,e:'Benar! 1 kelompok yang berisi 5 = 5.'},
+    {t:'check',q:'Pilih perkalian yang menghasilkan 15:',o:['$3 \\times 5$','$5 \\times 3$','$4 \\times 4$','$1 \\times 15$'],a:[0,1,3],e:'$3\\times5=15$, $5\\times3=15$, $1\\times15=15$. $4\\times4=16$.'},
+    {t:'pair',q:'Cocokkan perkalian dengan penjumlahan berulangnya:',l:['$3 \\times 4$','$2 \\times 5$','$4 \\times 3$','$5 \\times 2$'],r:['$4+4+4$','$5+5$','$3+3+3+3$','$2+2+2+2+2$'],a:[0,1,2,3],e:'Perkalian diubah ke penjumlahan berulang sesuai jumlah kelompok.'},
+    {t:'order',q:'Urutkan dari hasil terkecil:',i:['$4 \\times 4$','$2 \\times 3$','$5 \\times 1$','$3 \\times 3$'],a:[2,1,3,0],e:'Hasil: $4\\times4=16$, $2\\times3=6$, $5\\times1=5$, $3\\times3=9$. Urutan: 5,6,9,16.'},
+    {t:'fill',q:'3 baris × 5 kolom = ___',a:'15',e:'$3\\times5=15$'},
+    {t:'tf',q:'Array $4 \\times 2$ memiliki 4 kolom dan 2 baris',a:false,e:'Salah! $4\\times2$ artinya 4 baris dan 2 kolom. Baris ditulis duluan.'},
+    {t:'radio',q:'Di kotak donat ada 3 baris, masing-masing 4 donat. Berapa total donat?',o:['7','12','10','14'],a:1,e:'Total = $3 \\times 4 = 12$ donat.'},
+    {t:'fill',q:'3 × ___ = 9',a:'3',e:'$3\\times3=9$'}
+  ],
+  // GRUP 5
+  [
+    {t:'radio',q:'Apa arti dari perkalian $3 \\times 5$?',o:['3 ditambah 5','3 kelompok yang masing-masing berisi 5','5 kelompok yang masing-masing berisi 3','3 dikali 5 dikali 1'],a:1,e:'$3\\times5$ artinya ada 3 kelompok, tiap kelompok berisi 5 benda.'},
+    {t:'tf',q:'$6 \\times 0 = 6$',a:false,e:'Salah! Apapun dikali 0 hasilnya 0. $6\\times0=0$.'},
+    {t:'fill',q:'4 baris × 4 kolom = ___',a:'16',e:'$4\\times4=16$'},
+    {t:'check',q:'Pilih model array yang menghasilkan 8:',o:['2×4','4×2','1×8','3×3'],a:[0,1,2],e:'$2\\times4=8$, $4\\times2=8$, $1\\times8=8$. $3\\times3=9$.'},
+    {t:'pair',q:'Cocokkan array dengan totalnya:',l:['2×3','4×5','3×4','5×3'],r:['6','20','12','15'],a:[0,1,2,3],e:'$2\\times3=6$, $4\\times5=20$, $3\\times4=12$, $5\\times3=15$.'},
+    {t:'order',q:'Urutkan dari hasil terbesar:',i:['$3 \\times 2$','$5 \\times 5$','$4 \\times 4$','$1 \\times 9$'],a:[1,2,3,0],e:'Hasil: $3\\times2=6$, $5\\times5=25$, $4\\times4=16$, $1\\times9=9$. Urutan: 25,16,9,6.'},
+    {t:'fill',q:'2 baris × 6 kolom = ___',a:'12',e:'$2\\times6=12$'},
+    {t:'tf',q:'$5 \\times 3 = 3 \\times 5$',a:true,e:'Benar! Sifat komutatif perkalian berlaku.'},
+    {t:'radio',q:'Sebuah gedung memiliki 4 lantai, setiap lantai ada 5 jendela. Berapa total jendela?',o:['9','20','25','16'],a:1,e:'Total = 4 kelompok × 5 = $4\\times5=20$ jendela.'},
+    {t:'fill',q:'___ × 5 = 20',a:'4',e:'$4\\times5=20$'}
+  ]
+];
+
+/* ========== STATE ========== */
+const state={page:'home',secIdx:0,tab:'materi',qIdx:0,answers:{},checked:{},assignmentGrp:0,assignmentAns:{},assignmentChk:{},scores:[]};
+
+/* ========== RENDER ENGINE ========== */
+const app=document.getElementById('app');
+
+function navigate(page,extra){
+  state.page=page;
+  if(extra)Object.assign(state,extra);
+  render();
+}
+
+function render(){
+  switch(state.page){
+    case'home':renderHome();break;
+    case'section':renderSection();break;
+    case'assignment':renderAssignment();break;
+    case'consolidation':renderConsolidation();break;
+  }
+  renderMath(document.body);
+}
+
+/* ---- HOMEPAGE ---- */
+function renderHome(){
+  app.innerHTML=`
+  <div class="page active" style="justify-content:center;align-items:center;padding:20px">
+    <div class="glass fade-in" style="padding:40px;max-width:600px;width:100%;text-align:center">
+      <div style="font-size:48px;margin-bottom:8px">📐</div>
+      <h1 class="home-title" style="line-height:1.1">MATH TUTORING</h1>
+      <p style="color:var(--accent3);font-weight:700;font-size:18px;margin:4px 0 20px">by Deni</p>
+      <div style="background:rgba(34,197,94,0.1);border-radius:12px;padding:16px;margin-bottom:20px;border:1px solid var(--border)">
+        <p style="font-weight:700;font-size:16px;color:var(--accent2)">Topik: Lapangan Perkalian (Visual Array)</p>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px">Topic: Multiplication Field (Visual Array)</p>
+      </div>
+      <div style="text-align:left;margin-bottom:24px">
+        <p style="font-weight:700;margin-bottom:10px;font-size:14px"><i class="fa-solid fa-list-check" style="color:var(--accent);margin-right:6px"></i>Aturan Kelas:</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="rule-card"><span style="font-size:20px">🗣️</span><span style="font-size:13px">Berbicara secara bergantian</span></div>
+          <div class="rule-card"><span style="font-size:20px">🙋</span><span style="font-size:13px">Meminta izin ketika ingin meninggalkan kelas</span></div>
+          <div class="rule-card"><span style="font-size:20px">📷</span><span style="font-size:13px">Menyalakan kamera dan mikrofon jika diperlukan</span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <button class="btn btn-primary" style="font-size:16px;padding:14px 40px;width:100%" onclick="navigate('section',{secIdx:0,tab:'materi',qIdx:0})">
+          <i class="fa-solid fa-rocket"></i> Mulai Belajar
+        </button>
+        <button class="btn btn-secondary" style="font-size:14px;padding:12px 32px;width:100%" onclick="navigate('assignment',{assignmentGrp:0,assignmentQIdx:0})">
+          <i class="fa-solid fa-clipboard-check"></i> Langsung ke Assignment
+        </button>
+        <button class="btn btn-ghost" style="font-size:14px;padding:12px 32px;width:100%" onclick="navigate('consolidation')">
+          <i class="fa-solid fa-flag-checkered"></i> Konsolidasi & Refleksi
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- SECTION PAGE ---- */
+function renderSection(){
+  const sec=SECTIONS[state.secIdx];
+  if(!sec)return;
+  const totalQ=sec.questions.length;
+  const prog=state.tab==='latihan'?Math.round(((state.qIdx+1)/totalQ)*100):0;
+  const dots=SECTIONS.map((_,i)=>`<div class="nav-dot ${i===state.secIdx?'active':i<state.secIdx?'done':''}" onclick="navSection(${i})" title="${SECTIONS[i].title}"></div>`).join('');
+
+  app.innerHTML=`
+  <div class="page active" style="padding:0">
+    <!-- HEADER -->
+    <div style="padding:10px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);background:var(--card);flex-shrink:0">
+      <button class="btn btn-ghost btn-sm" onclick="state.secIdx===0?navigate('home'):navSection(state.secIdx-1)"><i class="fa-solid fa-arrow-left"></i></button>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="fa-solid ${sec.icon}" style="color:var(--accent)"></i>
+          <span style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sec.title}</span>
+          <span style="font-size:11px;color:var(--muted);white-space:nowrap"><i class="fa-regular fa-clock"></i> ${sec.time}</span>
+        </div>
+        <div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:${prog}%"></div></div>
+      </div>
+      <div style="display:flex;gap:5px">${dots}</div>
+      <select onchange="quickNav(this.value);this.value=''" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:Nunito,sans-serif;cursor:pointer;outline:none">
+        <option value="">⚡ Menuju...</option>
+        ${SECTIONS.map((s,i)=>`<option value="s${i}">📖 ${s.title}</option>`).join('')}
+        <option value="a0">📝 Assignment Grup 1</option>
+        <option value="a1">📝 Assignment Grup 2</option>
+        <option value="a2">📝 Assignment Grup 3</option>
+        <option value="a3">📝 Assignment Grup 4</option>
+        <option value="a4">📝 Assignment Grup 5</option>
+        <option value="c">🎓 Konsolidasi</option>
+      </select>
+    </div>
+    <!-- TABS -->
+    <div style="padding:8px 20px;display:flex;gap:8px;flex-shrink:0">
+      <button class="tab-btn ${state.tab==='materi'?'active':''}" onclick="switchTab('materi')"><i class="fa-solid fa-book-open"></i> Materi</button>
+      <button class="tab-btn ${state.tab==='latihan'?'active':''}" onclick="switchTab('latihan')"><i class="fa-solid fa-pen"></i> Latihan (${totalQ})</button>
+    </div>
+    <!-- CONTENT -->
+    <div style="flex:1;overflow-y:auto;padding:10px 20px 10px" id="secContent">
+      ${state.tab==='materi'?renderTheory(sec):renderQuestion(sec)}
+    </div>
+    <!-- FOOTER -->
+    <div style="padding:10px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);background:var(--card);flex-shrink:0">
+      <div style="display:flex;gap:8px">
+        ${state.tab==='latihan'?`
+          <button class="btn btn-ghost btn-sm" onclick="prevQ()"><i class="fa-solid fa-chevron-left"></i> Sebelumnya</button>
+          <button class="btn btn-danger btn-sm" onclick="resetQ()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        `:`<span style="font-size:12px;color:var(--muted)">Baca materi dengan saksama</span>`}
+      </div>
+      <div style="font-size:12px;color:var(--muted)">${state.tab==='latihan'?`Soal ${state.qIdx+1} / ${totalQ}`:''}</div>
+      <div style="display:flex;gap:8px">
+        ${state.tab==='latihan'?`<button class="btn btn-primary btn-sm" onclick="nextQ()">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>`
+        :`<button class="btn btn-primary btn-sm" onclick="switchTab('latihan')">Mulai Latihan <i class="fa-solid fa-pen"></i></button>`}
+      </div>
+    </div>
+  </div>`;
+  renderMath(document.body);
+}
+
+function renderTheory(sec){
+  return `<div class="fade-in" style="max-width:700px;margin:0 auto">${sec.theory}</div>`;
+}
+
+function renderQuestion(sec){
+  const qi=state.qIdx;
+  const q=sec.questions[qi];
+  if(!q)return '<p>Selesai!</p>';
+  const key=`${state.secIdx}_${qi}`;
+  const chk=state.checked[key];
+
+  let html=`<div class="slide-in" style="max-width:650px;margin:0 auto">`;
+  html+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+    <span style="background:var(--accent);color:#fff;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700">Soal ${qi+1}</span>
+    <span style="font-size:11px;color:var(--muted)">${q.t==='fill'?'Isian Singkat':q.t==='radio'?'Pilihan Ganda':q.t==='check'?'Centang Benar':q.t==='tf'?'Benar/Salah':q.t==='pair'?'Cocokkan':q.t==='order'?'Urutkan':'Soal'}</span>
+  </div>`;
+  html+=`<div style="font-size:15px;margin-bottom:16px;line-height:1.6">${rm(q.q)}</div>`;
+
+  // Visual array jika ada
+  if(q.visual) html+=`<div style="margin-bottom:16px;text-align:center">${makeArray(q.visual[0],q.visual[1],q.visual[2]||'🟠')}</div>`;
+
+  html+=renderAnswerArea(q,key,chk);
+  html+=renderCheckAndExplain(q,key,chk);
+  html+=`</div>`;
+  return html;
+}
+
+function renderAnswerArea(q,key,chk){
+  const ans=state.answers[key];
+  let h='';
+  switch(q.t){
+    case'fill':
+      if(Array.isArray(q.a)){
+        const vals=ans||Array(q.a.length).fill('');
+        h+=`<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">`;
+        q.a.forEach((_,i)=>{
+          h+=`<input class="input-blank" type="text" value="${vals[i]||''}" onchange="setFill(${i},this.value)" ${chk?'disabled':''} placeholder="...">`;
+        });
+        h+=`</div>`;
+      }else{
+        h+=`<input class="input-blank" type="text" value="${ans||''}" onchange="setAnswer(this.value)" ${chk?'disabled':''} placeholder="Ketik jawaban...">`;
+      }
+      break;
+    case'radio':
+      q.o.forEach((opt,i)=>{
+        const sel=ans===i;
+        const cls=chk?(sel?(i===q.a?'correct':'wrong'):(i===q.a?'correct':'')):(sel?'selected':'');
+        h+=`<div class="q-option ${cls}" onclick="setAnswer(${i})" style="margin-bottom:6px;${chk?'pointer-events:none':''}">${String.fromCharCode(65+i)}. ${rm(opt)}</div>`;
+      });
+      break;
+    case'check':
+      const ca=ans||[];
+      q.o.forEach((opt,i)=>{
+        const sel=ca.includes(i);
+        const isCorr=q.a.includes(i);
+        const cls=chk?(sel?(isCorr?'correct':'wrong'):(isCorr?'correct':'')):(sel?'selected':'');
+        h+=`<div class="q-option ${cls}" onclick="toggleCheck(${i})" style="margin-bottom:6px;${chk?'pointer-events:none':''}"><i class="fa-${sel?'solid':'regular'} fa-square-check" style="margin-right:6px"></i>${rm(opt)}</div>`;
+      });
+      break;
+    case'tf':
+      [true,false].forEach(v=>{
+        const sel=ans===v;
+        const cls=chk?(sel?(v===q.a?'correct':'wrong'):(v===q.a?'correct':'')):(sel?'selected':'');
+        h+=`<div class="q-option ${cls}" onclick="setAnswer(${v})" style="margin-bottom:6px;display:inline-block;margin-right:8px;padding:10px 24px;${chk?'pointer-events:none':''}"><i class="fa-solid ${v?'fa-check':'fa-xmark'}" style="margin-right:4px"></i>${v?'Benar':'Salah'}</div>`;
+      });
+      break;
+    case'pair':
+      const pm=ans||{};
+      h+=`<div style="display:flex;gap:20px;flex-wrap:wrap">`;
+      h+=`<div style="flex:1;min-width:140px"><p style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px">Kolom Kiri</p>`;
+      q.l.forEach((item,i)=>{
+        const isMatched=Object.values(pm).includes(i);
+        h+=`<div class="pair-item ${isMatched?'matched':''} ${pm._sel===i?'sel':''}" onclick="pairSelLeft(${i})" style="margin-bottom:6px">${rm(item)}</div>`;
+      });
+      h+=`</div><div style="flex:1;min-width:140px"><p style="font-size:12px;font-weight:700;color:var(--accent3);margin-bottom:8px">Kolom Kanan</p>`;
+      const rOrder=q._rOrder||q.r.map((_,i)=>i);
+      rOrder.forEach(ri=>{
+        const isMatched=Object.values(pm).includes(ri);
+        h+=`<div class="pair-item ${isMatched?'matched':''}" onclick="pairSelRight(${ri})" style="margin-bottom:6px">${rm(q.r[ri])}</div>`;
+      });
+      h+=`</div></div>`;
+      if(Object.keys(pm).filter(k=>k!=='_sel').length>0){
+        h+=`<div style="margin-top:10px;font-size:12px;color:var(--muted)">Pasangan: ${Object.entries(pm).filter(([k])=>k!=='_sel').map(([l,r])=>`${q.l[l]} ↔ ${q.r[r]}`).join(', ')}</div>`;
+      }
+      break;
+    case'order':
+      const ord=ans||[];
+      h+=`<div style="display:flex;flex-direction:column;gap:6px">`;
+      q.i.forEach((item,idx)=>{
+        const ordIdx=ord.indexOf(idx);
+        h+=`<div class="order-item ${ordIdx>=0?'ordered':''}" onclick="orderClick(${idx})" style="${chk?'pointer-events:none':''}">
+          ${ordIdx>=0?`<span class="order-num">${ordIdx+1}</span>`:'<span style="width:22px"></span>'}
+          ${rm(item)}
+        </div>`;
+      });
+      h+=`</div>`;
+      if(ord.length>0) h+=`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="orderReset()"><i class="fa-solid fa-rotate-left"></i> Atur Ulang Urutan</button>`;
+      break;
+  }
+  return h;
+}
+
+function renderCheckAndExplain(q,key,chk){
+  let h=`<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">`;
+  if(!chk) h+=`<button class="btn btn-secondary btn-sm" onclick="checkAnswer()"><i class="fa-solid fa-check-circle"></i> Cek Jawaban</button>`;
+  h+=`</div>`;
+  if(chk){
+    const correct=isCorrect(q,key);
+    h+=`<div style="margin-top:10px;padding:12px 16px;border-radius:10px;background:${correct?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)'};border:1px solid ${correct?'var(--accent2)':'var(--danger)'}">
+      <div style="font-weight:700;font-size:14px;color:${correct?'var(--accent2)':'var(--danger)'}">${correct?'✓ Benar!':'✗ Kurang tepat'}</div>
+    </div>`;
+    h+=`<div style="margin-top:8px">
+      <div class="collapse-trigger" onclick="toggleCollapse(this)"><i class="fa-solid fa-lightbulb" style="color:var(--accent3)"></i> Lihat Penjelasan <i class="fa-solid fa-chevron-down" style="font-size:10px;margin-left:auto;transition:transform .3s"></i></div>
+      <div class="collapse-body"><div style="padding:12px;font-size:13px;line-height:1.6;color:var(--muted)">${rm(q.e)}</div></div>
+    </div>`;
+  }
+  return h;
+}
+
+/* ---- INTERAKSI JAWABAN ---- */
+function setAnswer(v){const key=`${state.secIdx}_${state.qIdx}`;state.answers[key]=v;renderSection();}
+function setFill(i,v){const key=`${state.secIdx}_${state.qIdx}`;if(!state.answers[key])state.answers[key]=[];state.answers[key][i]=v;renderSection();}
+function toggleCheck(i){const key=`${state.secIdx}_${state.qIdx}`;let a=state.answers[key]||[];if(a.includes(i))a=a.filter(x=>x!==i);else a.push(i);state.answers[key]=a;renderSection();}
+function pairSelLeft(i){const key=`${state.secIdx}_${state.qIdx}`;if(!state.answers[key])state.answers[key]={};state.answers[key]._sel=i;renderSection();}
+function pairSelRight(ri){const key=`${state.secIdx}_${state.qIdx}`;if(!state.answers[key])state.answers[key]={};const pm=state.answers[key];if(pm._sel!==undefined){pm[pm._sel]=ri;delete pm._sel;}renderSection();}
+function orderClick(idx){const key=`${state.secIdx}_${state.qIdx}`;let ord=state.answers[key]||[];const i=ord.indexOf(idx);if(i>=0)ord.splice(i,1);else ord.push(idx);state.answers[key]=ord;renderSection();}
+function orderReset(){const key=`${state.secIdx}_${state.qIdx}`;state.answers[key]=[];renderSection();}
+
+function isCorrect(q,key){
+  const ans=state.answers[key];
+  switch(q.t){
+    case'fill':
+      if(Array.isArray(q.a)) return q.a.every((a,i)=>(ans&&ans[i]||'').toString().trim().toLowerCase()===a.toString().trim().toLowerCase());
+      return (ans||'').toString().trim().toLowerCase()===q.a.toString().trim().toLowerCase();
+    case'radio':return ans===q.a;
+    case'check':if(!ans)return false;q.a.sort();const ca=[...ans].sort();return JSON.stringify(ca)===JSON.stringify(q.a);
+    case'tf':return ans===q.a;
+    case'pair':const pm=ans||{};return q.a.every((r,l)=>pm[l]===r);
+    case'order':const ord=ans||[];return JSON.stringify(ord)===JSON.stringify(q.a);
+  }
+  return false;
+}
+
+function checkAnswer(){
+  const key=`${state.secIdx}_${state.qIdx}`;
+  state.checked[key]=true;
+  renderSection();
+}
+
+function toggleCollapse(el){
+  const body=el.nextElementSibling;
+  body.classList.toggle('open');
+  const icon=el.querySelector('.fa-chevron-down');
+  if(icon)icon.style.transform=body.classList.contains('open')?'rotate(180deg)':'';
+}
+
+function switchTab(t){state.tab=t;state.qIdx=0;renderSection();}
+function prevQ(){if(state.qIdx>0){state.qIdx--;renderSection();}}
+function nextQ(){
+  const sec=SECTIONS[state.secIdx];
+  if(state.qIdx<sec.questions.length-1){state.qIdx++;renderSection();}
+  else{
+    // Hapus validasi pemblokir, langsung lanjut
+    if(state.secIdx<SECTIONS.length-1){navSection(state.secIdx+1);}
+    else{navigate('assignment',{assignmentGrp:0,assignmentQIdx:0});}
+  }
+}
+function resetQ(){
+  const sec=SECTIONS[state.secIdx];
+  sec.questions.forEach((_,i)=>{delete state.answers[`${state.secIdx}_${i}`];delete state.checked[`${state.secIdx}_${i}`];});
+  state.qIdx=0;renderSection();
+}
+function navSection(i){
+  if(i<0){navigate('home');return;}
+  if(i>=SECTIONS.length){navigate('assignment',{assignmentGrp:0});return;}
+  state.secIdx=i;state.tab='materi';state.qIdx=0;navigate('section');
+}
+
+function quickNav(val){
+  if(!val)return;
+  if(val==='c'){navigate('consolidation');return;}
+  if(val.startsWith('a')){const grp=parseInt(val.replace('a',''));navigate('assignment',{assignmentGrp:grp,assignmentQIdx:0});return;}
+  if(val.startsWith('s')){const idx=parseInt(val.replace('s',''));navigate('section',{secIdx:idx,tab:'materi',qIdx:0});return;}
+}
+
+/* ---- TOAST ---- */
+function showToast(msg,type='info'){
+  const colors={info:'var(--accent2)',warning:'var(--accent)',error:'var(--danger)'};
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:12px 24px;border-radius:10px;background:${colors[type]};color:#fff;font-weight:700;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:fadeIn .3s ease;font-family:Nunito,sans-serif`;
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},2500);
+}
+
+/* ---- ASSIGNMENT ---- */
+function renderAssignment(){
+  const grp=state.assignmentGrp;const totalGrps=5;if(grp>=totalGrps){navigate('consolidation');return;}
+  const qs=ASSIGNMENT_DATA[grp];const qi=state.assignmentQIdx||0;
+  const prog=Math.round(((qi+1)/10)*100);
+  const dots=Array.from({length:totalGrps},(_,i)=>`<div class="nav-dot ${i===grp?'active':i<grp?'done':''}" style="cursor:default"></div>`).join('');
+  
+  app.innerHTML=`
+  <div class="page active" style="padding:0">
+    <div style="padding:10px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);background:var(--card);flex-shrink:0">
+      <button class="btn btn-ghost btn-sm" onclick="navigate('section',{secIdx:SECTIONS.length-1,tab:'materi',qIdx:0})"><i class="fa-solid fa-arrow-left"></i></button>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="fa-solid fa-clipboard-check" style="color:var(--accent)"></i>
+          <span style="font-weight:700;font-size:14px">Assignment - Grup ${grp+1}</span>
+        </div>
+        <div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:${prog}%"></div></div>
+      </div>
+      <div style="display:flex;gap:5px">${dots}</div>
+      
+      <!-- INI ADALAH DROPDOWN NAVIGASI YANG DITAMBAHKAN -->
+      <select onchange="quickNav(this.value);this.value=''" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:Nunito,sans-serif;cursor:pointer;outline:none">
+        <option value="">⚡ Menuju...</option>
+        ${SECTIONS.map((s,i)=>`<option value="s${i}">📖 ${s.title}</option>`).join('')}
+        <option value="a0">📝 Assignment Grup 1</option>
+        <option value="a1">📝 Assignment Grup 2</option>
+        <option value="a2">📝 Assignment Grup 3</option>
+        <option value="a3">📝 Assignment Grup 4</option>
+        <option value="a4">📝 Assignment Grup 5</option>
+        <option value="c">🎓 Konsolidasi</option>
+      </select>
+      
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:10px 20px" id="assignContent">
+      ${renderAssignQ(qs,qi,grp)}
+    </div>
+    <div style="padding:10px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);background:var(--card);flex-shrink:0">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="assignPrev()"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="assignReset()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      </div>
+      <span style="font-size:12px;color:var(--muted)">Soal ${qi+1}/10</span>
+      <button class="btn btn-primary btn-sm" onclick="assignNext()">Selanjutnya <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>`;
+}
+
+function renderAssignQ(qs,qi,grp){
+  const q=qs[qi];
+  const key=`a${grp}_${qi}`;
+  const chk=state.assignmentChk[key];
+  let html=`<div class="slide-in" style="max-width:650px;margin:0 auto">`;
+  html+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+    <span style="background:var(--accent3);color:#000;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700">Grup ${grp+1} - Soal ${qi+1}</span>
+    <span style="font-size:11px;color:var(--muted)">${q.t==='fill'?'Isian':q.t==='radio'?'PG':q.t==='check'?'Centang':q.t==='tf'?'B/S':q.t==='pair'?'Cocokkan':'Urutkan'}</span>
+  </div>`;
+  html+=`<div style="font-size:15px;margin-bottom:16px;line-height:1.6">${rm(q.q)}</div>`;
+  if(q.visual) html+=`<div style="margin-bottom:16px;text-align:center">${makeArray(q.visual[0],q.visual[1],q.visual[2]||'🟠')}</div>`;
+  html+=renderAssignAnswerArea(q,key,chk);
+  html+=renderAssignCheckAndExplain(q,key,chk);
+  html+=`</div>`;
+  return html;
+}
+
+function renderAssignAnswerArea(q,key,chk){
+  const ans=state.assignmentAns[key];
+  let h='';
+  switch(q.t){
+    case'fill':
+      if(Array.isArray(q.a)){
+        const vals=ans||Array(q.a.length).fill('');
+        h+=`<div style="display:flex;flex-wrap:wrap;gap:8px">`;
+        q.a.forEach((_,i)=>{h+=`<input class="input-blank" value="${vals[i]||''}" onchange="setAFill(${i},this.value)" ${chk?'disabled':''} placeholder="...">`;});
+        h+=`</div>`;
+      }else{h+=`<input class="input-blank" value="${ans||''}" onchange="setAAnswer(this.value)" ${chk?'disabled':''} placeholder="Ketik jawaban...">`;}
+      break;
+    case'radio':
+      q.o.forEach((opt,i)=>{
+        const sel=ans===i;const cls=chk?(sel?(i===q.a?'correct':'wrong'):(i===q.a?'correct':'')):(sel?'selected':'');
+        h+=`<div class="q-option ${cls}" onclick="setAAnswer(${i})" style="margin-bottom:6px;${chk?'pointer-events:none':''}">${String.fromCharCode(65+i)}. ${rm(opt)}</div>`;
+      });break;
+    case'check':
+      const ca=ans||[];
+      q.o.forEach((opt,i)=>{
+        const sel=ca.includes(i);const isC=q.a.includes(i);const cls=chk?(sel?(isC?'correct':'wrong'):(isC?'correct':'')):(sel?'selected':'');
+        h+=`<div class="q-option ${cls}" onclick="toggleACheck(${i})" style="margin-bottom:6px;${chk?'pointer-events:none':''}"><i class="fa-${sel?'solid':'regular'} fa-square-check" style="margin-right:6px"></i>${rm(opt)}</div>`;
+      });break;
+    case'tf':
+      [true,false].forEach(v=>{
+        const sel=ans===v;const cls=chk?(sel?(v===q.a?'correct':'wrong'):(v===q.a?'correct':'')):(sel?'selected':'');
+        h+=`<div class="q-option ${cls}" onclick="setAAnswer(${v})" style="margin-bottom:6px;display:inline-block;margin-right:8px;padding:10px 24px;${chk?'pointer-events:none':''}"><i class="fa-solid ${v?'fa-check':'fa-xmark'}" style="margin-right:4px"></i>${v?'Benar':'Salah'}</div>`;
+      });break;
+    case'pair':
+      const pm=ans||{};
+      h+=`<div style="display:flex;gap:20px;flex-wrap:wrap"><div style="flex:1;min-width:140px"><p style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px">Kolom Kiri</p>`;
+      q.l.forEach((item,i)=>{const isM=Object.values(pm).includes(i);h+=`<div class="pair-item ${isM?'matched':''} ${pm._sel===i?'sel':''}" onclick="aPairSelLeft(${i})" style="margin-bottom:6px">${rm(item)}</div>`;});
+      h+=`</div><div style="flex:1;min-width:140px"><p style="font-size:12px;font-weight:700;color:var(--accent3);margin-bottom:8px">Kolom Kanan</p>`;
+      const rO=q._rOrder||q.r.map((_,i)=>i);
+      rO.forEach(ri=>{const isM=Object.values(pm).includes(ri);h+=`<div class="pair-item ${isM?'matched':''}" onclick="aPairSelRight(${ri})" style="margin-bottom:6px">${rm(q.r[ri])}</div>`;});
+      h+=`</div></div>`;
+      if(Object.keys(pm).filter(k=>k!=='_sel').length>0) h+=`<div style="margin-top:10px;font-size:12px;color:var(--muted)">Pasangan: ${Object.entries(pm).filter(([k])=>k!=='_sel').map(([l,r])=>`${q.l[l]} ↔ ${q.r[r]}`).join(', ')}</div>`;
+      break;
+    case'order':
+      const ord=ans||[];
+      h+=`<div style="display:flex;flex-direction:column;gap:6px">`;
+      q.i.forEach((item,idx)=>{const oi=ord.indexOf(idx);h+=`<div class="order-item ${oi>=0?'ordered':''}" onclick="aOrderClick(${idx})" style="${chk?'pointer-events:none':''}">${oi>=0?`<span class="order-num">${oi+1}</span>`:'<span style="width:22px"></span>'}${rm(item)}</div>`;});
+      h+=`</div>`;
+      if(ord.length>0)h+=`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="aOrderReset()"><i class="fa-solid fa-rotate-left"></i> Atur Ulang</button>`;
+      break;
+  }
+  return h;
+}
+
+function renderAssignCheckAndExplain(q,key,chk){
+  let h=`<div style="margin-top:14px">`;
+  if(!chk) h+=`<button class="btn btn-secondary btn-sm" onclick="checkAAnswer()"><i class="fa-solid fa-check-circle"></i> Cek Jawaban</button>`;
+  h+=`</div>`;
+  if(chk){
+    const correct=isACorrect(q,key);
+    h+=`<div style="margin-top:10px;padding:12px 16px;border-radius:10px;background:${correct?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)'};border:1px solid ${correct?'var(--accent2)':'var(--danger)'}">
+      <div style="font-weight:700;font-size:14px;color:${correct?'var(--accent2)':'var(--danger)'}">${correct?'✓ Benar!':'✗ Kurang tepat'}</div>
+    </div>`;
+    h+=`<div style="margin-top:8px"><div class="collapse-trigger" onclick="toggleCollapse(this)"><i class="fa-solid fa-lightbulb" style="color:var(--accent3)"></i> Lihat Penjelasan <i class="fa-solid fa-chevron-down" style="font-size:10px;margin-left:auto;transition:transform .3s"></i></div>
+    <div class="collapse-body"><div style="padding:12px;font-size:13px;line-height:1.6;color:var(--muted)">${rm(q.e)}</div></div></div>`;
+  }
+  return h;
+}
+
+function setAAnswer(v){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;state.assignmentAns[key]=v;renderAssignment();}
+function setAFill(i,v){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;if(!state.assignmentAns[key])state.assignmentAns[key]=[];state.assignmentAns[key][i]=v;renderAssignment();}
+function toggleACheck(i){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;let a=state.assignmentAns[key]||[];if(a.includes(i))a=a.filter(x=>x!==i);else a.push(i);state.assignmentAns[key]=a;renderAssignment();}
+function aPairSelLeft(i){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;if(!state.assignmentAns[key])state.assignmentAns[key]={};state.assignmentAns[key]._sel=i;renderAssignment();}
+function aPairSelRight(ri){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;if(!state.assignmentAns[key])state.assignmentAns[key]={};const pm=state.assignmentAns[key];if(pm._sel!==undefined){pm[pm._sel]=ri;delete pm._sel;}renderAssignment();}
+function aOrderClick(idx){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;let ord=state.assignmentAns[key]||[];const i=ord.indexOf(idx);if(i>=0)ord.splice(i,1);else ord.push(idx);state.assignmentAns[key]=ord;renderAssignment();}
+function aOrderReset(){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;state.assignmentAns[key]=[];renderAssignment();}
+function isACorrect(q,key){const ans=state.assignmentAns[key];switch(q.t){case'fill':if(Array.isArray(q.a))return q.a.every((a,i)=>(ans&&ans[i]||'').toString().trim().toLowerCase()===a.toString().trim().toLowerCase());return(ans||'').toString().trim().toLowerCase()===q.a.toString().trim().toLowerCase();case'radio':return ans===q.a;case'check':if(!ans)return false;return JSON.stringify([...ans].sort())===JSON.stringify([...q.a].sort());case'tf':return ans===q.a;case'pair':const pm=ans||{};return q.a.every((r,l)=>pm[l]===r);case'order':return JSON.stringify(ans||[])===JSON.stringify(q.a);}return false;}
+function checkAAnswer(){const key=`a${state.assignmentGrp}_${state.assignmentQIdx||0}`;state.assignmentChk[key]=true;renderAssignment();}
+function assignPrev(){if((state.assignmentQIdx||0)>0){state.assignmentQIdx--;renderAssignment();}}
+function assignNext(){
+  const qi=state.assignmentQIdx;const grp=state.assignmentGrp;const qs=ASSIGNMENT_DATA[grp];
+  if(qi<9){state.assignmentQIdx=qi+1;renderAssignment();}
+  else{
+    // Hitung skor otomatis (soal yang belum di-cek dianggap salah)
+    let score=0;
+    qs.forEach((q,i)=>{
+      const key=`a${grp}_${i}`;
+      if(!state.assignmentChk[key]) state.assignmentChk[key]=true; // auto-cek
+      if(isCor(q,key,true))score++;
+    });
+    state.scores[grp]=score;
+    showAssignmentResult(grp,score,qs);
+  }
+}
+function assignReset(){
+  const grp=state.assignmentGrp;
+  for(let i=0;i<10;i++){delete state.assignmentAns[`a${grp}_${i}`];delete state.assignmentChk[`a${grp}_${i}`];}
+  state.assignmentQIdx=0;renderAssignment();
+}
+
+function showAssignmentResult(grp,score,qs){
+  const pct=Math.round(score/10*100);
+  const col=pct>=80?'var(--accent2)':pct>=50?'var(--accent3)':'var(--danger)';
+  app.innerHTML=`
+  <div class="page active" style="justify-content:center;align-items:center;padding:20px">
+    <div class="glass fade-in" style="padding:32px;max-width:500px;width:100%;text-align:center">
+      <h2 style="font-size:22px;margin-bottom:16px"><i class="fa-solid fa-trophy" style="color:var(--accent3)"></i> Hasil Assignment Grup ${grp+1}</h2>
+      <div class="score-ring" style="margin:0 auto 16px;border-color:${col};color:${col}">${score}/10</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px">${pct>=80?'Luar biasa! Kamu menguasai materi ini!':pct>=50?'Bagus! Terus berlatih untuk hasil lebih baik!':'Jangan menyerah! Ayo pelajari lagi materinya!'}</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="printResult(${grp})"><i class="fa-solid fa-print"></i> Cetak Hasil</button>
+        ${grp<4?`<button class="btn btn-secondary btn-sm" onclick="state.assignmentGrp=${grp+1};state.assignmentQIdx=0;renderAssignment()"><i class="fa-solid fa-forward"></i> Grup ${grp+2}</button>`:`<button class="btn btn-secondary btn-sm" onclick="navigate('consolidation')"><i class="fa-solid fa-flag-checkered"></i> Selesai</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function printResult(grp){
+  const qs=getAssignmentQuestions(grp);
+  const score=state.scores[grp]||0;
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  let rows='';
+  qs.forEach((q,i)=>{
+    const key=`a${grp}_${i}`;
+    const ans=state.assignmentAns[key];
+    const correct=isACorrect(q,key);
+    let studAns='-',corrAns='-';
+    switch(q.t){
+      case'fill':studAns=Array.isArray(q.a)?(ans||[]).join(', '):(ans||'-');corrAns=Array.isArray(q.a)?q.a.join(', '):q.a;break;
+      case'radio':studAns=ans!==undefined?String.fromCharCode(65+ans):'-';corrAns=String.fromCharCode(65+q.a);break;
+      case'check':studAns=(ans||[]).map(x=>String.fromCharCode(65+x)).join(', ')||'-';corrAns=q.a.map(x=>String.fromCharCode(65+x)).join(', ');break;
+      case'tf':studAns=ans===true?'Benar':ans===false?'Salah':'-';corrAns=q.a?'Benar':'Salah';break;
+      case'pair':studAns=Object.entries(ans||{}).filter(([k])=>k!=='_sel').map(([l,r])=>`${q.l[l]}↔${q.r[r]}`).join('; ')||'-';corrAns=q.a.map((r,l)=>`${q.l[l]}↔${q.r[r]}`).join('; ');break;
+      case'order':studAns=(ans||[]).map(i=>q.i[i]).join(' → ')||'-';corrAns=q.a.map(i=>q.i[i]).join(' → ');break;
+    }
+    const qText=q.q.replace(/\$[^$]+\$/g,'').substring(0,60);
+    rows+=`<tr><td style="border:1px solid #333;padding:6px;text-align:center">${i+1}</td><td style="border:1px solid #333;padding:6px;font-size:12px">${qText}</td><td style="border:1px solid #333;padding:6px;font-size:12px">${studAns}</td><td style="border:1px solid #333;padding:6px;font-size:12px">${corrAns}</td><td style="border:1px solid #333;padding:6px;text-align:center">${correct?'<span style="color:green">✓</span>':'<span style="color:red">✗</span>'}</td></tr>`;
+  });
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Assessment Result</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"><\/script>
+  <style>body{font-family:Arial,sans-serif;padding:30px;color:#222}table{border-collapse:collapse;width:100%;margin-top:16px}h1{font-size:20px}hr{margin:12px 0}</style></head><body>
+  <h1>ASSESSMENT RESULT</h1>
+  <table style="border:none;width:auto"><tr><td style="border:none;padding:4px 12px 4px 0"><strong>Name:</strong></td><td style="border:none">_________________________</td></tr>
+  <tr><td style="border:none;padding:4px 12px 4px 0"><strong>Date:</strong></td><td style="border:none">${dateStr}</td></tr>
+  <tr><td style="border:none;padding:4px 12px 4px 0"><strong>Topic:</strong></td><td style="border:none">Lapangan Perkalian (Visual Array)</td></tr>
+  <tr><td style="border:none;padding:4px 12px 4px 0"><strong>Assessment Group:</strong></td><td style="border:none">Grup ${grp+1}</td></tr>
+  <tr><td style="border:none;padding:4px 12px 4px 0"><strong>Score:</strong></td><td style="border:none;font-size:18px;color:${score>=8?'green':score>=5?'orange':'red'}">${score}/10</td></tr></table>
+  <hr>
+  <table><thead><tr><th style="border:1px solid #333;padding:8px;background:#f0f0f0">No.</th><th style="border:1px solid #333;padding:8px;background:#f0f0f0">Question</th><th style="border:1px solid #333;padding:8px;background:#f0f0f0">Student Answer</th><th style="border:1px solid #333;padding:8px;background:#f0f0f0">Correct Answer</th><th style="border:1px solid #333;padding:8px;background:#f0f0f0">Note</th></tr></thead>
+  <tbody>${rows}</tbody></table>
+  <p style="margin-top:12px"><strong>Total = ${score}/10</strong></p>
+  <br><br>
+  <p>Checked by,<br><br><strong>Deni</strong></p>
+  <script>setTimeout(()=>{if(typeof renderMathInElement==='function')renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});},500);<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+/* ---- CONSOLIDATION ---- */
+function renderConsolidation(){
+  const totalScore=state.scores.reduce((a,b)=>a+(b||0),0);
+  const maxScore=state.scores.filter(s=>s!==undefined).length*10;
+  
+  app.innerHTML=`
+  <div class="page active" style="justify-content:center;align-items:center;padding:20px">
+    <div class="glass fade-in" style="padding:32px;max-width:600px;width:100%;text-align:center;position:relative">
+      
+      <!-- Dropdown Navigasi di pojok kanan atas -->
+      <div style="position:absolute;top:16px;right:16px">
+        <select onchange="quickNav(this.value);this.value=''" style="background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:Nunito,sans-serif;cursor:pointer;outline:none">
+          <option value="">⚡ Menuju...</option>
+          ${SECTIONS.map((s,i)=>`<option value="s${i}">📖 ${s.title}</option>`).join('')}
+          <option value="a0">📝 Assignment Grup 1</option>
+          <option value="a1">📝 Assignment Grup 2</option>
+          <option value="a2">📝 Assignment Grup 3</option>
+          <option value="a3">📝 Assignment Grup 4</option>
+          <option value="a4">📝 Assignment Grup 5</option>
+        </select>
+      </div>
+
+      <div style="font-size:48px;margin-bottom:8px">🎓</div>
+      <h2 style="font-size:24px;margin-bottom:4px;background:linear-gradient(135deg,var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Konsolidasi & Refleksi</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:20px">Kamu telah menyelesaikan semua materi dan assignment!</p>
+      
+      <div class="glass2" style="padding:20px;margin-bottom:16px;text-align:left">
+        <h3 style="font-size:16px;color:var(--accent2);margin-bottom:10px"><i class="fa-solid fa-star"></i> Ringkasan Hari Ini</h3>
+        <ul style="font-size:13px;line-height:2;color:var(--muted);list-style:none;padding:0">
+          <li>✅ Perkalian = menyusun benda di lapangan baris & kolom</li>
+          <li>✅ Array/Larik = susunan rapi dalam baris dan kolom</li>
+          <li>✅ Baris × Kolom = Total benda</li>
+          <li>✅ Penjumlahan berulang ↔ Perkalian</li>
+          <li>✅ $a \\times b = b \\times a$ (sifat komutatif)</li>
+        </ul>
+      </div>
+      
+      <div class="glass2" style="padding:16px;margin-bottom:20px">
+        <p style="font-size:14px;font-weight:700;color:var(--accent3)">Total Skor Assignment: ${totalScore}/${maxScore||50}</p>
+      </div>
+      
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <a href="https://learn.algonova.id/login" target="_blank" class="btn btn-primary" style="text-decoration:none;font-size:16px;padding:14px 32px;display:inline-flex;justify-content:center">
+          <i class="fa-solid fa-external-link-alt"></i> Buka LMS - Misi Tambahan
+        </a>
+        <button class="btn btn-secondary" style="font-size:14px;padding:12px 32px" onclick="navigate('home')">
+          <i class="fa-solid fa-house"></i> Kembali ke Beranda
+        </button>
+      </div>
+      
+    </div>
+  </div>`;
+}
+
+/* ---- ASSIGNMENT QUESTION DATA ---- */
+function getAssignmentQuestions(grp){
+  return ASSIGNMENT_DATA[grp]||[];
+}
+
+/* ---- FLOATING SHAPES ---- */
+function createFloats(){
+  const c=document.getElementById('floats');
+  const shapes=['●','■','▲','◆'];
+  for(let i=0;i<12;i++){
+    const d=document.createElement('div');
+    d.className='float-shape';
+    const s=shapes[i%4];
+    d.textContent=s;
+    d.style.cssText=`left:${Math.random()*100}%;font-size:${20+Math.random()*40}px;color:var(--accent2);animation-duration:${15+Math.random()*20}s;animation-delay:${Math.random()*10}s`;
+    c.appendChild(d);
+  }
+}
+createFloats();
+
+/* ---- INIT ---- */
+render();
+</script>
+</body>
+</html>
