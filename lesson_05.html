@@ -1,0 +1,3029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Tutoring — Building Multiplication Tables 6–9 and 0</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#58cc02;--green-dark:#58a700;--green-light:#d7ffb8;
+  --blue:#1cb0f6;--blue-dark:#1899d6;--blue-light:#e7f5ff;
+  --purple:#ce82ff;--purple-dark:#a560e8;--purple-light:#f3e5ff;
+  --red:#ff4b4b;--red-dark:#ea2b2b;--red-light:#ffe5e5;
+  --yellow:#ffc800;--yellow-dark:#e6a700;--yellow-light:#fffbe6;
+  --orange:#ff9600;--orange-dark:#e08600;
+  --gray:#afafaf;--gray-light:#e5e5e5;--gray-lighter:#f7f7f7;
+  --text:#3c3c3c;--text-light:#777;--white:#fff;
+}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(180deg,#fff 0%,#f0f8ff 100%);color:var(--text);min-height:100vh;line-height:1.5}
+
+/* ===== HEADER ===== */
+.app-header{background:var(--white);border-bottom:4px solid var(--gray-light);padding:12px 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo{width:46px;height:46px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Baloo 2',cursive;font-weight:800;font-size:22px;box-shadow:0 4px 0 var(--green-dark)}
+.brand-text{font-family:'Baloo 2',cursive;font-weight:800;font-size:18px;color:var(--green-dark);line-height:1.1}
+.brand-text small{display:block;font-family:'Nunito',sans-serif;font-weight:600;font-size:11px;color:var(--gray);letter-spacing:.5px}
+.topic-pill{background:var(--gray-lighter);border:2px solid var(--gray-light);padding:8px 16px;border-radius:16px;font-weight:700;color:var(--text);font-size:13px}
+.topic-pill small{display:block;font-size:11px;color:var(--text-light);font-weight:600}
+.rules-btn{background:var(--blue);color:#fff;border:none;padding:10px 16px;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 4px 0 var(--blue-dark);transition:transform .1s,box-shadow .1s;text-transform:uppercase;letter-spacing:.5px}
+.rules-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-dark)}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:20px;padding:28px;max-width:480px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:modalIn .3s ease}
+@keyframes modalIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h2{font-family:'Baloo 2',cursive;color:var(--green-dark);font-size:26px;margin-bottom:16px;text-align:center}
+.modal h2 small{display:block;font-family:'Nunito',sans-serif;color:var(--text-light);font-size:13px;font-weight:600;margin-top:2px}
+.rule-item{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--gray-lighter);border-radius:12px;margin-bottom:10px}
+.rule-num{background:var(--green);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.rule-text strong{display:block;font-size:15px;color:var(--text)}
+.rule-text small{color:var(--text-light);font-size:12px;font-style:italic}
+.modal-close{background:var(--gray-light);border:none;padding:12px 24px;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;width:100%;margin-top:12px;color:var(--text);box-shadow:0 3px 0 var(--gray);text-transform:uppercase;letter-spacing:.5px}
+
+/* ===== NODE MAP ===== */
+.map-container{max-width:760px;margin:0 auto;padding:30px 20px 80px;position:relative}
+.map-header{text-align:center;margin-bottom:30px}
+.map-header h1{font-family:'Baloo 2',cursive;font-size:30px;color:var(--green-dark)}
+.map-header p{color:var(--text-light);font-size:13px;font-style:italic}
+.map-track{position:relative}
+.map-track::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:6px;background:repeating-linear-gradient(180deg,var(--gray-light) 0 10px,transparent 10px 20px);transform:translateX(-50%);z-index:0}
+.node-row{display:flex;justify-content:center;position:relative;margin-bottom:42px;z-index:1}
+.node-row.left{justify-content:flex-start;padding-left:18%}
+.node-row.right{justify-content:flex-end;padding-right:18%}
+.lesson-node{width:88px;height:88px;border-radius:50%;background:var(--white);border:4px solid var(--gray-light);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:transform .2s,box-shadow .2s;font-family:'Baloo 2',cursive;font-weight:800;user-select:none}
+.lesson-node:hover{transform:translateY(-4px)}
+.lesson-node.active{border-color:var(--green);box-shadow:0 0 0 4px var(--green-light)}
+.lesson-node.completed{background:var(--green);border-color:var(--green-dark);color:#fff}
+.lesson-node.completed .node-icon{color:#fff}
+.lesson-node.completed::after{content:'✓';position:absolute;top:-6px;right:-6px;background:#fff;color:var(--green);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid var(--green-dark);font-weight:800}
+.node-icon{font-size:26px;line-height:1}
+.node-label{font-size:11px;margin-top:2px;text-align:center;padding:0 4px;line-height:1.1}
+.node-time{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-light);white-space:nowrap;font-weight:700;background:#fff;padding:1px 6px;border-radius:6px;border:1px solid var(--gray-light)}
+.node-assign{width:70px;height:70px}
+.node-assign .node-icon{font-size:22px}
+.node-assign .node-label{font-size:10px}
+
+/* ===== SECTION PANEL ===== */
+.section-panel{display:none;max-width:900px;margin:0 auto;padding:20px;position:relative}
+.section-panel.active{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;position:sticky;top:72px;background:#fff;padding:10px 0;z-index:10;border-bottom:2px solid var(--gray-lighter)}
+.section-back{background:var(--gray-light);border:none;width:44px;height:44px;border-radius:12px;font-size:22px;cursor:pointer;box-shadow:0 3px 0 var(--gray);font-weight:800;color:var(--text)}
+.section-back:active{transform:translateY(2px);box-shadow:0 1px 0 var(--gray)}
+.section-title{font-family:'Baloo 2',cursive;color:var(--green-dark);font-size:22px;flex:1;line-height:1.1}
+.section-title small{display:block;font-family:'Nunito',sans-serif;color:var(--text-light);font-size:12px;font-weight:600;margin-top:2px;font-style:italic}
+
+/* Progress bar */
+.progress-wrap{background:var(--gray-light);border-radius:999px;height:18px;overflow:hidden;margin-bottom:8px;position:relative;border:2px solid var(--gray-light)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green) 0%,var(--green-dark) 100%);border-radius:999px;transition:width .5s ease;width:0%;position:relative}
+.progress-fill::after{content:'';position:absolute;top:4px;left:8px;right:8px;height:4px;background:rgba(255,255,255,.4);border-radius:999px}
+.progress-text{text-align:center;font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:20px}
+
+/* ===== TASK CARD ===== */
+.task-card{background:#fff;border:2px solid var(--gray-light);border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 2px 0 var(--gray-light);transition:border-color .2s}
+.task-card.completed{border-color:var(--green)}
+.task-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.task-num{background:var(--gray-light);color:var(--text);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+.task-badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.task-badge.theory{background:var(--blue);color:#fff}
+.task-badge.exercise{background:var(--purple);color:#fff}
+.task-question{font-size:17px;font-weight:700;margin-bottom:6px;color:var(--text);line-height:1.4}
+.task-question small{display:block;font-size:13px;color:var(--text-light);font-weight:600;margin-top:3px;font-style:italic}
+.task-content{margin-top:14px}
+
+/* Theory content */
+.theory-box{background:linear-gradient(135deg,var(--blue-light) 0%,#f0f8ff 100%);border-left:4px solid var(--blue);padding:16px;border-radius:12px;line-height:1.6}
+.theory-box p{margin-bottom:10px}
+.theory-box p:last-child{margin-bottom:0}
+.theory-box small{display:block;color:var(--text-light);font-size:13px;font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--gray-light)}
+.theory-box .formula{background:#fff;padding:12px;border-radius:8px;text-align:center;margin:12px 0;font-size:18px;font-weight:700;border:2px solid var(--blue-light)}
+.katex{font-size:1.05em !important}
+
+/* Inputs */
+.text-input{border:2px solid var(--gray-light);border-radius:12px;padding:12px 16px;font-size:18px;font-family:'Nunito',sans-serif;font-weight:700;width:120px;text-align:center;outline:none;transition:border .2s;background:#fff}
+.text-input:focus{border-color:var(--blue)}
+.text-input.large{width:160px;font-size:22px}
+
+/* Options */
+.option-grid{display:grid;gap:10px;margin:12px 0}
+.option-card{border:2px solid var(--gray-light);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .15s;background:#fff;font-weight:700;user-select:none}
+.option-card:hover{background:var(--gray-lighter)}
+.option-card.selected{border-color:var(--blue);background:var(--blue-light)}
+.option-card.correct{border-color:var(--green);background:var(--green-light)}
+.option-card.incorrect{border-color:var(--red);background:var(--red-light)}
+.option-marker{width:28px;height:28px;border-radius:50%;border:2px solid var(--gray-light);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;background:#fff;font-size:14px}
+.option-card.selected .option-marker{background:var(--blue);border-color:var(--blue);color:#fff}
+.option-card.correct .option-marker{background:var(--green);border-color:var(--green);color:#fff}
+.option-card.incorrect .option-marker{background:var(--red);border-color:var(--red);color:#fff}
+.checkbox-marker{border-radius:8px}
+.option-text{flex:1}
+.option-text small{display:block;font-size:12px;color:var(--text-light);font-weight:600;font-style:italic}
+
+/* Buttons */
+.btn{border:none;padding:12px 22px;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .1s;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.btn:active{transform:translateY(2px)}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-dark)}
+.btn-primary:active{box-shadow:0 2px 0 var(--green-dark)}
+.btn-secondary{background:var(--gray-light);color:var(--text);box-shadow:0 4px 0 var(--gray)}
+.btn-secondary:active{box-shadow:0 2px 0 var(--gray)}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-dark)}
+.btn-blue:active{box-shadow:0 2px 0 var(--blue-dark)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+
+/* Explanation */
+.explanation{margin-top:14px;border-top:1px dashed var(--gray-light);padding-top:12px}
+.explanation-toggle{background:none;border:none;color:var(--blue-dark);font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px;font-family:'Nunito',sans-serif;padding:4px 0}
+.explanation-toggle:hover{text-decoration:underline}
+.explanation-content{display:none;margin-top:10px;padding:12px;background:var(--yellow-light);border-left:4px solid var(--yellow);border-radius:8px;font-size:14px;line-height:1.5}
+.explanation-content.open{display:block}
+.explanation-content small{display:block;color:var(--text-light);font-style:italic;margin-top:6px;padding-top:6px;border-top:1px dashed var(--yellow)}
+.feedback{margin-top:12px;padding:10px 14px;border-radius:10px;font-weight:700;display:none;font-size:14px}
+.feedback.show{display:block}
+.feedback.correct{background:var(--green-light);color:var(--green-dark)}
+.feedback.incorrect{background:var(--red-light);color:var(--red-dark)}
+
+/* Pairing */
+.pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:14px 0}
+.pair-col{display:flex;flex-direction:column;gap:8px}
+.pair-col-title{font-weight:800;font-size:13px;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.pair-item{padding:12px;border:2px solid var(--gray-light);border-radius:12px;cursor:pointer;text-align:center;font-weight:700;transition:all .15s;background:#fff;font-size:15px}
+.pair-item:hover{background:var(--gray-lighter)}
+.pair-item small{display:block;font-size:11px;color:var(--text-light);font-weight:600;font-style:italic;margin-top:2px}
+.pair-item.selected-left{background:var(--blue-light);border-color:var(--blue)}
+.pair-item.selected-right{background:var(--purple-light);border-color:var(--purple)}
+.pair-item.matched{background:var(--green-light);border-color:var(--green);pointer-events:none}
+
+/* Drag and Drop */
+.dd-bank{background:var(--gray-lighter);border-radius:12px;padding:10px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;min-height:60px;align-items:center;justify-content:center}
+.dd-bank-title{font-size:12px;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.dd-item{background:#fff;padding:10px 16px;border-radius:10px;cursor:grab;border:2px solid var(--gray-light);font-weight:700;user-select:none;transition:all .15s}
+.dd-item:hover{border-color:var(--blue)}
+.dd-item:active{cursor:grabbing}
+.dd-item.dragging{opacity:.4}
+.dd-slots{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.dd-slot{min-width:60px;min-height:50px;border:2px dashed var(--gray);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;background:var(--gray-lighter);padding:8px;transition:all .15s}
+.dd-slot.drag-over{background:var(--blue-light);border-color:var(--blue)}
+.dd-slot.filled{background:#fff;border-style:solid;border-color:var(--gray-light)}
+
+/* True/False */
+.tf-row{display:flex;gap:10px;margin:12px 0}
+.tf-btn{flex:1;padding:16px;border:2px solid var(--gray-light);border-radius:14px;background:#fff;cursor:pointer;font-weight:800;font-size:16px;font-family:'Nunito',sans-serif;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.tf-btn small{font-size:11px;font-weight:600;color:var(--text-light);font-style:italic}
+.tf-btn:hover{background:var(--gray-lighter)}
+.tf-btn.selected-true{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+.tf-btn.selected-false{background:var(--red-light);border-color:var(--red);color:var(--red-dark)}
+.tf-btn.correct{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+.tf-btn.incorrect{background:var(--red-light);border-color:var(--red);color:var(--red-dark)}
+
+/* Order */
+.order-list{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.order-item{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--gray-light);border-radius:12px;padding:12px;cursor:grab;font-weight:700;transition:all .15s}
+.order-item:hover{border-color:var(--blue)}
+.order-item.dragging{opacity:.4}
+.order-num{background:var(--blue);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:14px}
+.order-item.correct .order-num{background:var(--green)}
+.order-item.incorrect .order-num{background:var(--red)}
+.order-text{flex:1}
+.order-text small{display:block;font-size:12px;color:var(--text-light);font-weight:600;font-style:italic}
+
+/* Result */
+.result-screen{text-align:center;padding:24px;background:linear-gradient(135deg,var(--green-light) 0%,#fff 100%);border-radius:18px;margin-top:16px}
+.result-stars{font-size:50px;margin-bottom:10px}
+.result-title{font-family:'Baloo 2',cursive;font-size:28px;color:var(--green-dark);margin-bottom:6px}
+.result-title small{display:block;font-family:'Nunito',sans-serif;color:var(--text-light);font-size:13px;font-weight:600;margin-top:2px;font-style:italic}
+.result-score{font-size:20px;font-weight:800;margin-bottom:16px;color:var(--text)}
+.result-details{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;text-align:left}
+.result-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--gray-light);font-size:14px}
+.result-row:last-child{border:none}
+.result-row .num{font-weight:800}
+
+/* Assignment banner */
+.assignment-banner{background:linear-gradient(135deg,var(--yellow) 0%,var(--orange) 100%);color:#fff;padding:14px 20px;border-radius:14px;margin-bottom:16px;font-weight:800;display:flex;align-items:center;gap:10px;box-shadow:0 4px 0 var(--orange-dark)}
+.assignment-banner small{display:block;font-size:12px;font-weight:600;opacity:.9;font-style:italic}
+
+/* Algonova link */
+.algonova-card{background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);color:#fff;padding:24px;border-radius:18px;text-align:center;margin:20px 0}
+.algonova-card h3{font-family:'Baloo 2',cursive;font-size:24px;margin-bottom:8px}
+.algonova-card p{font-size:14px;margin-bottom:14px;opacity:.95}
+.algonova-link{display:inline-block;background:#fff;color:var(--green-dark);padding:14px 28px;border-radius:14px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.2);transition:transform .1s}
+.algonova-link:active{transform:translateY(2px)}
+
+/* Theory welcome */
+.theory-welcome{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.theory-welcome .emoji{font-size:40px}
+.theory-welcome h3{font-family:'Baloo 2',cursive;color:var(--green-dark);font-size:20px}
+.theory-welcome h3 small{display:block;font-family:'Nunito',sans-serif;color:var(--text-light);font-size:12px;font-weight:600;font-style:italic}
+
+/* Hint */
+.hint{background:var(--blue-light);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--blue-dark);margin-top:10px;display:flex;gap:8px;align-items:flex-start}
+.hint small{display:block;color:var(--text-light);font-style:italic;margin-top:3px}
+
+/* Responsive */
+@media (max-width:640px){
+  .lesson-node{width:74px;height:74px}
+  .node-icon{font-size:22px}
+  .node-label{font-size:10px}
+  .node-row.left{padding-left:8%}
+  .node-row.right{padding-right:8%}
+  .pair-grid{grid-template-columns:1fr}
+  .section-title{font-size:18px}
+  .task-card{padding:16px}
+  .text-input{width:90px;font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">M</div>
+      <div class="brand-text">MATH TUTORING by Deni<small>Multiplication Tables 6–9 & 0</small></div>
+    </div>
+    <div class="topic-pill">Topic: Building Multiplication Tables 6–9 and 0<small>Topik: Membangun Tabel Perkalian 6–9 dan 0</small></div>
+    <button class="rules-btn" onclick="openClassRules()">📋 Class Rules</button>
+  </div>
+</header>
+
+<!-- Class Rules Modal -->
+<div class="modal-overlay" id="rulesModal">
+  <div class="modal">
+    <h2>Class Rules<small>Aturan Kelas</small></h2>
+    <div class="rule-item">
+      <div class="rule-num">1</div>
+      <div class="rule-text"><strong>Take turns speaking</strong><small>Berbicara secara bergantian</small></div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-num">2</div>
+      <div class="rule-text"><strong>Ask permission before leaving the class</strong><small>Meminta izin jika ingin meninggalkan kelas</small></div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-num">3</div>
+      <div class="rule-text"><strong>Turn on camera and microphone when needed</strong><small>Menyalakan kamera dan microphone jika diperlukan</small></div>
+    </div>
+    <button class="modal-close" onclick="closeClassRules()">Got it! / Mengerti!</button>
+  </div>
+</div>
+
+<main>
+  <!-- ===== NODE MAP ===== -->
+  <div id="mapView" class="map-container">
+    <div class="map-header">
+      <h1>Choose Your Mission</h1>
+      <p>Pilih Misi Anda</p>
+    </div>
+    <div class="map-track" id="mapTrack"></div>
+  </div>
+
+  <!-- ===== SECTION PANEL (dynamically rendered) ===== -->
+  <div id="sectionView" style="display:none;"></div>
+</main>
+
+<script>
+/* ============================================================
+   GLOBAL DATA & STATE
+   ============================================================ */
+const sections = {};          // section data (filled across all parts)
+const sectionState = {};      // runtime state per section
+
+const nodeOrder = [
+  {id:'1',  row:'center', icon:'🔥', label:'Warm-up',         time:'00:00–00:10', type:'main'},
+  {id:'2',  row:'right',  icon:'🌍', label:'Intro',           time:'00:10–00:15', type:'main'},
+  {id:'3',  row:'left',   icon:'🔄', label:'Review',          time:'00:15–00:20', type:'main'},
+  {id:'4',  row:'center', icon:'💡', label:'Problem',         time:'00:20–00:30', type:'main'},
+  {id:'5',  row:'right',  icon:'🧭', label:'Guided',          time:'00:30–00:45', type:'main'},
+  {id:'6',  row:'left',   icon:'🚀', label:'Solo Mission',    time:'00:45–01:00', type:'main'},
+  {id:'7.1',row:'center', icon:'⭐', label:'Assign 1',        time:'Homework',    type:'assign'},
+  {id:'7.2',row:'right',  icon:'⭐', label:'Assign 2',        time:'Homework',    type:'assign'},
+  {id:'7.3',row:'left',   icon:'⭐', label:'Assign 3',        time:'Homework',    type:'assign'},
+  {id:'7.4',row:'center', icon:'⭐', label:'Assign 4',        time:'Homework',    type:'assign'},
+  {id:'7.5',row:'right',  icon:'🏆', label:'Assign 5',        time:'Homework',    type:'assign'},
+  {id:'8',  row:'center', icon:'🎯', label:'Wrap-up',         time:'01:00–01:05', type:'main'}
+];
+
+/* ============================================================
+   RENDER NODE MAP
+   ============================================================ */
+function renderMap(){
+  const track = document.getElementById('mapTrack');
+  track.innerHTML = nodeOrder.map(n => `
+    <div class="node-row ${n.row}">
+      <div class="lesson-node ${n.type==='assign'?'node-assign':''}" id="node-${n.id}" onclick="openSection('${n.id}')">
+        <div class="node-icon">${n.icon}</div>
+        <div class="node-label">${n.label}</div>
+        <div class="node-time">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+  refreshNodeStatus();
+}
+
+function refreshNodeStatus(){
+  nodeOrder.forEach(n=>{
+    const el = document.getElementById('node-'+n.id);
+    if(!el) return;
+    el.classList.toggle('completed', !!sectionState[n.id]?.completed);
+  });
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function openSection(id){
+  const sec = sections[id];
+  const view = document.getElementById('sectionView');
+  const map = document.getElementById('mapView');
+  if(!sec){
+    view.innerHTML = `<div class="section-panel active" style="text-align:center;padding:60px 20px">
+      <div style="font-size:48px">⏳</div>
+      <h2 style="font-family:'Baloo 2',cursive;color:#58a700;margin:10px 0">Loading...</h2>
+      <p style="color:#777">This section will be available after all code parts are merged.</p>
+      <button class="btn btn-secondary" onclick="showMap()" style="margin-top:16px">← Back to Map</button>
+    </div>`;
+    view.style.display='block';
+    map.style.display='none';
+    window.scrollTo(0,0);
+    return;
+  }
+  // init state
+  if(!sectionState[id]){
+    sectionState[id] = {tasks:{}, completed:false};
+  }
+  renderSection(id);
+  view.style.display='block';
+  map.style.display='none';
+  window.scrollTo(0,0);
+}
+
+function showMap(){
+  document.getElementById('sectionView').style.display='none';
+  document.getElementById('mapView').style.display='block';
+  refreshNodeStatus();
+  window.scrollTo(0,0);
+}
+
+function openClassRules(){document.getElementById('rulesModal').classList.add('active');}
+function closeClassRules(){document.getElementById('rulesModal').classList.remove('active');}
+document.getElementById('rulesModal').addEventListener('click',e=>{
+  if(e.target.id==='rulesModal') closeClassRules();
+});
+
+/* ============================================================
+   RENDER A SECTION
+   ============================================================ */
+function renderSection(id){
+  const sec = sections[id];
+  const st = sectionState[id];
+  const total = sec.tasks.length;
+  const done = Object.values(st.tasks).filter(t=>t.correct).length;
+  const pct = Math.round((done/total)*100);
+
+  let html = `<div class="section-panel active">
+    <div class="section-header">
+      <button class="section-back" onclick="showMap()" aria-label="Back">←</button>
+      <div class="section-title">${sec.title}<small>${sec.title_id} · ${sec.time}</small></div>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-text">${done} / ${total} tasks completed · ${pct}%</div>`;
+
+  if(sec.banner){
+    html += `<div class="assignment-banner">${sec.banner}<small>${sec.banner_id}</small></div>`;
+  }
+
+  sec.tasks.forEach((task,i)=>{
+    html += renderTask(id, task, i);
+  });
+
+  if(sec.footer){
+    html += sec.footer;
+  }
+
+  html += `</div>`;
+  document.getElementById('sectionView').innerHTML = html;
+  renderMathInElement_(document.getElementById('sectionView'));
+  attachInteractions(id);
+}
+
+/* ============================================================
+   TASK RENDERERS
+   ============================================================ */
+function renderTask(sid, task, idx){
+  const num = idx+1;
+  const tid = `${sid}-${num}`;
+  const state = sectionState[sid].tasks[num] || {};
+  const isDone = state.correct;
+  let body = '';
+
+  if(task.type==='theory'){
+    body = `<div class="theory-box">
+      ${task.title ? `<div class="theory-welcome"><div class="emoji">${task.icon||'📘'}</div><h3>${task.title}<small>${task.title_id}</small></h3></div>` : ''}
+      <div>${task.content}</div>
+      ${task.content_id ? `<small>${task.content_id}</small>` : ''}
+    </div>`;
+    return `<div class="task-card ${isDone?'completed':''}" id="task-${tid}">
+      <div class="task-header"><div class="task-num">${num}</div><span class="task-badge theory">Theory · Teori</span></div>
+      <div class="task-content">${body}</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="markTheoryDone('${sid}',${num})">${isDone?'✓ Done':'Mark as Read'}</button>
+      </div>
+    </div>`;
+  }
+
+  // Exercise types
+  if(task.type==='fill')        body = renderFill(task,tid);
+  else if(task.type==='radio')  body = renderRadio(task,tid);
+  else if(task.type==='checkbox')body= renderCheckbox(task,tid);
+  else if(task.type==='pair')   body = renderPair(task,tid);
+  else if(task.type==='tf')     body = renderTF(task,tid);
+  else if(task.type==='order')  body = renderOrder(task,tid);
+  else if(task.type==='drag')   body = renderDrag(task,tid);
+
+  return `<div class="task-card ${isDone?'completed':''}" id="task-${tid}" data-type="${task.type}" data-num="${num}">
+    <div class="task-header">
+      <div class="task-num">${num}</div>
+      <span class="task-badge exercise">Exercise · Latihan</span>
+      <span style="font-size:11px;color:#777;font-weight:700;margin-left:auto;text-transform:uppercase;letter-spacing:.5px">${task.type}</span>
+    </div>
+    <div class="task-question">${task.question}<small>${task.question_id}</small></div>
+    ${task.hint ? `<div class="hint">💡 ${task.hint}<small>${task.hint_id||''}</small></div>` : ''}
+    <div class="task-content" id="content-${tid}">${body}</div>
+    <div class="feedback" id="fb-${tid}"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="checkAnswer('${sid}',${num})">Check · Periksa</button>
+      <button class="btn btn-secondary" onclick="resetTask('${sid}',${num})">Reset</button>
+    </div>
+    <div class="explanation">
+      <button class="explanation-toggle" onclick="toggleExplanation('${tid}')">📖 Show Explanation · Tampilkan Penjelasan</button>
+      <div class="explanation-content" id="exp-${tid}">${task.explanation}<small>${task.explanation_id}</small></div>
+    </div>
+  </div>`;
+}
+
+function renderFill(task,tid){
+  return `<div class="input-row" style="justify-content:center">
+    <input type="text" class="text-input ${task.large?'large':''}" id="ans-${tid}" placeholder="${task.placeholder||'...'}" autocomplete="off" onkeydown="if(event.key==='Enter')checkAnswerById('${tid}')">
+  </div>`;
+}
+
+function renderRadio(task,tid){
+  return `<div class="option-grid">${task.options.map((o,i)=>`
+    <div class="option-card" data-tid="${tid}" data-idx="${i}" onclick="selectRadio('${tid}',${i})">
+      <div class="option-marker">${String.fromCharCode(65+i)}</div>
+      <div class="option-text">${o.en}${o.id?`<small>${o.id}</small>`:''}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderCheckbox(task,tid){
+  return `<div class="option-grid">${task.options.map((o,i)=>`
+    <div class="option-card" data-tid="${tid}" data-idx="${i}" onclick="toggleCheckbox('${tid}',${i})">
+      <div class="option-marker checkbox-marker">✓</div>
+      <div class="option-text">${o.en}${o.id?`<small>${o.id}</small>`:''}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderPair(task,tid){
+  const left = task.pairs.map((p,i)=>`<div class="pair-item" data-tid="${tid}" data-side="left" data-idx="${i}" onclick="selectPair('${tid}','left',${i})">${p.left.en}${p.left.id?`<small>${p.left.id}</small>`:''}</div>`).join('');
+  const right = [...task.pairs].sort(()=>Math.random()-0.5).map(p=>`<div class="pair-item" data-tid="${tid}" data-side="right" data-key="${p.right.key}" onclick="selectPair('${tid}','right','${p.right.key}')">${p.right.en}${p.right.id?`<small>${p.right.id}</small>`:''}</div>`).join('');
+  return `<div class="pair-grid">
+    <div class="pair-col"><div class="pair-col-title">Column A</div>${left}</div>
+    <div class="pair-col"><div class="pair-col-title">Column B</div>${right}</div>
+  </div>
+  <div id="pairs-${tid}" style="font-size:13px;color:#777;font-weight:700;margin-top:6px">Matched: 0 / ${task.pairs.length}</div>`;
+}
+
+function renderTF(task,tid){
+  return `<div class="tf-row">
+    <button class="tf-btn" data-tid="${tid}" data-val="true" onclick="selectTF('${tid}',true)">✓ True<small>Benar</small></button>
+    <button class="tf-btn" data-tid="${tid}" data-val="false" onclick="selectTF('${tid}',false)">✗ False<small>Salah</small></button>
+  </div>`;
+}
+
+function renderOrder(task,tid){
+  const shuffled = [...task.items].map((it,i)=>({en:it.en,id:it.id,correct:i})).sort(()=>Math.random()-0.5);
+  return `<div class="order-list" id="order-${tid}">${shuffled.map((it,i)=>`
+    <div class="order-item" draggable="true" data-tid="${tid}" data-correct="${it.correct}">
+      <div class="order-num">${i+1}</div>
+      <div class="order-text">${it.en}${it.id?`<small>${it.id}</small>`:''}</div>
+    </div>`).join('')}</div>
+  <p style="font-size:12px;color:#777;margin-top:6px">Drag to reorder. The numbers will update automatically.</p>`;
+}
+
+function renderDrag(task,tid){
+  const items = [...task.items].sort(()=>Math.random()-0.5);
+  return `<div class="dd-bank-title">Word Bank · Bank Kata</div>
+  <div class="dd-bank" id="bank-${tid}">${items.map(it=>`<div class="dd-item" draggable="true" data-tid="${tid}" data-val="${it.en}">${it.en}</div>`).join('')}</div>
+  <div style="font-size:13px;font-weight:700;color:#777;margin:8px 0">${task.instruction||'Drag the correct item into each slot.'}</div>
+  <div class="dd-slots" id="slots-${tid}">${task.slots.map((s,i)=>`<div class="dd-slot" data-tid="${tid}" data-slot="${i}" data-target="${s.target}">${s.label||''}</div>`).join('')}</div>`;
+}
+
+/* ============================================================
+   INTERACTION HANDLERS
+   ============================================================ */
+function attachInteractions(sid){
+  // drag and drop for order items
+  document.querySelectorAll('.order-item').forEach(el=>{
+    el.addEventListener('dragstart',e=>{
+      el.classList.add('dragging');
+      e.dataTransfer.setData('text/plain','order');
+    });
+    el.addEventListener('dragend',()=>{
+      el.classList.remove('dragging');
+      reorderList(el.closest('.order-list'));
+    });
+  });
+  document.querySelectorAll('.order-list').forEach(list=>{
+    list.addEventListener('dragover',e=>{e.preventDefault();const dragging=list.querySelector('.dragging');const after=getAfterElement(list,e.clientY);if(!dragging)return;if(after==null)list.appendChild(dragging);else list.insertBefore(dragging,after);reorderList(list);});
+  });
+  // drag and drop for dd-items
+  document.querySelectorAll('.dd-item').forEach(el=>{
+    el.addEventListener('dragstart',e=>{
+      el.classList.add('dragging');
+      e.dataTransfer.setData('text/plain','dd:'+el.dataset.val);
+    });
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+  });
+  document.querySelectorAll('.dd-slot').forEach(slot=>{
+    slot.addEventListener('dragover',e=>{e.preventDefault();slot.classList.add('drag-over');});
+    slot.addEventListener('dragleave',()=>slot.classList.remove('drag-over'));
+    slot.addEventListener('drop',e=>{
+      e.preventDefault();
+      slot.classList.remove('drag-over');
+      const data=e.dataTransfer.getData('text/plain');
+      if(!data.startsWith('dd:'))return;
+      const val=data.substring(3);
+      const tid=slot.dataset.tid;
+      // remove existing item in this slot
+      const existing=slot.querySelector('.dd-item');
+      if(existing){document.getElementById('bank-'+tid).appendChild(existing);}
+      const dragging=document.querySelector('.dd-item.dragging');
+      if(dragging){slot.appendChild(dragging);slot.classList.add('filled');}
+    });
+  });
+  // allow dropping back to bank
+  document.querySelectorAll('.dd-bank').forEach(bank=>{
+    bank.addEventListener('dragover',e=>e.preventDefault());
+    bank.addEventListener('drop',e=>{
+      e.preventDefault();
+      const dragging=document.querySelector('.dd-item.dragging');
+      if(dragging){
+        const slot=dragging.parentElement;
+        if(slot.classList.contains('dd-slot')){slot.classList.remove('filled');}
+        bank.appendChild(dragging);
+      }
+    });
+  });
+}
+
+function getAfterElement(container,y){
+  const els=[...container.querySelectorAll('.order-item:not(.dragging)')];
+  return els.reduce((closest,child)=>{
+    const box=child.getBoundingClientRect();
+    const offset=y-box.top-box.height/2;
+    if(offset<0&&offset>closest.offset)return{offset,element:child};
+    return closest;
+  },{offset:Number.NEGATIVE_INFINITY}).element;
+}
+
+function reorderList(list){
+  const items=list.querySelectorAll('.order-item');
+  items.forEach((it,i)=>{it.querySelector('.order-num').textContent=i+1;});
+}
+
+/* Selection helpers */
+function selectRadio(tid,idx){
+  document.querySelectorAll(`.option-card[data-tid="${tid}"]`).forEach((c,i)=>c.classList.toggle('selected',i===idx));
+}
+function toggleCheckbox(tid,idx){
+  const card=document.querySelector(`.option-card[data-tid="${tid}"][data-idx="${idx}"]`);
+  card.classList.toggle('selected');
+}
+function selectTF(tid,val){
+  document.querySelectorAll(`.tf-btn[data-tid="${tid}"]`).forEach(b=>{
+    b.classList.remove('selected-true','selected-false');
+    if(b.dataset.val===String(val))b.classList.add(val?'selected-true':'selected-false');
+  });
+}
+let pairState={};
+function selectPair(tid,side,key){
+  if(!pairState[tid])pairState[tid]={left:null,right:null};
+  // clear previous selection on that side
+  document.querySelectorAll(`.pair-item[data-tid="${tid}"][data-side="${side}"]`).forEach(el=>el.classList.remove('selected-'+side));
+  if(side==='left'){
+    pairState[tid].left=key;
+    document.querySelector(`.pair-item[data-tid="${tid}"][data-side="left"][data-idx="${key}"]`).classList.add('selected-left');
+  }else{
+    pairState[tid].right=key;
+    document.querySelector(`.pair-item[data-tid="${tid}"][data-side="right"][data-key="${key}"]`).classList.add('selected-right');
+  }
+  if(pairState[tid].left!==null&&pairState[tid].right!==null){
+    // check match
+    const task=findTaskByTid(tid);
+    const p=task.pairs[pairState[tid].left];
+    if(p.right.key===pairState[tid].right){
+      // correct match
+      document.querySelector(`.pair-item[data-tid="${tid}"][data-side="left"][data-idx="${pairState[tid].left}"]`).classList.add('matched');
+      document.querySelector(`.pair-item[data-tid="${tid}"][data-side="right"][data-key="${pairState[tid].right}"]`).classList.add('matched');
+      if(!task._matched)task._matched=0;
+      task._matched++;
+      document.getElementById('pairs-'+tid).textContent=`Matched: ${task._matched} / ${task.pairs.length}`;
+    }else{
+      // wrong, flash
+      setTimeout(()=>{
+        document.querySelectorAll(`.pair-item[data-tid="${tid}"][data-side="left"]`).forEach(el=>el.classList.remove('selected-left'));
+        document.querySelectorAll(`.pair-item[data-tid="${tid}"][data-side="right"]`).forEach(el=>el.classList.remove('selected-right'));
+      },400);
+    }
+    pairState[tid]={left:null,right:null};
+  }
+}
+
+function toggleExplanation(tid){
+  document.getElementById('exp-'+tid).classList.toggle('open');
+}
+
+function markTheoryDone(sid,num){
+  sectionState[sid].tasks[num]={correct:true};
+  const card=document.getElementById(`task-${sid}-${num}`);
+  card.classList.add('completed');
+  updateProgress(sid);
+}
+
+/* ============================================================
+   CHECK / RESET
+   ============================================================ */
+function findTaskByTid(tid){
+  const [sid,num]=tid.split('-');
+  const sec=sections[sid];
+  return sec.tasks[parseInt(num)-1];
+}
+
+function checkAnswerById(tid){
+  const [sid,num]=tid.split('-');
+  checkAnswer(sid,parseInt(num));
+}
+
+function checkAnswer(sid,num){
+  const tid=`${sid}-${num}`;
+  const task=sections[sid].tasks[num-1];
+  const fb=document.getElementById('fb-'+tid);
+  const card=document.getElementById('task-'+tid);
+  let correct=false, msg='';
+
+  try{
+    if(task.type==='fill'){
+      const inp=document.getElementById('ans-'+tid);
+      const val=inp.value.trim().toLowerCase().replace(/\s+/g,'');
+      const ans=String(task.answer).toLowerCase().replace(/\s+/g,'');
+      correct=val===ans;
+      inp.classList.remove('correct','incorrect');
+      inp.style.borderColor=correct?'var(--green)':'var(--red)';
+      msg=correct?'✓ Correct! · Benar!':'✗ Try again. · Coba lagi.';
+    }
+    else if(task.type==='radio'){
+      const sel=document.querySelector(`.option-card[data-tid="${tid}"].selected`);
+      document.querySelectorAll(`.option-card[data-tid="${tid}"]`).forEach(c=>c.classList.remove('correct','incorrect'));
+      if(!sel){msg='Please select an option. · Silakan pilih satu opsi.';fb.className='feedback show incorrect';fb.textContent=msg;return;}
+      const idx=parseInt(sel.dataset.idx);
+      correct=idx===task.answer;
+      sel.classList.add(correct?'correct':'incorrect');
+      if(!correct){
+        const rightCard=document.querySelector(`.option-card[data-tid="${tid}"][data-idx="${task.answer}"]`);
+        if(rightCard)rightCard.classList.add('correct');
+      }
+      msg=correct?'✓ Correct! · Benar!':'✗ Not quite. · Belum tepat.';
+    }
+    else if(task.type==='checkbox'){
+      document.querySelectorAll(`.option-card[data-tid="${tid}"]`).forEach(c=>c.classList.remove('correct','incorrect'));
+      const selected=[...document.querySelectorAll(`.option-card[data-tid="${tid}"].selected`)].map(c=>parseInt(c.dataset.idx));
+      const ansSet=new Set(task.answer);
+      const selSet=new Set(selected);
+      correct=ansSet.size===selSet.size&&[...ansSet].every(x=>selSet.has(x));
+      document.querySelectorAll(`.option-card[data-tid="${tid}"]`).forEach(c=>{
+        const idx=parseInt(c.dataset.idx);
+        if(ansSet.has(idx))c.classList.add('correct');
+        else if(selSet.has(idx))c.classList.add('incorrect');
+      });
+      msg=correct?'✓ All correct! · Semua benar!':'✗ Check the highlighted options. · Periksa opsi yang ditandai.';
+    }
+    else if(task.type==='tf'){
+      const sel=document.querySelector(`.tf-btn[data-tid="${tid}"].selected-true, .tf-btn[data-tid="${tid}"].selected-false`);
+      document.querySelectorAll(`.tf-btn[data-tid="${tid}"]`).forEach(b=>b.classList.remove('correct','incorrect'));
+      if(!sel){msg='Please choose True or False. · Pilih True atau False.';fb.className='feedback show incorrect';fb.textContent=msg;return;}
+      const val=sel.dataset.val==='true';
+      correct=val===task.answer;
+      sel.classList.add(correct?'correct':'incorrect');
+      if(!correct){
+        const other=document.querySelector(`.tf-btn[data-tid="${tid}"][data-val="${task.answer}"]`);
+        if(other)other.classList.add('correct');
+      }
+      msg=correct?'✓ Correct! · Benar!':'✗ Not quite. · Belum tepat.';
+    }
+    else if(task.type==='pair'){
+      const matched=task._matched||0;
+      correct=matched===task.pairs.length;
+      msg=correct?'✓ All pairs matched! · Semua pasangan cocok!':`Matched ${matched} / ${task.pairs.length}. Keep going! · Lanjutkan!`;
+    }
+    else if(task.type==='order'){
+      const listEl = document.getElementById('order-'+tid);
+      const items = listEl ? listEl.querySelectorAll('.order-item') : [];
+      const order=[...items].map(it=>parseInt(it.dataset.correct));
+      correct=order.every((v,i)=>v===i);
+      items.forEach((it,i)=>{
+        it.classList.remove('correct','incorrect');
+        it.classList.add(parseInt(it.dataset.correct)===i?'correct':'incorrect');
+      });
+      msg=correct?'✓ Perfect order! · Urutan sempurna!':'✗ Some items are out of order. · Beberapa item tidak berurutan.';
+    }
+    else if(task.type==='drag'){
+      const slots=document.querySelectorAll(`.dd-slot[data-tid="${tid}"]`);
+      correct=true;
+      slots.forEach(s=>{
+        const item=s.querySelector('.dd-item');
+        s.classList.remove('correct','incorrect');
+        if(item&&item.dataset.val===s.dataset.target){s.classList.add('correct');}
+        else{correct=false;s.classList.add('incorrect');}
+      });
+      msg=correct?'✓ All slots filled correctly! · Semua slot terisi dengan benar!':'✗ Some slots are wrong or empty. · Beberapa slot salah atau kosong.';
+    }
+  }catch(e){console.error(e);msg='Error checking. Please reset.';}
+
+  fb.className='feedback show '+(correct?'correct':'incorrect');
+  fb.textContent=msg;
+
+  if(correct){
+    sectionState[sid].tasks[num]={correct:true, studentAnswer:getStudentAnswerText(tid)};
+    card.classList.add('completed');
+  }else{
+    sectionState[sid].tasks[num]={correct:false};
+    card.classList.remove('completed');
+  }
+  updateProgress(sid);
+}
+
+function resetTask(sid,num){
+  const tid=`${sid}-${num}`;
+  const task=sections[sid].tasks[num-1];
+  const card=document.getElementById('task-'+tid);
+  card.classList.remove('completed');
+  const fb=document.getElementById('fb-'+tid);
+  if(fb){fb.className='feedback';fb.textContent='';}
+  // reset by re-rendering this task card content
+  if(task.type==='fill'){
+    const inp=document.getElementById('ans-'+tid);
+    if(inp){inp.value='';inp.style.borderColor='';}
+  }else if(task.type==='radio'||task.type==='checkbox'){
+    document.querySelectorAll(`.option-card[data-tid="${tid}"]`).forEach(c=>c.classList.remove('selected','correct','incorrect'));
+  }else if(task.type==='tf'){
+    document.querySelectorAll(`.tf-btn[data-tid="${tid}"]`).forEach(b=>b.classList.remove('selected-true','selected-false','correct','incorrect'));
+  }else if(task.type==='pair'){
+    document.querySelectorAll(`.pair-item[data-tid="${tid}"]`).forEach(el=>el.classList.remove('selected-left','selected-right','matched'));
+    pairState[tid]={left:null,right:null};
+    task._matched=0;
+    const c=document.getElementById('pairs-'+tid);
+    if(c)c.textContent=`Matched: 0 / ${task.pairs.length}`;
+  }else if(task.type==='order'){
+    // re-shuffle
+    const list=document.getElementById('order-'+tid);
+    const items=[...list.querySelectorAll('.order-item')].sort(()=>Math.random()-0.5);
+    items.forEach((it,i)=>{it.classList.remove('correct','incorrect');it.querySelector('.order-num').textContent=i+1;list.appendChild(it);});
+  }else if(task.type==='drag'){
+    // return all items to bank, clear slots
+    const bank=document.getElementById('bank-'+tid);
+    document.querySelectorAll(`.dd-slot[data-tid="${tid}"]`).forEach(s=>{s.classList.remove('correct','incorrect','filled');const it=s.querySelector('.dd-item');if(it)bank.appendChild(it);});
+    // shuffle bank
+    const items=[...bank.querySelectorAll('.dd-item')].sort(()=>Math.random()-0.5);
+    items.forEach(it=>bank.appendChild(it));
+  }
+  sectionState[sid].tasks[num]={correct:false};
+  updateProgress(sid);
+}
+
+/* ============================================================
+   PRINT & UPDATE HELPERS
+   ============================================================ */
+function getStudentAnswerText(tid){
+  const task = findTaskByTid(tid);
+  if(task.type === 'fill'){
+    const el = document.getElementById('ans-'+tid);
+    return el ? el.value.trim() : '';
+  }
+  if(task.type === 'radio' || task.type === 'checkbox'){
+    const sels = document.querySelectorAll(`.option-card[data-tid="${tid}"].selected`);
+    return [...sels].map(s => {
+      const idx = parseInt(s.dataset.idx);
+      return task.options[idx].en; // Ambil teks asli (sebelum dirender KaTeX)
+    }).join(', ');
+  }
+  if(task.type === 'tf'){
+    const sel = document.querySelector(`.tf-btn[data-tid="${tid}"].selected-true, .tf-btn[data-tid="${tid}"].selected-false`);
+    return sel ? (sel.dataset.val === 'true' ? 'True' : 'False') : '';
+  }
+  if(task.type === 'pair'){
+    const matched = document.querySelectorAll(`.pair-item[data-tid="${tid}"].matched`);
+    return matched.length + ' pairs matched';
+  }
+  if(task.type === 'order'){
+    const listEl = document.getElementById('order-'+tid);
+    const items = listEl ? listEl.querySelectorAll('.order-item') : [];
+    return [...items].map(it => {
+      const correctIdx = parseInt(it.dataset.correct);
+      return task.items[correctIdx].en; // Ambil teks asli
+    }).join(' -> ');
+  }
+  if(task.type === 'drag'){
+    const slots = document.querySelectorAll(`.dd-slot[data-tid="${tid}"]`);
+    return [...slots].map(s => {
+      const item = s.querySelector('.dd-item');
+      return item ? item.dataset.val : '(empty)';
+    }).join(', ');
+  }
+  return '';
+}
+
+function getCorrectAnswerText(tid){
+  const task = findTaskByTid(tid);
+  if(task.type === 'fill') return String(task.answer);
+  if(task.type === 'radio') return task.options[task.answer].en;
+  if(task.type === 'checkbox') return task.answer.map(i => task.options[i].en).join(', ');
+  if(task.type === 'tf') return String(task.answer);
+  if(task.type === 'pair') return 'All pairs matched';
+  if(task.type === 'order') return task.items.map(i => i.en).join(' -> ');
+  if(task.type === 'drag') return task.slots.map(s => s.target).join(', ');
+  return '';
+}
+
+function updateAssignmentData(sid){
+  const sec = sections[sid];
+  const st = sectionState[sid];
+  const total = sec.tasks.length - 1; // exclude result screen
+  let done = 0;
+  for(let i=1; i<=total; i++){
+    if(st.tasks[i] && st.tasks[i].correct) done++;
+  }
+  const scoreEl = document.getElementById('print-score-'+sid);
+  if(scoreEl) scoreEl.innerText = done + ' / ' + total;
+  alert('Data updated! Score: ' + done + ' / ' + total);
+}
+
+/* Helper untuk merender KaTeX menjadi HTML sebelum dicetak */
+function parseMathHtml(str) {
+  if(!str) return '';
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = str;
+  if(window.renderMathInElement){
+    renderMathInElement(tempDiv, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ],
+      throwOnError: false
+    });
+  }
+  return tempDiv.innerHTML;
+}
+
+function printAssignment(sid){
+  const sec = sections[sid];
+  const st = sectionState[sid];
+  const total = sec.tasks.length - 1;
+  let done = 0;
+  let rows = '';
+  
+  const nameInput = document.getElementById('print-name-'+sid);
+  const studentName = nameInput ? nameInput.value : '';
+  
+  for(let i=1; i<=total; i++){
+    const task = sec.tasks[i-1];
+    const taskState = st.tasks[i] || {};
+    const isCorrect = taskState.correct;
+    const studentAns = taskState.studentAnswer || getStudentAnswerText(`${sid}-${i}`);
+    const correctAns = getCorrectAnswerText(`${sid}-${i}`);
+    
+    if(isCorrect) done++;
+    
+    // Merender teks question, student answer, dan correct answer menjadi HTML matematika
+    const qHtml = parseMathHtml(task.question);
+    const sHtml = parseMathHtml(studentAns) || '-';
+    const cHtml = parseMathHtml(correctAns);
+    
+    rows += `<tr>
+      <td style="text-align:center">${i}</td>
+      <td>${qHtml}</td>
+      <td>${sHtml}</td>
+      <td>${cHtml}</td>
+      <td style="text-align:center; font-size:18px">${isCorrect ? '✓' : '✗'}</td>
+    </tr>`;
+  }
+  
+  const htmlContent = `
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Print Assessment - ${sec.title}</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+        h2 { text-align: center; margin-bottom: 5px; text-transform: uppercase; }
+        .info { margin-bottom: 20px; border: 1px solid #000; padding: 10px; }
+        .info p { margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; vertical-align: top; }
+        th { background: #f0f0f0; }
+        .sign { margin-top: 40px; text-align: right; }
+      </style>
+    </head>
+    <body>
+      <h2>MATH TUTORING by Deni</h2>
+      <div class="info">
+        <p><strong>Name:</strong> ${studentName}</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+        <p><strong>Topic:</strong> Building Multiplication Tables 6–9 and 0</p>
+        <p><strong>Assessment Group:</strong> ${sec.title}</p>
+        <p><strong>Score:</strong> ${done} / ${total}</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30px">No.</th>
+            <th>Question</th>
+            <th>Student Answer</th>
+            <th>Correct Answer</th>
+            <th style="width:50px">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+      <div class="sign">
+        <p>Checked by,</p>
+        <br><br>
+        <p><strong>Deni</strong></p>
+      </div>
+      <script>
+        window.onload = function() { window.print(); }
+      <\/script>
+    </body>
+    </html>
+  `;
+  
+  // Menggunakan Blob URL dengan charset UTF-8 untuk menghindari simbol aneh
+  const blob = new Blob([htmlContent], {type: 'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+function updateProgress(sid){
+  const sec=sections[sid];
+  const st=sectionState[sid];
+  const total=sec.tasks.length;
+  const done=Object.values(st.tasks).filter(t=>t.correct).length;
+  const pct=Math.round((done/total)*100);
+  const panel=document.querySelector('.section-panel');
+  if(panel){
+    const fill=panel.querySelector('.progress-fill');
+    const text=panel.querySelector('.progress-text');
+    if(fill)fill.style.width=pct+'%';
+    if(text)text.textContent=`${done} / ${total} tasks completed · ${pct}%`;
+  }
+  st.completed=done===total;
+  refreshNodeStatus();
+}
+
+/* ============================================================
+   KaTeX helper
+   ============================================================ */
+function renderMathInElement_(el){
+  if(window.renderMathInElement){
+    try{
+      renderMathInElement(el,{
+        delimiters:[
+          {left:'$$',right:'$$',display:true},
+          {left:'$',right:'$',display:false}
+        ],
+        throwOnError:false
+      });
+    }catch(e){console.warn('KaTeX error',e);}
+  }else{
+    setTimeout(()=>renderMathInElement_(el),300);
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded',()=>{
+  renderMap();
+  renderMathInElement_(document.body);
+});
+</script>
+
+<script>
+/* ============================================================
+   SECTION 1 — SPIRAL REVIEW WARM-UP
+   ============================================================ */
+sections['1'] = {
+  title:'Spiral Review Warm-up',
+  title_id:'Pemanasan Tinjauan Spiral',
+  time:'00:00 – 00:10',
+  tasks:[
+    /* 1. THEORY */
+    {
+      type:'theory',
+      icon:'🔥',
+      title:'Welcome Back!',
+      title_id:'Selamat Datang Kembali!',
+      content:`<p>Before we dive into new multiplication missions, let's warm up our brain with place value and number patterns from our previous adventures.</p>
+      <div class="formula">$\\text{Value} = T\\times 1000 + H\\times 100 + \\text{Te}\\times 10 + O\\times 1$</div>
+      <p>Place value tells us how much each digit is worth based on its position in the number.</p>`,
+      content_id:'Sebelum kita masuk ke misi perkalian baru, mari kita pemanasan otak dengan nilai tempat dan pola bilangan dari petualangan kita sebelumnya. Nilai tempat memberitahu kita berapa nilai tiap digit berdasarkan posisinya dalam bilangan.'
+    },
+    /* 2. FILL */
+    {
+      type:'fill',
+      question:'Build the number: 4 thousands + 0 hundreds + 9 tens + 2 ones = ?',
+      question_id:'Rakit angka ini: 4 ribuan + 0 ratusan + 9 puluhan + 2 satuan. Jadinya berapa?',
+      placeholder:'____',
+      large:true,
+      answer:'4092',
+      hint:'Add the values: $4000 + 0 + 90 + 2$',
+      hint_id:'Tambahkan nilai-nilainya: $4000 + 0 + 90 + 2$',
+      explanation:'$4\\times1000 + 0\\times100 + 9\\times10 + 2\\times1 = 4000 + 0 + 90 + 2 = 4092$',
+      explanation_id:'4 ribuan = 4000, 0 ratusan = 0, 9 puluhan = 90, 2 satuan = 2. Totalnya 4092.'
+    },
+    /* 3. RADIO */
+    {
+      type:'radio',
+      question:'Break down the number 7,503 into its expanded form. Which one is correct?',
+      question_id:'Bongkar angka 7.503 menjadi bentuk panjangnya. Mana yang benar?',
+      options:[
+        {en:'$7000 + 500 + 3$', id:'$7000 + 500 + 3$'},
+        {en:'$7000 + 50 + 3$', id:'$7000 + 50 + 3$'},
+        {en:'$7000 + 500 + 30$', id:'$7000 + 500 + 30$'},
+        {en:'$700 + 500 + 3$', id:'$700 + 500 + 3$'}
+      ],
+      answer:0,
+      explanation:'7 is in the thousands place = 7000, 5 is in the hundreds place = 500, 0 in the tens = 0, 3 in the ones = 3. So $7000 + 500 + 3 = 7503$.',
+      explanation_id:'7 di tempat ribuan = 7000, 5 di ratusan = 500, 0 di puluhan = 0, 3 di satuan = 3. Jadi $7000 + 500 + 3 = 7503$.'
+    },
+    /* 4. FILL */
+    {
+      type:'fill',
+      question:'Cloud Numbers pattern: 45, 50, 55, ___, ___. What are the next two numbers? Type them separated by a comma.',
+      question_id:'Awan Bilangan: 45, 50, 55, ___, ___. Berapakah dua angka selanjutnya? Ketik dengan dipisah koma.',
+      placeholder:'__, __',
+      large:true,
+      answer:'60,65',
+      hint:'Look at the jump between numbers. What is being added each time?',
+      hint_id:'Perhatikan loncatan antar bilangan. Apa yang ditambahkan setiap kali?',
+      explanation:'Each number increases by 5: $45 \\rightarrow 50 \\rightarrow 55 \\rightarrow 60 \\rightarrow 65$. So the next two numbers are 60 and 65.',
+      explanation_id:'Setiap bilangan bertambah 5: $45 \\rightarrow 50 \\rightarrow 55 \\rightarrow 60 \\rightarrow 65$. Jadi dua angka berikutnya adalah 60 dan 65.'
+    },
+    /* 5. THEORY */
+    {
+      type:'theory',
+      icon:'⚖️',
+      title:'Comparing Numbers',
+      title_id:'Membandingkan Bilangan',
+      content:`<p>When comparing two 4-digit numbers, we start from the leftmost digit (thousands). If they are equal, we move to the next digit (hundreds), and so on.</p>
+      <div class="formula">$3210 \\quad \\text{vs} \\quad 3120$</div>
+      <p>Both have 3 in the thousands place, so we compare the hundreds: 2 vs 1. Since $2 > 1$, then $3210 > 3120$.</p>`,
+      content_id:'Saat membandingkan dua bilangan empat angka, kita mulai dari digit paling kiri (ribuan). Jika sama, kita pindah ke digit berikutnya (ratusan), dan seterusnya. Keduanya memiliki 3 di ribuan, jadi kita bandingkan ratusan: 2 vs 1. Karena $2 > 1$, maka $3210 > 3120$.'
+    },
+    /* 6. RADIO */
+    {
+      type:'radio',
+      question:'Which number is larger: 3,210 or 3,120?',
+      question_id:'Di antara angka 3.210 dan 3.120, mana yang lebih besar?',
+      options:[
+        {en:'$3,210$',id:'$3.210$'},
+        {en:'$3,120$',id:'$3.120$'},
+        {en:'They are equal',id:'Keduanya sama'},
+        {en:'Cannot be compared',id:'Tidak bisa dibandingkan'}
+      ],
+      answer:0,
+      explanation:'Compare thousands: 3 = 3. Compare hundreds: $2 > 1$. So $3210 > 3120$.',
+      explanation_id:'Bandingkan ribuan: 3 = 3. Bandingkan ratusan: $2 > 1$. Jadi $3210 > 3120$.'
+    },
+    /* 7. FILL */
+    {
+      type:'fill',
+      question:'Build the number: 6 thousands + 3 hundreds + 0 tens + 5 ones = ?',
+      question_id:'Rakit angka: 6 ribuan + 3 ratusan + 0 puluhan + 5 satuan = ?',
+      placeholder:'____',
+      large:true,
+      answer:'6305',
+      hint:'$6000 + 300 + 0 + 5$',
+      hint_id:'$6000 + 300 + 0 + 5$',
+      explanation:'$6\\times1000 + 3\\times100 + 0\\times10 + 5\\times1 = 6000 + 300 + 0 + 5 = 6305$.',
+      explanation_id:'6 ribuan = 6000, 3 ratusan = 300, 0 puluhan = 0, 5 satuan = 5. Totalnya 6305.'
+    },
+    /* 8. ORDER */
+    {
+      type:'order',
+      question:'Arrange these numbers from smallest to largest.',
+      question_id:'Urutkan bilangan ini dari terkecil ke terbesar.',
+      items:[
+        {en:'$1234$',id:'$1234$'},
+        {en:'$4321$',id:'$4321$'},
+        {en:'$2341$',id:'$2341$'},
+        {en:'$3412$',id:'$3412$'}
+      ],
+      explanation:'Comparing thousands first: 1 < 2 < 3 < 4. So the order is 1234, 2341, 3412, 4321.',
+      explanation_id:'Bandingkan ribuan lebih dulu: 1 < 2 < 3 < 4. Jadi urutannya 1234, 2341, 3412, 4321.'
+    },
+    /* 9. THEORY */
+    {
+      type:'theory',
+      icon:'📍',
+      title:'Place Value Recap',
+      title_id:'Tinjauan Nilai Tempat',
+      content:`<p>Every digit in a 4-digit number has a special seat:</p>
+      <div class="formula">$\\underbrace{T}_{\\text{thousands}} \\, \\underbrace{H}_{\\text{hundreds}} \\, \\underbrace{\\text{Te}}_{\\text{tens}} \\, \\underbrace{O}_{\\text{ones}}$</div>
+      <p>For example, in <strong>5,073</strong>: T=5, H=0, Te=7, O=3. The 0 is important — it holds the hundreds place so the 5 stays in the thousands!</p>`,
+      content_id:'Setiap digit dalam bilangan empat angka memiliki tempat khusus: Ribuan, Ratusan, Puluhan, Satuan. Contoh pada 5.073: T=5, H=0, Te=7, O=3. Angka 0 penting — ia menahan tempat ratusan agar 5 tetap di ribuan!'
+    },
+    /* 10. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: The expansion of 4,502 is $4000 + 500 + 2$.',
+      question_id:'Benar atau Salah: Bentuk panjang dari 4.502 adalah $4000 + 500 + 2$.',
+      answer:false,
+      explanation:'False. The correct expansion is $4000 + 500 + 0 + 2$ or simply $4000 + 500 + 2$. Wait — actually $4000 + 500 + 2 = 4502$, which IS correct! So the answer is TRUE.',
+      explanation_id:'Salah. Bentuk panjang yang benar adalah $4000 + 500 + 0 + 2$. Sebenarnya $4000 + 500 + 2 = 4502$ — itu benar! Jadi jawabannya BENAR.'
+    },
+    /* 11. DRAG */
+    {
+      type:'drag',
+      question:'Drag the digits 5, 3, 8, 1 into the slots to make the LARGEST possible 4-digit number.',
+      question_id:'Seret angka 5, 3, 8, 1 ke slot untuk membuat bilangan 4 angka TERBESAR.',
+      instruction:'Drop the largest digit first (thousands), then next largest, and so on.',
+      items:[
+        {en:'5'},{en:'3'},{en:'8'},{en:'1'}
+      ],
+      slots:[
+        {label:'Thousands',target:'8'},
+        {label:'Hundreds',target:'5'},
+        {label:'Tens',target:'3'},
+        {label:'Ones',target:'1'}
+      ],
+      explanation:'To make the largest number, place the largest digit in the highest place value. Order: 8, 5, 3, 1 → $8531$.',
+      explanation_id:'Untuk membuat bilangan terbesar, letakkan digit terbesar di nilai tempat tertinggi. Urutan: 8, 5, 3, 1 → $8531$.'
+    },
+    /* 12. PAIR */
+    {
+      type:'pair',
+      question:'Match each number with its correct expanded form.',
+      question_id:'Cocokkan tiap bilangan dengan bentuk panjangnya yang benar.',
+      pairs:[
+        {left:{en:'$2,345$',id:'$2.345$'},right:{en:'$2000+300+40+5$',id:'$2000+300+40+5$',key:'a'}},
+        {left:{en:'$5,070$',id:'$5.070$'},right:{en:'$5000+70$',id:'$5000+70$',key:'b'}},
+        {left:{en:'$8,009$',id:'$8.009$'},right:{en:'$8000+9$',id:'$8000+9$',key:'c'}},
+        {left:{en:'$1,234$',id:'$1.234$'},right:{en:'$1000+200+30+4$',id:'$1000+200+30+4$',key:'d'}}
+      ],
+      explanation:'Each number is broken into its place value components. Zeros can be skipped, but every nonzero digit contributes its full place value.',
+      explanation_id:'Setiap bilangan dipecah menjadi komponen nilai tempatnya. Angka nol bisa dilewati, tetapi setiap digit bukan nol memberikan nilai tempat penuhnya.'
+    },
+    /* 13. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following equal $5,000 + 70 + 3$? (Select ALL that apply)',
+      question_id:'Manakah dari berikut ini yang sama dengan $5.000 + 70 + 3$? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$5,073$',id:'$5.073$'},
+        {en:'$5,703$',id:'$5.703$'},
+        {en:'$5000 + 70 + 3$',id:'$5000 + 70 + 3$'},
+        {en:'$5,730$',id:'$5.730$'},
+        {en:'$4\\text{ thousands} + 10\\text{ hundreds} + 7\\text{ tens} + 3\\text{ ones}$',id:'$4\\text{ ribuan} + 10\\text{ ratusan} + 7\\text{ puluhan} + 3\\text{ satuan}$'}
+      ],
+      answer:[0,2,4],
+      explanation:'$5000+70+3 = 5073$. Option A = 5073 ✓. Option B = 5703 ✗. Option C = 5073 ✓. Option D = 5730 ✗. Option E: $4000 + 1000 + 70 + 3 = 5073$ ✓.',
+      explanation_id:'$5000+70+3 = 5073$. Opsi A = 5073 ✓. Opsi B = 5703 ✗. Opsi C = 5073 ✓. Opsi D = 5730 ✗. Opsi E: $4000 + 1000 + 70 + 3 = 5073$ ✓.'
+    }
+  ]
+};
+</script>
+<script>
+/* ============================================================
+   SECTION 2 — INTRODUCTION & REAL-WORLD CONNECTION
+   ============================================================ */
+sections['2'] = {
+  title:'Introduction & Real-World Connection',
+  title_id:'Pengenalan & Koneksi Dunia Nyata',
+  time:'00:10 – 00:15',
+  tasks:[
+    /* 1. THEORY */
+    {
+      type:'theory',
+      icon:'🌍',
+      title:'Arrays in Real Life',
+      title_id:'Susunan dalam Kehidupan Nyata',
+      content:`<p>Have you ever looked at floor tiles or cinema seats? They are usually arranged in neat rows and columns. We call this an <strong>array</strong>.</p>
+      <div class="formula">$\\text{Rows} \\times \\text{Columns} = \\text{Total}$</div>
+      <p>If a floor has 7 rows and 8 columns of tiles, counting them one by one is tiring! Multiplication is our shortcut.</p>`,
+      content_id:'Pernahkah kamu melihat ubin di lantai atau susunan kursi di bioskop? Seringkali ubin itu disusun dalam 7 baris dan 8 kolom. Kalau kita tidak tahu perkalian 6-9, kita akan capek menghitungnya satu-satu! Hari ini, kita akan belajar cara cepat jadi master perkalian tinggi supaya kamu bisa menghitung apapun dalam sekejap.'
+    },
+    /* 2. FILL */
+    {
+      type:'fill',
+      question:'A cinema has 7 rows and 8 columns of seats. How many seats are there in total?',
+      question_id:'Sebuah bioskop memiliki 7 baris dan 8 kolom kursi. Berapa banyak kursi secara total?',
+      placeholder:'___',
+      large:true,
+      answer:'56',
+      hint:'Use multiplication: $7 \\times 8 = ?$',
+      hint_id:'Gunakan perkalian: $7 \\times 8 = ?$',
+      explanation:'$7 \\text{ rows} \\times 8 \\text{ columns} = 56 \\text{ seats}$.',
+      explanation_id:'$7 \\text{ baris} \\times 8 \\text{ kolom} = 56 \\text{ kursi}$.'
+    },
+    /* 3. RADIO */
+    {
+      type:'radio',
+      question:'Which of the following is an example of an array?',
+      question_id:'Manakah dari berikut ini yang merupakan contoh array?',
+      options:[
+        {en:'A chess board with 8 rows and 8 columns',id:'Papan catur dengan 8 baris dan 8 kolom'},
+        {en:'A pile of scattered marbles',id:'Tumpukan kelereng yang berserakan'},
+        {en:'A single line of 5 students',id:'Satu baris 5 siswa'},
+        {en:'A random drawing of a circle',id:'Gambar acak sebuah lingkaran'}
+      ],
+      answer:0,
+      explanation:'An array has equal rows and equal columns. A chess board perfectly fits this definition.',
+      explanation_id:'Array memiliki baris dan kolom yang sama rapi. Papan catur sangat cocok dengan definisi ini.'
+    },
+    /* 4. PAIR */
+    {
+      type:'pair',
+      question:'Match the real-world description to its multiplication equation.',
+      question_id:'Cocokkan deskripsi dunia nyata dengan persamaan perkaliannya.',
+      pairs:[
+        {left:{en:'4 rows of 6 windows',id:'4 baris 6 jendela'},right:{en:'$4 \\times 6$',id:'$4 \\times 6$',key:'a'}},
+        {left:{en:'5 rows of 5 trees',id:'5 baris 5 pohon'},right:{en:'$5 \\times 5$',id:'$5 \\times 5$',key:'b'}},
+        {left:{en:'7 rows of 3 cars',id:'7 baris 3 mobil'},right:{en:'$7 \\times 3$',id:'$7 \\times 3$',key:'c'}}
+      ],
+      explanation:'The first number is usually the rows, and the second is the columns, but they can be swapped!',
+      explanation_id:'Bilangan pertama biasanya baris, dan bilangan kedua kolom, tetapi bisa ditukar!'
+    },
+    /* 5. THEORY */
+    {
+      type:'theory',
+      icon:'⚡',
+      title:'The Power of Multiplication',
+      title_id:'Kekuatan Perkalian',
+      content:`<p>Why do we learn multiplication tables up to 9? Because it makes calculating fast! Instead of adding $8 + 8 + 8 + 8 + 8 + 8 + 8$, we just do $7 \\times 8 = 56$.</p>
+      <div class="formula">$8 + 8 + 8 + 8 + 8 + 8 + 8 = 7 \\times 8 = 56$</div>
+      <p>Today we will master 6, 7, 8, and 9!</p>`,
+      content_id:'Mengapa kita belajar tabel perkalian sampai 9? Karena membuat perhitungan jadi cepat! Daripada menjumlahkan 8+8+8+8+8+8+8, kita cukup $7 \\times 8 = 56$. Hari ini kita akan menguasai 6, 7, 8, dan 9!'
+    },
+    /* 6. FILL */
+    {
+      type:'fill',
+      question:'A garden has 6 rows of 9 flowers. How many flowers are there?',
+      question_id:'Sebuah taman memiliki 6 baris 9 bunga. Berapa banyak bunga di sana?',
+      placeholder:'___',
+      large:true,
+      answer:'54',
+      hint:'$6 \\times 9 = ?$',
+      hint_id:'$6 \\times 9 = ?$',
+      explanation:'$6 \\times 9 = 54$ flowers.',
+      explanation_id:'$6 \\times 9 = 54$ bunga.'
+    },
+    /* 7. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following can be calculated using multiplication? (Select ALL that apply)',
+      question_id:'Manakah dari berikut ini yang bisa dihitung dengan perkalian? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'Total eggs in 8 cartons of 6 eggs',id:'Total telur di 8 wadah berisi 6 telur'},
+        {en:'Total rainfall in a year',id:'Total curah hujan dalam setahun'},
+        {en:'Total students in 5 classes of 30',id:'Total siswa di 5 kelas berisi 30 siswa'},
+        {en:'Total weight of 3 different fruits',id:'Total berat dari 3 buah yang berbeda'}
+      ],
+      answer:[0,2],
+      explanation:'Multiplication is used when we have equal groups (like 8 groups of 6, or 5 groups of 30). Different items or varying amounts cannot be simply multiplied.',
+      explanation_id:'Perkalian digunakan ketika kita memiliki kelompok yang sama (seperti 8 kelompok berisi 6, atau 5 kelompok berisi 30). Barang yang berbeda atau jumlah yang bervariasi tidak bisa langsung dikalikan.'
+    },
+    /* 8. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: In an array, every row must have the same number of objects.',
+      question_id:'Benar atau Salah: Dalam array, setiap baris harus memiliki jumlah benda yang sama.',
+      answer:true,
+      explanation:'True. An array requires equal rows. If rows have different amounts, it is not a standard multiplication array.',
+      explanation_id:'Benar. Array membutuhkan baris yang sama jumlahnya. Jika baris memiliki jumlah berbeda, itu bukan array perkalian standar.'
+    },
+    /* 9. THEORY */
+    {
+      type:'theory',
+      icon:'🧱',
+      title:'Visualizing Arrays',
+      title_id:'Memvisualisasikan Array',
+      content:`<p>Let's visualize a small array: 3 rows of 4 dots.</p>
+      <div class="formula">$\\begin{array}{cccc} \\bullet & \\bullet & \\bullet & \\bullet \\\\ \\bullet & \\bullet & \\bullet & \\bullet \\\\ \\bullet & \\bullet & \\bullet & \\bullet \\end{array}$</div>
+      <p>Count them: 12 dots. This is $3 \\times 4 = 12$.</p>`,
+      content_id:'Mari visualisasikan array kecil: 3 baris 4 titik. Jumlahnya: 12 titik. Ini sama dengan $3 \\times 4 = 12$.'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'A parking lot has 8 rows with 4 cars in each row. How many cars are there?',
+      question_id:'Sebuah parkiran memiliki 8 baris dengan 4 mobil di tiap baris. Berapa total mobilnya?',
+      placeholder:'___',
+      large:true,
+      answer:'32',
+      hint:'$8 \\times 4 = ?$',
+      hint_id:'$8 \\times 4 = ?$',
+      explanation:'$8 \\times 4 = 32$ cars.',
+      explanation_id:'$8 \\times 4 = 32$ mobil.'
+    },
+    /* 11. ORDER */
+    {
+      type:'order',
+      question:'Arrange the steps to find the total objects in an array.',
+      question_id:'Urutkan langkah-langkah untuk menemukan total benda dalam array.',
+      items:[
+        {en:'Count the number of rows',id:'Hitung jumlah baris'},
+        {en:'Count the number of columns',id:'Hitung jumlah kolom'},
+        {en:'Multiply rows by columns',id:'Kalikan baris dengan kolom'},
+        {en:'Get the total objects',id:'Dapatkan total benda'}
+      ],
+      explanation:'First find rows, then columns, multiply them, and you get the total.',
+      explanation_id:'Pertama temukan baris, lalu kolom, kalikan, dan dapatkan totalnya.'
+    },
+    /* 12. DRAG */
+    {
+      type:'drag',
+      question:'A store shelf has 5 rows of 8 boxes. Drag the correct numbers to complete the equation.',
+      question_id:'Rak toko memiliki 5 baris 8 kotak. Seret angka yang benar untuk melengkapi persamaan.',
+      instruction:'Drop the numbers into the correct slots to form 5 × 8 = 40.',
+      items:[
+        {en:'5'},{en:'8'},{en:'40'}
+      ],
+      slots:[
+        {label:'Slot 1',target:'5'},
+        {label:'×',target:'8'},
+        {label:'=',target:'40'}
+      ],
+      explanation:'5 rows times 8 columns equals 40 boxes total.',
+      explanation_id:'5 baris dikali 8 kolom sama dengan 40 kotak total.'
+    },
+    /* 13. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'A box of chocolates has 7 rows and 9 columns. Which calculations will find the total? (Select ALL that apply)',
+      question_id:'Sebuah kotak cokelat memiliki 7 baris dan 9 kolom. Perhitungan manakah yang akan menemukan totalnya? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$7 \\times 9$',id:'$7 \\times 9$'},
+        {en:'$9 \\times 7$',id:'$9 \\times 7$'},
+        {en:'$7 + 9$',id:'$7 + 9$'},
+        {en:'$9 + 9 + 9 + 9 + 9 + 9 + 9$',id:'$9 + 9 + 9 + 9 + 9 + 9 + 9$'}
+      ],
+      answer:[0,1,3],
+      explanation:'$7 \\times 9$ and $9 \\times 7$ give the same result. Adding 9 seven times ($9+9+9+9+9+9+9$) is also correct. $7+9$ is only 16, which is wrong.',
+      explanation_id:'$7 \\times 9$ dan $9 \\times 7$ memberikan hasil yang sama. Menjumlahkan 9 sebanyak tujuh kali juga benar. $7+9$ hanya 16, itu salah.'
+    }
+  ]
+};
+
+/* ============================================================
+   SECTION 3 — REVIEW OF PRIOR KNOWLEDGE
+   ============================================================ */
+sections['3'] = {
+  title:'Review of Prior Knowledge',
+  title_id:'Tinjauan Pengetahuan Sebelumnya',
+  time:'00:15 – 00:20',
+  tasks:[
+    /* 1. THEORY */
+    {
+      type:'theory',
+      icon:'🔄',
+      title:'The Commutative Property',
+      title_id:'Sifat Komutatif',
+      content:`<p>You remember that $2 \\times 3 = 6$ and $3 \\times 2 = 6$. The result is the same! This is called the <strong>Commutative Property</strong> (Sifat Bolak-Balik).</p>
+      <div class="formula">$a \\times b = b \\times a$</div>
+      <p>This is our "secret weapon"!</p>`,
+      content_id:'Kamu pasti ingat kalau 2 x 3 itu sama dengan 3 x 2, kan? Hasilnya sama-sama 6. Ini namanya sifat komutatif atau Sifat Bolak-Balik. Nah, sifat ini adalah senjata rahasia kita.'
+    },
+    /* 2. FILL */
+    {
+      type:'fill',
+      question:'If $3 \\times 8 = 24$, then $8 \\times 3 = ?$',
+      question_id:'Jika $3 \\times 8 = 24$, maka $8 \\times 3 = ?$',
+      placeholder:'___',
+      large:true,
+      answer:'24',
+      hint:'Use the commutative property!',
+      hint_id:'Gunakan sifat komutatif!',
+      explanation:'By the commutative property, $8 \\times 3 = 3 \\times 8 = 24$.',
+      explanation_id:'Berdasarkan sifat komutatif, $8 \\times 3 = 3 \\times 8 = 24$.'
+    },
+    /* 3. RADIO */
+    {
+      type:'radio',
+      question:'Which equation demonstrates the commutative property?',
+      question_id:'Persamaan manakah yang menunjukkan sifat komutatif?',
+      options:[
+        {en:'$4 \\times 5 = 20$',id:'$4 \\times 5 = 20$'},
+        {en:'$4 \\times 5 = 5 \\times 4$',id:'$4 \\times 5 = 5 \\times 4$'},
+        {en:'$4 + 5 = 9$',id:'$4 + 5 = 9$'},
+        {en:'$5 \\times 4 = 20$',id:'$5 \\times 4 = 20$'}
+      ],
+      answer:1,
+      explanation:'The commutative property shows that swapping the order of multiplication gives the same result: $a \\times b = b \\times a$.',
+      explanation_id:'Sifat komutatif menunjukkan bahwa menukar urutan perkalian memberikan hasil yang sama: $a \\times b = b \\times a$.'
+    },
+    /* 4. PAIR */
+    {
+      type:'pair',
+      question:'Match each multiplication with its commutative pair.',
+      question_id:'Cocokkan tiap perkalian dengan pasangan komutatifnya.',
+      pairs:[
+        {left:{en:'$2 \\times 7$',id:'$2 \\times 7$'},right:{en:'$7 \\times 2$',id:'$7 \\times 2$',key:'a'}},
+        {left:{en:'$4 \\times 5$',id:'$4 \\times 5$'},right:{en:'$5 \\times 4$',id:'$5 \\times 4$',key:'b'}},
+        {left:{en:'$6 \\times 3$',id:'$6 \\times 3$'},right:{en:'$3 \\times 6$',id:'$3 \\times 6$',key:'c'}}
+      ],
+      explanation:'Just swap the positions of the two numbers being multiplied!',
+      explanation_id:'Cukup tukar posisi kedua angka yang dikalikan!'
+    },
+    /* 5. THEORY */
+    {
+      type:'theory',
+      icon:'🤫',
+      title:'The Secret Weapon',
+      title_id:'Senjata Rahasia',
+      content:`<p>If you memorize $2 \\times 7 = 14$, you automatically know $7 \\times 2 = 14$ too! You don't need to memorize both. This cuts your work in half!</p>
+      <div class="formula">$\\text{Memorize } 3 \\times 8 \\implies \\text{Know } 8 \\times 3 \\text{ for free!}$</div>`,
+      content_id:'Kalau kamu sudah hafal 2 x 7 = 14, maka otomatis kamu sudah tahu 7 x 2 itu berapa. Kamu tidak perlu menghafal keduanya. Ini memotong pekerjaanmu menjadi setengahnya!'
+    },
+    /* 6. FILL */
+    {
+      type:'fill',
+      question:'If $9 \\times 4 = 36$, then $4 \\times 9 = ?$',
+      question_id:'Jika $9 \\times 4 = 36$, maka $4 \\times 9 = ?$',
+      placeholder:'___',
+      large:true,
+      answer:'36',
+      hint:'$a \\times b = b \\times a$',
+      hint_id:'$a \\times b = b \\times a$',
+      explanation:'$4 \\times 9$ is the same as $9 \\times 4$, which is 36.',
+      explanation_id:'$4 \\times 9$ sama dengan $9 \\times 4$, yaitu 36.'
+    },
+    /* 7. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: $5 \\times 4 = 4 \\times 5$.',
+      question_id:'Benar atau Salah: $5 \\times 4 = 4 \\times 5$.',
+      answer:true,
+      explanation:'True. By the commutative property, the order of multiplication does not change the result.',
+      explanation_id:'Benar. Berdasarkan sifat komutatif, urutan perkalian tidak mengubah hasil.'
+    },
+    /* 8. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following are equal to $6 \\times 3$? (Select ALL that apply)',
+      question_id:'Manakah dari berikut ini yang sama dengan $6 \\times 3$? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$3 \\times 6$',id:'$3 \\times 6$'},
+        {en:'$6 + 6 + 6$',id:'$6 + 6 + 6$'},
+        {en:'$18$',id:'$18$'},
+        {en:'$6 + 3$',id:'$6 + 3$'}
+      ],
+      answer:[0,1,2],
+      explanation:'$6 \\times 3 = 18$. $3 \\times 6 = 18$. $6+6+6 = 18$. All of these are equal. $6+3 = 9$, which is not equal.',
+      explanation_id:'$6 \\times 3 = 18$. $3 \\times 6 = 18$. $6+6+6 = 18$. Semuanya sama. $6+3 = 9$, yang tidak sama.'
+    },
+    /* 9. THEORY */
+    {
+      type:'theory',
+      icon:'0️⃣',
+      title:'The Golden Rule of Zero',
+      title_id:'Aturan Emas Si Nol',
+      content:`<p>Any number, no matter how large, when multiplied by 0, will always result in <strong>0</strong> (Zero)! It's like magic.</p>
+      <div class="formula">$N \\times 0 = 0$</div>
+      <p>Even $1,000,000 \\times 0 = 0$.</p>`,
+      content_id:'Angka berapapun, jika dikalikan 0, hasilnya akan selalu 0! Mau satu juta dikali 0, tetap saja 0. Lucu ya?'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'What is $1,000,000 \\times 0$?',
+      question_id:'Berapakah $1.000.000 \\times 0$?',
+      placeholder:'___',
+      large:true,
+      answer:'0',
+      hint:'Anything times zero is zero.',
+      hint_id:'Apapun dikali nol adalah nol.',
+      explanation:'Any number multiplied by 0 is 0.',
+      explanation_id:'Angka apapun dikalikan 0 hasilnya 0.'
+    },
+    /* 11. RADIO */
+    {
+      type:'radio',
+      question:'What is $527 \\times 0$?',
+      question_id:'Berapakah $527 \\times 0$?',
+      options:[
+        {en:'$527$',id:'$527$'},
+        {en:'$0$',id:'$0$'},
+        {en:'$1$',id:'$1$'},
+        {en:'$5270$',id:'$5270$'}
+      ],
+      answer:1,
+      explanation:'The rule of zero: any number multiplied by 0 is always 0.',
+      explanation_id:'Aturan nol: angka apapun dikalikan 0 selalu 0.'
+    },
+    /* 12. DRAG */
+    {
+      type:'drag',
+      question:'Complete the equation using the commutative property: $9 \\times 4 = 4 \\times \\_ = 36$.',
+      question_id:'Lengkapi persamaan menggunakan sifat komutatif: $9 \\times 4 = 4 \\times \\_ = 36$.',
+      instruction:'Drag the correct number into the empty slot.',
+      items:[
+        {en:'4'},{en:'9'},{en:'36'}
+      ],
+      slots:[
+        {label:'Empty Slot',target:'9'}
+      ],
+      explanation:'$9 \\times 4$ becomes $4 \\times 9$ using the commutative property. Both equal 36.',
+      explanation_id:'$9 \\times 4$ berubah menjadi $4 \\times 9$ menggunakan sifat komutatif. Keduanya sama dengan 36.'
+    },
+    /* 13. ORDER */
+    {
+      type:'order',
+      question:'Put the steps in order to use the commutative property.',
+      question_id:'Urutkan langkah-langkah untuk menggunakan sifat komutatif.',
+      items:[
+        {en:'See a hard multiplication like $8 \\times 3$',id:'Lihat perkalian sulit seperti $8 \\times 3$'},
+        {en:'Flip the numbers to $3 \\times 8$',id:'Balik angkanya menjadi $3 \\times 8$'},
+        {en:'Use the one you memorized better',id:'Gunakan yang lebih kamu hafal'},
+        {en:'Get the correct answer',id:'Dapatkan jawaban yang benar'}
+      ],
+      explanation:'If $8 \\times 3$ is hard, flip it to $3 \\times 8$ which you might remember better. The answer is the same!',
+      explanation_id:'Jika $8 \\times 3$ sulit, balik menjadi $3 \\times 8$ yang mungkin lebih kamu hafal. Jawabannya sama!'
+    }
+  ]
+};
+</script>
+<script>
+/* ============================================================
+   SECTION 4 — PROBLEM INTRODUCTION
+   ============================================================ */
+sections['4'] = {
+  title:'Problem Introduction',
+  title_id:'Pengenalan Masalah',
+  time:'00:20 – 00:30',
+  tasks:[
+    /* 1. THEORY */
+    {
+      type:'theory',
+      icon:'🎵',
+      title:'Rhythm of Multiplication',
+      title_id:'Ritme Perkalian',
+      content:`<p>Multiplication 6 to 9 is often considered hard, but we have a rhythm! Let's try the rhythm for 6:</p>
+      <div class="formula">"Six, twelve, eighteen, twenty-four, thirty, thirty-six..."</div>
+      <p>Singing or chanting the numbers helps our brain remember them faster. It's like learning song lyrics!</p>`,
+      content_id:'Perkalian 6 sampai 9 sering dianggap sulit, tapi kita punya ritme! Mari kita coba ritme perkalian 6: "Enam, dua belas, delapan belas, dua puluh empat..." Menyanyi atau melantunkan angka membantu otak kita mengingatnya lebih cepat. Seperti menghafal lirik lagu!'
+    },
+    /* 2. FILL */
+    {
+      type:'fill',
+      question:'Using the rhythm, what comes next? 6, 12, 18, 24, __',
+      question_id:'Menggunakan ritme, apa selanjutnya? 6, 12, 18, 24, __',
+      placeholder:'___',
+      large:true,
+      answer:'30',
+      hint:'Add 6 to the last number.',
+      hint_id:'Tambahkan 6 ke angka terakhir.',
+      explanation:'$24 + 6 = 30$. The next number is 30.',
+      explanation_id:'$24 + 6 = 30$. Angka selanjutnya adalah 30.'
+    },
+    /* 3. FILL */
+    {
+      type:'fill',
+      question:'Continue the rhythm: 6, 12, 18, 24, 30, 36, __',
+      question_id:'Lanjutkan ritmenya: 6, 12, 18, 24, 30, 36, __',
+      placeholder:'___',
+      large:true,
+      answer:'42',
+      hint:'$36 + 6 = ?$',
+      hint_id:'$36 + 6 = ?$',
+      explanation:'$36 + 6 = 42$. This means $6 \\times 7 = 42$.',
+      explanation_id:'$36 + 6 = 42$. Ini berarti $6 \\times 7 = 42$.'
+    },
+    /* 4. RADIO */
+    {
+      type:'radio',
+      question:'Which of these numbers is NOT in the 6 times table rhythm?',
+      question_id:'Manakah dari angka ini yang BUKAN ritme perkalian 6?',
+      options:[
+        {en:'$48$',id:'$48$'},
+        {en:'$54$',id:'$54$'},
+        {en:'$56$',id:'$56$'},
+        {en:'$60$',id:'$60$'}
+      ],
+      answer:2,
+      explanation:'The 6s go: 6, 12, 18, 24, 30, 36, 42, 48, 54, 60. 56 is not in this list (it is $7 \\times 8$).',
+      explanation_id:'Perkalian 6: 6, 12, 18, 24, 30, 36, 42, 48, 54, 60. 56 tidak ada di daftar ini (itu $7 \\times 8$).'
+    },
+    /* 5. THEORY */
+    {
+      type:'theory',
+      icon:'7️⃣',
+      title:'The 7s and 8s Rhythm',
+      title_id:'Ritme 7 dan 8',
+      content:`<p>Let's try the rhythm for 7: "Seven, fourteen, twenty-one, twenty-eight, thirty-five..."</p>
+      <p>And for 8: "Eight, sixteen, twenty-four, thirty-two, forty..."</p>
+      <div class="formula">$7, 14, 21, 28, 35, 42, 49, 56, 63$</div>
+      <div class="formula">$8, 16, 24, 32, 40, 48, 56, 64, 72$</div>
+      <p>Notice how 56 appears in both! That's because $7 \\times 8 = 56$ and $8 \\times 7 = 56$.</p>`,
+      content_id:'Mari kita coba ritme untuk 7: "Tujuh, empat belas, dua puluh satu, dua puluh delapan..." Dan untuk 8: "Delapan, enam belas, dua puluh empat..." Perhatikan bagaimana 56 muncul di keduanya! Itu karena $7 \\times 8 = 56$ dan $8 \\times 7 = 56$.'
+    },
+    /* 6. ORDER */
+    {
+      type:'order',
+      question:'Arrange the 7 times table in correct order.',
+      question_id:'Urutkan tabel perkalian 7 dengan benar.',
+      items:[
+        {en:'$7, 14$',id:'$7, 14$'},
+        {en:'$21, 28$',id:'$21, 28$'},
+        {en:'$35, 42$',id:'$35, 42$'},
+        {en:'$49, 56$',id:'$49, 56$'}
+      ],
+      explanation:'The 7s sequence adds 7 each time: 7, 14, 21, 28, 35, 42, 49, 56.',
+      explanation_id:'Urutan 7 menambah 7 setiap kali: 7, 14, 21, 28, 35, 42, 49, 56.'
+    },
+    /* 7. FILL */
+    {
+      type:'fill',
+      question:'Continue the 8s rhythm: 8, 16, 24, 32, 40, __',
+      question_id:'Lanjutkan ritme 8: 8, 16, 24, 32, 40, __',
+      placeholder:'___',
+      large:true,
+      answer:'48',
+      hint:'Add 8 to 40.',
+      hint_id:'Tambahkan 8 ke 40.',
+      explanation:'$40 + 8 = 48$. So $8 \\times 6 = 48$.',
+      explanation_id:'$40 + 8 = 48$. Jadi $8 \\times 6 = 48$.'
+    },
+    /* 8. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: 64 is part of the 8 times table.',
+      question_id:'Benar atau Salah: 64 adalah bagian dari tabel perkalian 8.',
+      answer:true,
+      explanation:'True. $8 \\times 8 = 64$.',
+      explanation_id:'Benar. $8 \\times 8 = 64$.'
+    },
+    /* 9. THEORY */
+    {
+      type:'theory',
+      icon:'0️⃣',
+      title:'The Golden Rule of Zero',
+      title_id:'Aturan Emas Angka Nol',
+      content:`<p>Remember the golden rule: Any number, when multiplied by 0, will always result in <strong>Zonk!</strong> (Zero).</p>
+      <div class="formula">$N \\times 0 = 0 \\quad \\text{or} \\quad 0 \\times N = 0$</div>
+      <p>Even $1,000,000 \\times 0 = 0$. It's like having zero groups of something — you end up with nothing!</p>`,
+      content_id:'Ingat aturan emas: Angka berapapun, jika dikalikan 0, hasilnya akan selalu Zonk! Alias 0. Mau satu juta dikali 0, tetap saja 0. Lucu ya?'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'What is $1,000,000 \\times 0$?',
+      question_id:'Berapakah $1.000.000 \\times 0$?',
+      placeholder:'___',
+      large:true,
+      answer:'0',
+      hint:'Anything times zero is zero.',
+      hint_id:'Apapun dikali nol adalah nol.',
+      explanation:'Any number multiplied by 0 is 0.',
+      explanation_id:'Angka apapun dikalikan 0 hasilnya 0.'
+    },
+    /* 11. PAIR */
+    {
+      type:'pair',
+      question:'Match the multiplication with its result.',
+      question_id:'Cocokkan perkalian dengan hasilnya.',
+      pairs:[
+        {left:{en:'$9 \\times 0$',id:'$9 \\times 0$'},right:{en:'$0$',id:'$0$',key:'a'}},
+        {left:{en:'$0 \\times 8$',id:'$0 \\times 8$'},right:{en:'$0$',id:'$0$',key:'b'}},
+        {left:{en:'$5 \\times 1$',id:'$5 \\times 1$'},right:{en:'$5$',id:'$5$',key:'c'}},
+        {left:{en:'$4 \\times 0$',id:'$4 \\times 0$'},right:{en:'$0$',id:'$0$',key:'d'}}
+      ],
+      explanation:'Multiplying by 0 always gives 0. Multiplying by 1 gives the same number.',
+      explanation_id:'Mengalikan dengan 0 selalu menghasilkan 0. Mengalikan dengan 1 menghasilkan angka itu sendiri.'
+    },
+    /* 12. DRAG */
+    {
+      type:'drag',
+      question:'Complete the rhythm for 9: 9, 18, 27, ___, 45.',
+      question_id:'Lengkapi ritme untuk 9: 9, 18, 27, ___, 45.',
+      instruction:'Drag the correct number into the empty slot.',
+      items:[
+        {en:'30'},{en:'36'},{en:'33'}
+      ],
+      slots:[
+        {label:'Empty Slot',target:'36'}
+      ],
+      explanation:'The 9s add 9 each time: $9, 18, 27, 36, 45$. So the missing number is 36.',
+      explanation_id:'Perkalian 9 menambah 9 setiap kali: $9, 18, 27, 36, 45$. Jadi angka yang hilang adalah 36.'
+    },
+    /* 13. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following equations equal 0? (Select ALL that apply)',
+      question_id:'Manakah dari persamaan berikut yang sama dengan 0? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$7 \\times 0$',id:'$7 \\times 0$'},
+        {en:'$0 \\times 99$',id:'$0 \\times 99$'},
+        {en:'$8 \\times 1$',id:'$8 \\times 1$'},
+        {en:'$0 + 5$',id:'$0 + 5$'}
+      ],
+      answer:[0,1],
+      explanation:'$7 \\times 0 = 0$ and $0 \\times 99 = 0$. $8 \\times 1 = 8$ and $0 + 5 = 5$.',
+      explanation_id:'$7 \\times 0 = 0$ dan $0 \\times 99 = 0$. $8 \\times 1 = 8$ dan $0 + 5 = 5$.'
+    }
+  ]
+};
+
+/* ============================================================
+   SECTION 5 — GUIDED PRACTICE
+   ============================================================ */
+sections['5'] = {
+  title:'Guided Practice',
+  title_id:'Latihan Terbimbing',
+  time:'00:30 – 00:45',
+  tasks:[
+    /* 1. THEORY */
+    {
+      type:'theory',
+      icon:'🧭',
+      title:'Detective Mission: Finding 7 x 8',
+      title_id:'Misi Detektif: Menemukan 7 x 8',
+      content:`<p>A detective lost a safe code. The code is the result of $7 \\times 8$. If you forget $7 \\times 8$, you can use a trick!</p>
+      <div class="formula">$7 \\times 7 = 49 \\implies 49 + 7 = 56$</div>
+      <p>So, $7 \\times 8 = 56$.</p>`,
+      content_id:'Seorang detektif kehilangan kode brankas. Kodenya adalah hasil dari 7 x 8. Jika lupa 7 x 8, gunakan trik! $7 \\times 7 = 49$, lalu tambah 7 lagi. Jadi, $7 \\times 8 = 56$.'
+    },
+    /* 2. FILL */
+    {
+      type:'fill',
+      question:'If $7 \\times 7 = 49$, what is $7 \\times 8$?',
+      question_id:'Jika $7 \\times 7 = 49$, berapakah $7 \\times 8$?',
+      placeholder:'___',
+      large:true,
+      answer:'56',
+      hint:'$49 + 7 = ?$',
+      hint_id:'$49 + 7 = ?$',
+      explanation:'Add 7 to 49 to get the next multiple of 7: $49 + 7 = 56$.',
+      explanation_id:'Tambahkan 7 ke 49 untuk mendapatkan kelipatan 7 berikutnya: $49 + 7 = 56$.'
+    },
+    /* 3. RADIO */
+    {
+      type:'radio',
+      question:'Using the same trick, if $8 \\times 8 = 64$, what is $8 \\times 9$?',
+      question_id:'Dengan trik yang sama, jika $8 \\times 8 = 64$, berapakah $8 \\times 9$?',
+      options:[
+        {en:'$65$',id:'$65$'},
+        {en:'$72$',id:'$72$'},
+        {en:'$81$',id:'$81$'},
+        {en:'$88$',id:'$88$'}
+      ],
+      answer:1,
+      explanation:'Add 8 to 64: $64 + 8 = 72$. So $8 \\times 9 = 72$.',
+      explanation_id:'Tambahkan 8 ke 64: $64 + 8 = 72$. Jadi $8 \\times 9 = 72$.'
+    },
+    /* 4. FILL */
+    {
+      type:'fill',
+      question:'What is $8 \\times 7$? (Remember the secret weapon!)',
+      question_id:'Berapakah $8 \\times 7$? (Ingat senjata rahasia!)',
+      placeholder:'___',
+      large:true,
+      answer:'56',
+      hint:'$8 \\times 7 = 7 \\times 8 = ?$',
+      hint_id:'$8 \\times 7 = 7 \\times 8 = ?$',
+      explanation:'By the commutative property, $8 \\times 7 = 7 \\times 8 = 56$.',
+      explanation_id:'Berdasarkan sifat komutatif, $8 \\times 7 = 7 \\times 8 = 56$.'
+    },
+    /* 5. THEORY */
+    {
+      type:'theory',
+      icon:'✋',
+      title:'The Finger Trick for 9s',
+      title_id:'Trik Jari untuk Perkalian 9',
+      content:`<p>Here is a cool trick for multiplying by 9! Let's try $9 \\times 6$.</p>
+      <p>Hold up both hands (10 fingers). To multiply 9 by 6, fold down the 6th finger from the left.</p>
+      <div class="formula">$\\underbrace{\\text{5 fingers}}_{\\text{left of folded}} \\quad | \\quad \\underbrace{\\text{4 fingers}}_{\\text{right of folded}}$</div>
+      <p>The fingers to the left are the tens (5), and the fingers to the right are the ones (4). So, $9 \\times 6 = 54$!</p>`,
+      content_id:'Ini trik keren untuk perkalian 9! Mari coba 9 x 6. Angkat kedua tangan (10 jari). Untuk mengalikan 9 dengan 6, lipat jari ke-6 dari kiri. Jari di kirinya ada 5, jari di kanannya ada 4. Jadi, $9 \\times 6 = 54$!'
+    },
+    /* 6. FILL */
+    {
+      type:'fill',
+      question:'Using the finger trick, what is $9 \\times 3$?',
+      question_id:'Menggunakan trik jari, berapakah $9 \\times 3$?',
+      placeholder:'___',
+      large:true,
+      answer:'27',
+      hint:'Fold the 3rd finger. How many are on the left? On the right?',
+      hint_id:'Lipat jari ke-3. Berapa yang di kiri? Di kanan?',
+      explanation:'Fold the 3rd finger. 2 fingers on the left (tens), 7 fingers on the right (ones). $2$ tens and $7$ ones = $27$.',
+      explanation_id:'Lipat jari ke-3. 2 jari di kiri (puluhan), 7 jari di kanan (satuan). 2 puluhan dan 7 satuan = 27.'
+    },
+    /* 7. DRAG */
+    {
+      type:'drag',
+      question:'For $9 \\times 6$, drag the correct number of fingers to the correct side.',
+      question_id:'Untuk $9 \\times 6$, seret jumlah jari yang benar ke sisi yang benar.',
+      instruction:'Drop the numbers representing the count of fingers on each side.',
+      items:[
+        {en:'5'},{en:'4'},{en:'6'}
+      ],
+      slots:[
+        {label:'Left of folded (Tens)',target:'5'},
+        {label:'Right of folded (Ones)',target:'4'}
+      ],
+      explanation:'The 6th finger is folded. 5 remain on the left, 4 on the right. Making 54.',
+      explanation_id:'Jari ke-6 dilipat. 5 tersisa di kiri, 4 di kanan. Membentuk 54.'
+    },
+    /* 8. FILL */
+    {
+      type:'fill',
+      question:'Use the finger trick: What is $9 \\times 8$?',
+      question_id:'Gunakan trik jari: Berapakah $9 \\times 8$?',
+      placeholder:'___',
+      large:true,
+      answer:'72',
+      hint:'Fold the 8th finger. How many on the left and right?',
+      hint_id:'Lipat jari ke-8. Berapa di kiri dan kanan?',
+      explanation:'Fold the 8th finger. 7 on the left, 2 on the right. $9 \\times 8 = 72$.',
+      explanation_id:'Lipat jari ke-8. 7 di kiri, 2 di kanan. $9 \\times 8 = 72$.'
+    },
+    /* 9. THEORY */
+    {
+      type:'theory',
+      icon:'🔍',
+      title:'Finding Missing Factors',
+      title_id:'Menemukan Faktor yang Hilang',
+      content:`<p>Sometimes we know the answer but one number is missing! Example: $8 \\times \\_ = 48$.</p>
+      <div class="formula">$\\text{Missing Factor} = \\text{Product} \\div \\text{Known Factor}$</div>
+      <p>To find it, ask yourself: "8 times what equals 48?" We know from our rhythm that $8 \\times 6 = 48$, so the missing factor is 6.</p>`,
+      content_id:'Kadang kita tahu jawabannya tapi satu angka hilang! Contoh: $8 \\times \\_ = 48$. Untuk menemukannya, tanyakan pada diri sendiri: "8 dikali apa sama dengan 48?" Kita tahu dari ritme bahwa $8 \\times 6 = 48$, jadi faktor yang hilang adalah 6.'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'Find the missing factor: $8 \\times \\_ = 48$',
+      question_id:'Temukan faktor yang hilang: $8 \\times \\_ = 48$',
+      placeholder:'___',
+      large:true,
+      answer:'6',
+      hint:'Count by 8s until you hit 48.',
+      hint_id:'Hitung kelipatan 8 sampai mencapai 48.',
+      explanation:'$8 \\times 6 = 48$, so the missing factor is 6.',
+      explanation_id:'$8 \\times 6 = 48$, jadi faktor yang hilang adalah 6.'
+    },
+    /* 11. FILL */
+    {
+      type:'fill',
+      question:'Find the missing factor: $\\_ \\times 7 = 63$',
+      question_id:'Temukan faktor yang hilang: $\\_ \\times 7 = 63$',
+      placeholder:'___',
+      large:true,
+      answer:'9',
+      hint:'$9 \\times 7 = ?$',
+      hint_id:'$9 \\times 7 = ?$',
+      explanation:'$9 \\times 7 = 63$, so the missing factor is 9.',
+      explanation_id:'$9 \\times 7 = 63$, jadi faktor yang hilang adalah 9.'
+    },
+    /* 12. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following solve the equation $9 \\times \\_ = 72$? (Select ALL that apply)',
+      question_id:'Manakah dari berikut ini yang menyelesaikan persamaan $9 \\times \\_ = 72$? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$8$',id:'$8$'},
+        {en:'$72 \\div 9$',id:'$72 \\div 9$'},
+        {en:'$9 \\times 8$',id:'$9 \\times 8$'},
+        {en:'$7$',id:'$7$'}
+      ],
+      answer:[0,1,2],
+      explanation:'The missing factor is 8. $72 \\div 9 = 8$ and $9 \\times 8 = 72$.',
+      explanation_id:'Faktor yang hilang adalah 8. $72 \\div 9 = 8$ dan $9 \\times 8 = 72$.'
+    },
+    /* 13. PAIR */
+    {
+      type:'pair',
+      question:'Match each missing factor equation with its correct answer.',
+      question_id:'Cocokkan tiap persamaan faktor hilang dengan jawaban yang benar.',
+      pairs:[
+        {left:{en:'$7 \\times \\_ = 56$',id:'$7 \\times \\_ = 56$'},right:{en:'$8$',id:'$8$',key:'a'}},
+        {left:{en:'$\\_ \\times 6 = 54$',id:'$\\_ \\times 6 = 54$'},right:{en:'$9$',id:'$9$',key:'b'}},
+        {left:{en:'$8 \\times \\_ = 64$',id:'$8 \\times \\_ = 64$'},right:{en:'$8$',id:'$8$',key:'c'}},
+        {left:{en:'$9 \\times \\_ = 0$',id:'$9 \\times \\_ = 0$'},right:{en:'$0$',id:'$0$',key:'d'}}
+      ],
+      explanation:'Use your multiplication facts or count by rhythm to find the missing numbers.',
+      explanation_id:'Gunakan fakta perkalian atau hitung dengan ritme untuk menemukan angka yang hilang.'
+    }
+  ]
+};
+</script>
+<script>
+/* ============================================================
+   SECTION 6 — INDEPENDENT PRACTICE
+   ============================================================ */
+sections['6'] = {
+  title:'Independent Practice',
+  title_id:'Latihan Mandiri',
+  time:'00:45 – 01:00',
+  tasks:[
+    /* 1. THEORY */
+    {
+      type:'theory',
+      icon:'🚀',
+      title:'Solo Mission!',
+      title_id:'Misi Mandiri!',
+      content:`<p>Now it's time for your Solo Mission! I will give you several challenges on the screen. Solve the word problems, show off your skills, and use the tricks you've learned.</p>
+      <div class="formula">$\\text{Groups} \\times \\text{Items per Group} = \\text{Total}$</div>
+      <p>Don't be afraid to make mistakes, because from mistakes we learn the right way!</p>`,
+      content_id:'Sekarang waktunya Misi Mandiri! Saya akan berikan beberapa tantangan di layar. Selesaikan soal cerita, tunjukkan keahlianmu, dan gunakan trik yang telah kamu pelajari. Jangan takut salah, karena dari kesalahan kita jadi tahu cara benarnya!'
+    },
+    /* 2. DRAG */
+    {
+      type:'drag',
+      question:'Complete the equation: $6 \\times 7 = \\_$',
+      question_id:'Lengkapi persamaan: $6 \\times 7 = \\_$',
+      instruction:'Drag the correct product into the empty slot.',
+      items:[
+        {en:'42'},{en:'48'},{en:'36'}
+      ],
+      slots:[
+        {label:'$6 \\times 7 = $',target:'42'}
+      ],
+      explanation:'Count by 6s seven times: 6, 12, 18, 24, 30, 36, 42. Or use rhythm! $6 \\times 7 = 42$.',
+      explanation_id:'Hitung kelipatan 6 sebanyak tujuh kali: 6, 12, 18, 24, 30, 36, 42. Atau gunakan ritme! $6 \\times 7 = 42$.'
+    },
+    /* 3. FILL */
+    {
+      type:'fill',
+      question:'What is $8 \\times 9$?',
+      question_id:'Berapakah $8 \\times 9$?',
+      placeholder:'___',
+      large:true,
+      answer:'72',
+      hint:'You know $8 \\times 8 = 64$. Just add 8 more!',
+      hint_id:'Kamu tahu $8 \\times 8 = 64$. Cukup tambah 8 lagi!',
+      explanation:'$64 + 8 = 72$. So $8 \\times 9 = 72$.',
+      explanation_id:'$64 + 8 = 72$. Jadi $8 \\times 9 = 72$.'
+    },
+    /* 4. RADIO */
+    {
+      type:'radio',
+      question:'Which of the following is the correct product for $7 \\times 8$?',
+      question_id:'Manakah dari berikut ini yang merupakan hasil yang benar untuk $7 \\times 8$?',
+      options:[
+        {en:'$54$',id:'$54$'},
+        {en:'$56$',id:'$56$'},
+        {en:'$63$',id:'$63$'},
+        {en:'$64$',id:'$64$'}
+      ],
+      answer:1,
+      explanation:'$7 \\times 8 = 56$. (You can also remember $8 \\times 7 = 56$).',
+      explanation_id:'$7 \\times 8 = 56$. (Kamu juga bisa ingat $8 \\times 7 = 56$).'
+    },
+    /* 5. THEORY */
+    {
+      type:'theory',
+      icon:'📦',
+      title:'Word Problems',
+      title_id:'Soal Cerita',
+      content:`<p>Multiplication is super useful for word problems! If we have groups of objects, we multiply the number of groups by the number of objects in each group.</p>
+      <div class="formula">$\\text{Total} = \\text{Boxes} \\times \\text{Items per Box}$</div>
+      <p>Read carefully and identify the numbers!</p>`,
+      content_id:'Perkalian sangat berguna untuk soal cerita! Jika kita memiliki kelompok benda, kita kalikan jumlah kelompok dengan jumlah benda di tiap kelompok. Baca dengan teliti dan identifikasi angkanya!'
+    },
+    /* 6. FILL */
+    {
+      type:'fill',
+      question:'A boy has 9 boxes, each box contains 7 marbles. What is the total number of marbles?',
+      question_id:'Seorang anak punya 9 kotak, tiap kotak isi 7 kelereng. Berapa total kelerengnya?',
+      placeholder:'___',
+      large:true,
+      answer:'63',
+      hint:'$9 \\times 7 = ?$',
+      hint_id:'$9 \\times 7 = ?$',
+      explanation:'9 groups of 7 marbles = $9 \\times 7 = 63$ marbles.',
+      explanation_id:'9 kelompok berisi 7 kelereng = $9 \\times 7 = 63$ kelereng.'
+    },
+    /* 7. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following equations have a product of 48? (Select ALL that apply)',
+      question_id:'Manakah dari persamaan berikut yang hasilnya 48? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$6 \\times 8$',id:'$6 \\times 8$'},
+        {en:'$7 \\times 7$',id:'$7 \\times 7$'},
+        {en:'$8 \\times 6$',id:'$8 \\times 6$'},
+        {en:'$9 \\times 5$',id:'$9 \\times 5$'}
+      ],
+      answer:[0,2],
+      explanation:'$6 \\times 8 = 48$ and $8 \\times 6 = 48$ (Commutative Property). $7 \\times 7 = 49$ and $9 \\times 5 = 45$.',
+      explanation_id:'$6 \\times 8 = 48$ dan $8 \\times 6 = 48$ (Sifat Komutatif). $7 \\times 7 = 49$ dan $9 \\times 5 = 45$.'
+    },
+    /* 8. PAIR */
+    {
+      type:'pair',
+      question:'Match each multiplication with its correct product.',
+      question_id:'Cocokkan tiap perkalian dengan hasil yang benar.',
+      pairs:[
+        {left:{en:'$6 \\times 9$',id:'$6 \\times 9$'},right:{en:'$54$',id:'$54$',key:'a'}},
+        {left:{en:'$7 \\times 7$',id:'$7 \\times 7$'},right:{en:'$49$',id:'$49$',key:'b'}},
+        {left:{en:'$8 \\times 8$',id:'$8 \\times 8$'},right:{en:'$64$',id:'$64$',key:'c'}},
+        {left:{en:'$9 \\times 9$',id:'$9 \\times 9$'},right:{en:'$81$',id:'$81$',key:'d'}}
+      ],
+      explanation:'These are the perfect squares and high facts! $6\\times9=54, 7\\times7=49, 8\\times8=64, 9\\times9=81$.',
+      explanation_id:'Ini adalah kuadrat sempurna dan fakta perkalian tinggi! $6\\times9=54, 7\\times7=49, 8\\times8=64, 9\\times9=81$.'
+    },
+    /* 9. THEORY */
+    {
+      type:'theory',
+      icon:'🛡️',
+      title:'Checking Your Work',
+      title_id:'Memeriksa Pekerjaanmu',
+      content:`<p>Remember the Commutative Property! If you are unsure about $8 \\times 7$, think about $7 \\times 8$. Also remember the rule of zero: anything times zero is zero.</p>
+      <div class="formula">$9 \\times 0 = 0$</div>
+      <p>Use your fingers for the 9s if you need to!</p>`,
+      content_id:'Ingat Sifat Komutatif! Jika kamu ragu dengan $8 \\times 7$, pikirkan $7 \\times 8$. Juga ingat aturan nol: apapun dikali nol adalah nol. Gunakan jari untuk perkalian 9 jika perlu!'
+    },
+    /* 10. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: $9 \\times 0 = 9$.',
+      question_id:'Benar atau Salah: $9 \\times 0 = 9$.',
+      answer:false,
+      explanation:'False. Any number multiplied by 0 is 0. So $9 \\times 0 = 0$.',
+      explanation_id:'Salah. Angka apapun dikalikan 0 adalah 0. Jadi $9 \\times 0 = 0$.'
+    },
+    /* 11. FILL */
+    {
+      type:'fill',
+      question:'Solve: $7 \\times 6 = ?$',
+      question_id:'Selesaikan: $7 \\times 6 = ?$',
+      placeholder:'___',
+      large:true,
+      answer:'42',
+      hint:'This is the same as $6 \\times 7$.',
+      hint_id:'Ini sama dengan $6 \\times 7$.',
+      explanation:'$7 \\times 6 = 42$.',
+      explanation_id:'$7 \\times 6 = 42$.'
+    },
+    /* 12. ORDER */
+    {
+      type:'order',
+      question:'Arrange the products of the 9 times table in ascending order (smallest to largest).',
+      question_id:'Urutkan hasil perkalian 9 dari terkecil ke terbesar.',
+      items:[
+        {en:'$27$',id:'$27$'},
+        {en:'$54$',id:'$54$'},
+        {en:'$18$',id:'$18$'},
+        {en:'$45$',id:'$45$'}
+      ],
+      explanation:'18 ($9\\times2$), 27 ($9\\times3$), 45 ($9\\times5$), 54 ($9\\times6$).',
+      explanation_id:'18 ($9\\times2$), 27 ($9\\times3$), 45 ($9\\times5$), 54 ($9\\times6$).'
+    },
+    /* 13. DRAG */
+    {
+      type:'drag',
+      question:'Drag the correct numbers to complete the mixed multiplication facts.',
+      question_id:'Seret angka yang benar untuk melengkapi fakta perkalian campuran.',
+      instruction:'Drop the correct products into the matching equations.',
+      items:[
+        {en:'56'},{en:'63'},{en:'72'}
+      ],
+      slots:[
+        {label:'$7 \\times 8 = $',target:'56'},
+        {label:'$9 \\times 7 = $',target:'63'},
+        {label:'$8 \\times 9 = $',target:'72'}
+      ],
+      explanation:'$7\\times8=56$, $9\\times7=63$, $8\\times9=72$. You can use the commutative property to help you!',
+      explanation_id:'$7\\times8=56$, $9\\times7=63$, $8\\times9=72$. Kamu bisa menggunakan sifat komutatif untuk membantumu!'
+    }
+  ]
+};
+</script>
+<script>
+/* ============================================================
+   SECTION 7.1 — ASSIGNMENT 1
+   ============================================================ */
+sections['7.1'] = {
+  title:'Assignment 1: Mixed Practice',
+  title_id:'Tugas 1: Latihan Campuran',
+  time:'Homework',
+  banner:'⭐ Assignment 1: Mixed Practice',
+  banner_id:'⭐ Tugas 1: Latihan Campuran',
+  tasks:[
+    /* 1. FILL */
+    {
+      type:'fill',
+      question:'What is the result of $6 \\times 7$?',
+      question_id:'Berapakah hasil dari $6 \\times 7$?',
+      placeholder:'___',
+      large:true,
+      answer:'42',
+      explanation:'Using the rhythm of 6: 6, 12, 18, 24, 30, 36, 42. Or $7 \\times 6 = 42$.',
+      explanation_id:'Menggunakan ritme 6: 6, 12, 18, 24, 30, 36, 42. Atau $7 \\times 6 = 42$.'
+    },
+    /* 2. RADIO */
+    {
+      type:'radio',
+      question:'Use the commutative property: If $9 \\times 4 = 36$, then $4 \\times 9 = ?$',
+      question_id:'Gunakan sifat komutatif: Jika $9 \\times 4 = 36$, maka $4 \\times 9 = ...?$',
+      options:[
+        {en:'$36$',id:'$36$'},
+        {en:'$45$',id:'$45$'},
+        {en:'$39$',id:'$39$'},
+        {en:'$13$',id:'$13$'}
+      ],
+      answer:0,
+      explanation:'The commutative property states $a \\times b = b \\times a$. So $4 \\times 9$ is the same as $9 \\times 4$, which is 36.',
+      explanation_id:'Sifat komutatif menyatakan $a \\times b = b \\times a$. Jadi $4 \\times 9$ sama dengan $9 \\times 4$, yaitu 36.'
+    },
+    /* 3. FILL */
+    {
+      type:'fill',
+      question:'Fill in the blank: $8 \\times \\_ = 64$',
+      question_id:'Isi titik-titik berikut: $8 \\times \\_ = 64$',
+      placeholder:'___',
+      large:true,
+      answer:'8',
+      hint:'What number times itself equals 64?',
+      hint_id:'Angka berapa dikali dirinya sendiri sama dengan 64?',
+      explanation:'$8 \\times 8 = 64$. This is a perfect square!',
+      explanation_id:'$8 \\times 8 = 64$. Ini adalah kuadrat sempurna!'
+    },
+    /* 4. FILL */
+    {
+      type:'fill',
+      question:'What is $527 \\times 0$?',
+      question_id:'Berapakah $527 \\times 0$?',
+      placeholder:'___',
+      large:true,
+      answer:'0',
+      hint:'Any number multiplied by zero is...',
+      hint_id:'Semua angka dikalikan nol adalah...',
+      explanation:'The golden rule of zero: any number multiplied by 0 is always 0.',
+      explanation_id:'Aturan emas angka nol: angka apapun dikalikan 0 selalu 0.'
+    },
+    /* 5. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following equations equal 0? (Select ALL that apply)',
+      question_id:'Persamaan manakah yang sama dengan 0? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$5 \\times 0$',id:'$5 \\times 0$'},
+        {en:'$0 \\times 99$',id:'$0 \\times 99$'},
+        {en:'$9 \\times 1$',id:'$9 \\times 1$'},
+        {en:'$0 + 7$',id:'$0 + 7$'}
+      ],
+      answer:[0,1],
+      explanation:'Multiplying by 0 gives 0. So $5 \\times 0 = 0$ and $0 \\times 99 = 0$. Note that $0 + 7 = 7$, not 0.',
+      explanation_id:'Mengalikan dengan 0 menghasilkan 0. Jadi $5 \\times 0 = 0$ dan $0 \\times 99 = 0$. Perhatikan bahwa $0 + 7 = 7$, bukan 0.'
+    },
+    /* 6. PAIR */
+    {
+      type:'pair',
+      question:'Match each multiplication with its correct product.',
+      question_id:'Cocokkan tiap perkalian dengan hasil yang benar.',
+      pairs:[
+        {left:{en:'$6 \\times 8$',id:'$6 \\times 8$'},right:{en:'$48$',id:'$48$',key:'a'}},
+        {left:{en:'$7 \\times 9$',id:'$7 \\times 9$'},right:{en:'$63$',id:'$63$',key:'b'}},
+        {left:{en:'$8 \\times 7$',id:'$8 \\times 7$'},right:{en:'$56$',id:'$56$',key:'c'}},
+        {left:{en:'$9 \\times 6$',id:'$9 \\times 6$'},right:{en:'$54$',id:'$54$',key:'d'}}
+      ],
+      explanation:'Double-check using rhythm or the commutative property!',
+      explanation_id:'Periksa kembali menggunakan ritme atau sifat komutatif!'
+    },
+    /* 7. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: $8 \\times 7 = 56$, so $7 \\times 8 = 56$.',
+      question_id:'Benar atau Salah: $8 \\times 7 = 56$, maka $7 \\times 8 = 56$.',
+      answer:true,
+      explanation:'True. By the commutative property, swapping the order does not change the product.',
+      explanation_id:'Benar. Berdasarkan sifat komutatif, menukar urutan tidak mengubah hasil.'
+    },
+    /* 8. DRAG */
+    {
+      type:'drag',
+      question:'Complete the equation: $9 \\times 6 = \\_$',
+      question_id:'Lengkapi persamaan: $9 \\times 6 = \\_$',
+      instruction:'Drag the correct product into the empty slot.',
+      items:[
+        {en:'54'},{en:'45'},{en:'63'}
+      ],
+      slots:[
+        {label:'$9 \\times 6 = $',target:'54'}
+      ],
+      explanation:'You can use the finger trick for 9s. Fold the 6th finger: 5 on the left, 4 on the right. $9 \\times 6 = 54$.',
+      explanation_id:'Kamu bisa menggunakan trik jari untuk 9. Lipat jari ke-6: 5 di kiri, 4 di kanan. $9 \\times 6 = 54$.'
+    },
+    /* 9. ORDER */
+    {
+      type:'order',
+      question:'Arrange these products in ascending order (smallest to largest).',
+      question_id:'Urutkan hasil-hasil ini dari terkecil ke terbesar.',
+      items:[
+        {en:'$42$',id:'$42$'},
+        {en:'$48$',id:'$48$'},
+        {en:'$54$',id:'$54$'},
+        {en:'$63$',id:'$63$'}
+      ],
+      explanation:'42 < 48 < 54 < 63. These are products of $6\\times7, 6\\times8, 9\\times6, 7\\times9$.',
+      explanation_id:'42 < 48 < 54 < 63. Ini adalah hasil dari $6\\times7, 6\\times8, 9\\times6, 7\\times9$.'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'Solve: $7 \\times 9 = ?$',
+      question_id:'Selesaikan: $7 \\times 9 = ?$',
+      placeholder:'___',
+      large:true,
+      answer:'63',
+      hint:'You know $7 \\times 10 = 70$. Just subtract 7!',
+      hint_id:'Kamu tahu $7 \\times 10 = 70$. Kurangi 7 saja!',
+      explanation:'$70 - 7 = 63$. So $7 \\times 9 = 63$.',
+      explanation_id:'$70 - 7 = 63$. Jadi $7 \\times 9 = 63$.'
+    },
+    /* 11. RESULT */
+    {
+      type:'theory',
+      icon:'🏆',
+      title:'Assignment 1 Complete!',
+      title_id:'Tugas 1 Selesai!',
+      content:`<div class="result-screen">
+        <div class="result-stars">⭐⭐⭐</div>
+        <div class="result-title">Mission Accomplished!<small>Misi Selesai!</small></div>
+        <div style="margin:15px 0; text-align:left; background:#fff; padding:15px; border-radius:12px; border:2px solid #e5e5e5;">
+          <label style="font-weight:800; display:block; margin-bottom:5px;">Student Name: <small>Nama Siswa</small></label>
+          <input type="text" id="print-name-7.1" class="text-input" style="width:100%; text-align:left; font-size:16px;" placeholder="Type name here...">
+          <p style="margin-top:12px; font-weight:800; font-size:18px;">Score: <span id="print-score-7.1">0 / 10</span></p>
+        </div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-secondary" onclick="updateAssignmentData('7.1')">🔄 Update Data</button>
+          <button class="btn btn-blue" onclick="printAssignment('7.1')">🖨️ Print Result</button>
+        </div>
+      </div>`,
+      content_id:'Kamu telah menyelesaikan Tugas 1 dengan sangat baik. Perbarui data dan cetak hasil kerjamu!'
+    }
+  ]
+};
+
+/* ============================================================
+   SECTION 7.2 — ASSIGNMENT 2
+   ============================================================ */
+sections['7.2'] = {
+  title:'Assignment 2: Word Problems & Missing Factors',
+  title_id:'Tugas 2: Soal Cerita & Faktor Hilang',
+  time:'Homework',
+  banner:'⭐ Assignment 2: Word Problems & Missing Factors',
+  banner_id:'⭐ Tugas 2: Soal Cerita & Faktor Hilang',
+  tasks:[
+    /* 1. FILL */
+    {
+      type:'fill',
+      question:'A farmer plants 9 rows of corn. Each row contains 8 plants. What is the total number of corn plants?',
+      question_id:'Seorang petani menanam 9 baris jagung. Setiap baris berisi 8 tanaman. Berapa total tanaman jagung petani tersebut?',
+      placeholder:'___',
+      large:true,
+      answer:'72',
+      hint:'Multiply rows by plants per row: $9 \\times 8$',
+      hint_id:'Kalikan baris dengan tanaman per baris: $9 \\times 8$',
+      explanation:'9 groups of 8 = $9 \\times 8 = 72$ plants.',
+      explanation_id:'9 kelompok berisi 8 = $9 \\times 8 = 72$ tanaman.'
+    },
+    /* 2. FILL */
+    {
+      type:'fill',
+      question:'Determine the missing number: $\\_ \\times 7 = 63$',
+      question_id:'Tentukan angka yang hilang: $\\_ \\times 7 = 63$',
+      placeholder:'___',
+      large:true,
+      answer:'9',
+      hint:'What times 7 equals 63?',
+      hint_id:'Berapa dikali 7 sama dengan 63?',
+      explanation:'$9 \\times 7 = 63$, so the missing factor is 9.',
+      explanation_id:'$9 \\times 7 = 63$, jadi faktor yang hilang adalah 9.'
+    },
+    /* 3. FILL */
+    {
+      type:'fill',
+      question:'Solve: $(6 \\times 3) + (6 \\times 4) = 6 \\times \\_?$ (Hint: use simple distributive property)',
+      question_id:'Selesaikan: $(6 \\times 3) + (6 \\times 4) = 6 \\times \\_?$ (Petunjuk: gunakan sifat distributif sederhana)',
+      placeholder:'___',
+      large:true,
+      answer:'7',
+      hint:'Add the numbers inside: $3 + 4 = ?$',
+      hint_id:'Jumlahkan angka di dalamnya: $3 + 4 = ?$',
+      explanation:'By distributive property, $6\\times3 + 6\\times4 = 6 \\times (3+4) = 6 \\times 7$.',
+      explanation_id:'Berdasarkan sifat distributif, $6\\times3 + 6\\times4 = 6 \\times (3+4) = 6 \\times 7$.'
+    },
+    /* 4. RADIO */
+    {
+      type:'radio',
+      question:'Using the same logic, $(7 \\times 2) + (7 \\times 5) = 7 \\times \\_?$',
+      question_id:'Dengan logika yang sama, $(7 \\times 2) + (7 \\times 5) = 7 \\times \\_?$',
+      options:[
+        {en:'$7$',id:'$7$'},
+        {en:'$10$',id:'$10$'},
+        {en:'$14$',id:'$14$'},
+        {en:'$35$',id:'$35$'}
+      ],
+      answer:0,
+      explanation:'$2 + 5 = 7$. So the expression becomes $7 \\times 7 = 49$.',
+      explanation_id:'$2 + 5 = 7$. Jadi persamaannya menjadi $7 \\times 7 = 49$.'
+    },
+    /* 5. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following represent $9 \\times 8$? (Select ALL that apply)',
+      question_id:'Manakah dari berikut ini yang mewakili $9 \\times 8$? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$9 \\times 4 + 9 \\times 4$',id:'$9 \\times 4 + 9 \\times 4$'},
+        {en:'$8 \\times 9$',id:'$8 \\times 9$'},
+        {en:'$9 \\times 5 + 9 \\times 3$',id:'$9 \\times 5 + 9 \\times 3$'},
+        {en:'$8 \\times 8$',id:'$8 \\times 8$'}
+      ],
+      answer:[0,1,2],
+      explanation:'$9\\times4 + 9\\times4 = 9\\times8$. $8\\times9 = 9\\times8$. $9\\times5 + 9\\times3 = 9\\times8$. $8\\times8$ is 64, not 72.',
+      explanation_id:'$9\\times4 + 9\\times4 = 9\\times8$. $8\\times9 = 9\\times8$. $9\\times5 + 9\\times3 = 9\\times8$. $8\\times8$ adalah 64, bukan 72.'
+    },
+    /* 6. PAIR */
+    {
+      type:'pair',
+      question:'Match each word problem to its correct multiplication equation.',
+      question_id:'Cocokkan tiap soal cerita dengan persamaan perkalian yang benar.',
+      pairs:[
+        {left:{en:'7 rows of 6 chairs',id:'7 baris 6 kursi'},right:{en:'$7 \\times 6$',id:'$7 \\times 6$',key:'a'}},
+        {left:{en:'9 boxes of 8 pencils',id:'9 kotak 8 pensil'},right:{en:'$9 \\times 8$',id:'$9 \\times 8$',key:'b'}},
+        {left:{en:'8 groups of 7 students',id:'8 kelompok 7 siswa'},right:{en:'$8 \\times 7$',id:'$8 \\times 7$',key:'c'}}
+      ],
+      explanation:'Rows = first factor, items in row = second factor.',
+      explanation_id:'Baris = faktor pertama, item di baris = faktor kedua.'
+    },
+    /* 7. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: If $9 \\times 7 = 63$, then $63 \\div 7 = 9$.',
+      question_id:'Benar atau Salah: Jika $9 \\times 7 = 63$, maka $63 \\div 7 = 9$.',
+      answer:true,
+      explanation:'True. Multiplication and division are inverse operations.',
+      explanation_id:'Benar. Perkalian dan pembagian adalah operasi kebalikan.'
+    },
+    /* 8. FILL */
+    {
+      type:'fill',
+      question:'A hall has 7 rows of 9 chairs. How many chairs are there in total?',
+      question_id:'Sebuah aula memiliki 7 baris 9 kursi. Berapa total kursi di sana?',
+      placeholder:'___',
+      large:true,
+      answer:'63',
+      hint:'$7 \\times 9 = ?$',
+      hint_id:'$7 \\times 9 = ?$',
+      explanation:'$7 \\times 9 = 63$ chairs.',
+      explanation_id:'$7 \\times 9 = 63$ kursi.'
+    },
+    /* 9. DRAG */
+    {
+      type:'drag',
+      question:'Find the missing factor: $8 \\times \\_ = 72$',
+      question_id:'Temukan faktor yang hilang: $8 \\times \\_ = 72$',
+      instruction:'Drag the correct number into the empty slot.',
+      items:[
+        {en:'8'},{en:'9'},{en:'7'}
+      ],
+      slots:[
+        {label:'$8 \\times$',target:'9'}
+      ],
+      explanation:'$8 \\times 9 = 72$.',
+      explanation_id:'$8 \\times 9 = 72$.'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'Solve using distributive property: $(8 \\times 4) + (8 \\times 2) = 8 \\times \\_?$',
+      question_id:'Selesaikan menggunakan sifat distributif: $(8 \\times 4) + (8 \\times 2) = 8 \\times \\_?$',
+      placeholder:'___',
+      large:true,
+      answer:'6',
+      hint:'$4 + 2 = ?$',
+      hint_id:'$4 + 2 = ?$',
+      explanation:'$8 \\times 4 + 8 \\times 2 = 8 \\times (4+2) = 8 \\times 6$.',
+      explanation_id:'$8 \\times 4 + 8 \\times 2 = 8 \\times (4+2) = 8 \\times 6$.'
+    },
+    /* 11. RESULT */
+    {
+      type:'theory',
+      icon:'🏆',
+      title:'Assignment 2 Complete!',
+      title_id:'Tugas 2 Selesai!',
+      content:`<div class="result-screen">
+        <div class="result-stars">⭐⭐⭐</div>
+        <div class="result-title">Mission Accomplished!<small>Misi Selesai!</small></div>
+        <div style="margin:15px 0; text-align:left; background:#fff; padding:15px; border-radius:12px; border:2px solid #e5e5e5;">
+          <label style="font-weight:800; display:block; margin-bottom:5px;">Student Name: <small>Nama Siswa</small></label>
+          <input type="text" id="print-name-7.2" class="text-input" style="width:100%; text-align:left; font-size:16px;" placeholder="Type name here...">
+          <p style="margin-top:12px; font-weight:800; font-size:18px;">Score: <span id="print-score-7.2">0 / 10</span></p>
+        </div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-secondary" onclick="updateAssignmentData('7.2')">🔄 Update Data</button>
+          <button class="btn btn-blue" onclick="printAssignment('7.2')">🖨️ Print Result</button>
+        </div>
+      </div>`,
+      content_id:'Kamu telah menyelesaikan Tugas 2 dengan sangat baik. Perbarui data dan cetak hasil kerjamu!'
+    }
+  ]
+};
+
+/* ============================================================
+   SECTION 7.3 — ASSIGNMENT 3
+   ============================================================ */
+sections['7.3'] = {
+  title:'Assignment 3: Advanced Logic & Comparisons',
+  title_id:'Tugas 3: Logika Lanjutan & Perbandingan',
+  time:'Homework',
+  banner:'⭐ Assignment 3: Advanced Logic & Comparisons',
+  banner_id:'⭐ Tugas 3: Logika Lanjutan & Perbandingan',
+  tasks:[
+    /* 1. FILL */
+    {
+      type:'fill',
+      question:'If $8 \\times 7 = 56$, what is the result of $8 \\times 14$? (Hint: 14 is twice 7)',
+      question_id:'Jika $8 \\times 7 = 56$, berapakah hasil dari $8 \\times 14$? (Petunjuk: 14 adalah dua kali lipat dari 7)',
+      placeholder:'___',
+      large:true,
+      answer:'112',
+      hint:'If 7 becomes 14 (doubled), the product also doubles.',
+      hint_id:'Jika 7 menjadi 14 (berlipat ganda), hasilnya juga berlipat ganda.',
+      explanation:'Since 14 is $2 \\times 7$, then $8 \\times 14 = 8 \\times 7 \\times 2 = 56 \\times 2 = 112$.',
+      explanation_id:'Karena 14 adalah $2 \\times 7$, maka $8 \\times 14 = 8 \\times 7 \\times 2 = 56 \\times 2 = 112$.'
+    },
+    /* 2. RADIO */
+    {
+      type:'radio',
+      question:'Using the same logic, if $9 \\times 6 = 54$, what is $9 \\times 12$?',
+      question_id:'Dengan logika yang sama, jika $9 \\times 6 = 54$, berapakah $9 \\times 12$?',
+      options:[
+        {en:'$60$',id:'$60$'},
+        {en:'$108$',id:'$108$'},
+        {en:'$96$',id:'$96$'},
+        {en:'$112$',id:'$112$'}
+      ],
+      answer:1,
+      explanation:'12 is double 6. So the product doubles: $54 \\times 2 = 108$.',
+      explanation_id:'12 adalah dua kali 6. Jadi hasilnya berlipat ganda: $54 \\times 2 = 108$.'
+    },
+    /* 3. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: $7 \\times 9$ is greater than $8 \\times 8$.',
+      question_id:'Benar atau Salah: $7 \\times 9$ lebih besar daripada $8 \\times 8$.',
+      answer:false,
+      hint:'Calculate both: $7\\times9=63$ and $8\\times8=64$. Is 63 > 64?',
+      hint_id:'Hitung keduanya: $7\\times9=63$ dan $8\\times8=64$. Apakah 63 > 64?',
+      explanation:'False. $7 \\times 9 = 63$ and $8 \\times 8 = 64$. Since 63 is less than 64, $7 \\times 9$ is NOT greater than $8 \\times 8$.',
+      explanation_id:'Salah. $7 \\times 9 = 63$ dan $8 \\times 8 = 64$. Karena 63 kurang dari 64, $7 \\times 9$ TIDAK lebih besar dari $8 \\times 8$.'
+    },
+    /* 4. FILL */
+    {
+      type:'fill',
+      question:'Calculate: $(9 \\times 9) - (7 \\times 6) = ?$',
+      question_id:'Hitunglah: $(9 \\times 9) - (7 \\times 6) = ?$',
+      placeholder:'___',
+      large:true,
+      answer:'39',
+      hint:'First find $9\\times9$, then find $7\\times6$, then subtract.',
+      hint_id:'Pertama cari $9\\times9$, lalu cari $7\\times6$, lalu kurangkan.',
+      explanation:'$9 \\times 9 = 81$. $7 \\times 6 = 42$. $81 - 42 = 39$.',
+      explanation_id:'$9 \\times 9 = 81$. $7 \\times 6 = 42$. $81 - 42 = 39$.'
+    },
+    /* 5. FILL */
+    {
+      type:'fill',
+      question:'Calculate: $(8 \\times 8) - (6 \\times 6) = ?$',
+      question_id:'Hitunglah: $(8 \\times 8) - (6 \\times 6) = ?$',
+      placeholder:'___',
+      large:true,
+      answer:'28',
+      hint:'$64 - 36 = ?$',
+      hint_id:'$64 - 36 = ?$',
+      explanation:'$8 \\times 8 = 64$. $6 \\times 6 = 36$. $64 - 36 = 28$.',
+      explanation_id:'$8 \\times 8 = 64$. $6 \\times 6 = 36$. $64 - 36 = 28$.'
+    },
+    /* 6. ORDER */
+    {
+      type:'order',
+      question:'Arrange these products in ascending order (smallest to largest).',
+      question_id:'Urutkan hasil-hasil ini dari terkecil ke terbesar.',
+      items:[
+        {en:'$48$',id:'$48$'},
+        {en:'$56$',id:'$56$'},
+        {en:'$63$',id:'$63$'},
+        {en:'$72$',id:'$72$'}
+      ],
+      explanation:'48 ($6\\times8$) < 56 ($7\\times8$) < 63 ($7\\times9$) < 72 ($8\\times9$).',
+      explanation_id:'48 ($6\\times8$) < 56 ($7\\times8$) < 63 ($7\\times9$) < 72 ($8\\times9$).'
+    },
+    /* 7. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following expressions are greater than 60? (Select ALL that apply)',
+      question_id:'Manakah dari ekspresi berikut yang lebih besar dari 60? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$7 \\times 9$',id:'$7 \\times 9$'},
+        {en:'$8 \\times 8$',id:'$8 \\times 8$'},
+        {en:'$9 \\times 6$',id:'$9 \\times 6$'},
+        {en:'$6 \\times 8$',id:'$6 \\times 8$'}
+      ],
+      answer:[0,1,2],
+      explanation:'$7\\times9=63$ (>60). $8\\times8=64$ (>60). $9\\times6=54$ (<60). $6\\times8=48$ (<60).',
+      explanation_id:'$7\\times9=63$ (>60). $8\\times8=64$ (>60). $9\\times6=54$ (<60). $6\\times8=48$ (<60).'
+    },
+    /* 8. PAIR */
+    {
+      type:'pair',
+      question:'Match each complex expression with its correct result.',
+      question_id:'Cocokkan tiap ekspresi kompleks dengan hasil yang benar.',
+      pairs:[
+        {left:{en:'$(9 \\times 9) - 9$',id:'$(9 \\times 9) - 9$'},right:{en:'$72$',id:'$72$',key:'a'}},
+        {left:{en:'$(8 \\times 8) + 8$',id:'$(8 \\times 8) + 8$'},right:{en:'$72$',id:'$72$',key:'b'}},
+        {left:{en:'$(7 \\times 7) + 7$',id:'$(7 \\times 7) + 7$'},right:{en:'$56$',id:'$56$',key:'c'}}
+      ],
+      explanation:'$81-9=72$. $64+8=72$. $49+7=56$. The first two both equal 72!',
+      explanation_id:'$81-9=72$. $64+8=72$. $49+7=56$. Dua yang pertama sama-sama 72!'
+    },
+    /* 9. DRAG */
+    {
+      type:'drag',
+      question:'If $8 \\times 8 = 64$, what is $8 \\times 16$? Drag the correct number.',
+      question_id:'Jika $8 \\times 8 = 64$, berapakah $8 \\times 16$? Seret angka yang benar.',
+      instruction:'Drop the correct product into the empty slot.',
+      items:[
+        {en:'128'},{en:'118'},{en:'164'}
+      ],
+      slots:[
+        {label:'$8 \\times 16 = $',target:'128'}
+      ],
+      explanation:'16 is double 8. So the product doubles: $64 \\times 2 = 128$.',
+      explanation_id:'16 adalah dua kali 8. Jadi hasilnya berlipat ganda: $64 \\times 2 = 128$.'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'Calculate: $9 \\times 10 = ?$',
+      question_id:'Hitunglah: $9 \\times 10 = ?$',
+      placeholder:'___',
+      large:true,
+      answer:'90',
+      hint:'Just add a zero to 9!',
+      hint_id:'Cukup tambahkan nol ke 9!',
+      explanation:'Multiplying by 10 is easy: $9 \\times 10 = 90$.',
+      explanation_id:'Mengalikan dengan 10 itu mudah: $9 \\times 10 = 90$.'
+    },
+    /* 11. RESULT */
+    {
+      type:'theory',
+      icon:'🏆',
+      title:'Assignment 3 Complete!',
+      title_id:'Tugas 3 Selesai!',
+      content:`<div class="result-screen">
+        <div class="result-stars">⭐⭐⭐</div>
+        <div class="result-title">Mission Accomplished!<small>Misi Selesai!</small></div>
+        <div style="margin:15px 0; text-align:left; background:#fff; padding:15px; border-radius:12px; border:2px solid #e5e5e5;">
+          <label style="font-weight:800; display:block; margin-bottom:5px;">Student Name: <small>Nama Siswa</small></label>
+          <input type="text" id="print-name-7.3" class="text-input" style="width:100%; text-align:left; font-size:16px;" placeholder="Type name here...">
+          <p style="margin-top:12px; font-weight:800; font-size:18px;">Score: <span id="print-score-7.3">0 / 10</span></p>
+        </div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-secondary" onclick="updateAssignmentData('7.3')">🔄 Update Data</button>
+          <button class="btn btn-blue" onclick="printAssignment('7.3')">🖨️ Print Result</button>
+        </div>
+      </div>`,
+      content_id:'Kamu telah menyelesaikan Tugas 3 dengan sangat baik. Perbarui data dan cetak hasil kerjamu!'
+    }
+  ]
+};
+</script>
+<script>
+/* ============================================================
+   SECTION 7.4 — ASSIGNMENT 4
+   ============================================================ */
+sections['7.4'] = {
+  title:'Assignment 4: Master the Facts',
+  title_id:'Tugas 4: Kuasai Fakta Perkalian',
+  time:'Homework',
+  banner:'⭐ Assignment 4: Master the Facts',
+  banner_id:'⭐ Tugas 4: Kuasai Fakta Perkalian',
+  tasks:[
+    /* 1. FILL */
+    {
+      type:'fill',
+      question:'What is $6 \\times 8$?',
+      question_id:'Berapakah $6 \\times 8$?',
+      placeholder:'___',
+      large:true,
+      answer:'48',
+      hint:'Count by 6s eight times, or by 8s six times.',
+      hint_id:'Hitung kelipatan 6 sebanyak delapan kali, atau kelipatan 8 sebanyak enam kali.',
+      explanation:'$6 \\times 8 = 48$. You can also use $8 \\times 6 = 48$.',
+      explanation_id:'$6 \\times 8 = 48$. Kamu juga bisa menggunakan $8 \\times 6 = 48$.'
+    },
+    /* 2. RADIO */
+    {
+      type:'radio',
+      question:'Which of the following is the commutative property for $8 \\times 9 = 72$?',
+      question_id:'Manakah dari berikut ini yang merupakan sifat komutatif untuk $8 \\times 9 = 72$?',
+      options:[
+        {en:'$9 + 8 = 17$',id:'$9 + 8 = 17$'},
+        {en:'$9 \\times 8 = 72$',id:'$9 \\times 8 = 72$'},
+        {en:'$72 \\div 8 = 9$',id:'$72 \\div 8 = 9$'},
+        {en:'$8 \\times 0 = 0$',id:'$8 \\times 0 = 0$'}
+      ],
+      answer:1,
+      explanation:'Commutative property means swapping the factors: $8 \\times 9$ becomes $9 \\times 8$.',
+      explanation_id:'Sifat komutatif berarti menukar faktor: $8 \\times 9$ berubah menjadi $9 \\times 8$.'
+    },
+    /* 3. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following equal 54? (Select ALL that apply)',
+      question_id:'Manakah dari berikut ini yang sama dengan 54? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$6 \\times 9$',id:'$6 \\times 9$'},
+        {en:'$9 \\times 6$',id:'$9 \\times 6$'},
+        {en:'$7 \\times 8$',id:'$7 \\times 8$'},
+        {en:'$54 \\times 1$',id:'$54 \\times 1$'}
+      ],
+      answer:[0,1,3],
+      explanation:'$6\\times9=54$, $9\\times6=54$, and $54\\times1=54$. $7\\times8=56$.',
+      explanation_id:'$6\\times9=54$, $9\\times6=54$, dan $54\\times1=54$. $7\\times8=56$.'
+    },
+    /* 4. PAIR */
+    {
+      type:'pair',
+      question:'Match each multiplication with its product.',
+      question_id:'Cocokkan tiap perkalian dengan hasilnya.',
+      pairs:[
+        {left:{en:'$7 \\times 7$',id:'$7 \\times 7$'},right:{en:'$49$',id:'$49$',key:'a'}},
+        {left:{en:'$8 \\times 8$',id:'$8 \\times 8$'},right:{en:'$64$',id:'$64$',key:'b'}},
+        {left:{en:'$9 \\times 9$',id:'$9 \\times 9$'},right:{en:'$81$',id:'$81$',key:'c'}},
+        {left:{en:'$6 \\times 6$',id:'$6 \\times 6$'},right:{en:'$36$',id:'$36$',key:'d'}}
+      ],
+      explanation:'These are the perfect squares from 6 to 9!',
+      explanation_id:'Ini adalah kuadrat sempurna dari 6 sampai 9!'
+    },
+    /* 5. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: $9 \\times 8 = 72$, so $72 \\div 9 = 8$.',
+      question_id:'Benar atau Salah: $9 \\times 8 = 72$, maka $72 \\div 9 = 8$.',
+      answer:true,
+      explanation:'True. Multiplication and division are fact families!',
+      explanation_id:'Benar. Perkalian dan pembagian adalah keluarga fakta!'
+    },
+    /* 6. ORDER */
+    {
+      type:'order',
+      question:'Arrange these products in ascending order (smallest to largest).',
+      question_id:'Urutkan hasil-hasil ini dari terkecil ke terbesar.',
+      items:[
+        {en:'$36$',id:'$36$'},
+        {en:'$49$',id:'$49$'},
+        {en:'$64$',id:'$64$'},
+        {en:'$81$',id:'$81$'}
+      ],
+      explanation:'36 < 49 < 64 < 81. These are $6^2, 7^2, 8^2, 9^2$.',
+      explanation_id:'36 < 49 < 64 < 81. Ini adalah $6^2, 7^2, 8^2, 9^2$.'
+    },
+    /* 7. DRAG */
+    {
+      type:'drag',
+      question:'Complete the missing factor equation: $7 \\times \\_ = 56$',
+      question_id:'Lengkapi persamaan faktor yang hilang: $7 \\times \\_ = 56$',
+      instruction:'Drag the correct number into the empty slot.',
+      items:[
+        {en:'7'},{en:'8'},{en:'9'}
+      ],
+      slots:[
+        {label:'$7 \\times$',target:'8'}
+      ],
+      explanation:'$7 \\times 8 = 56$.',
+      explanation_id:'$7 \\times 8 = 56$.'
+    },
+    /* 8. FILL */
+    {
+      type:'fill',
+      question:'An orchard has 8 rows of 9 trees. How many trees are there in total?',
+      question_id:'Sebuah kebun memiliki 8 baris 9 pohon. Berapa total pohon di sana?',
+      placeholder:'___',
+      large:true,
+      answer:'72',
+      hint:'$8 \\times 9 = ?$',
+      hint_id:'$8 \\times 9 = ?$',
+      explanation:'8 groups of 9 = $8 \\times 9 = 72$ trees.',
+      explanation_id:'8 kelompok berisi 9 = $8 \\times 9 = 72$ pohon.'
+    },
+    /* 9. FILL */
+    {
+      type:'fill',
+      question:'Simplify using distributive property: $(8 \\times 5) + (8 \\times 3) = 8 \\times \\_?$',
+      question_id:'Sederhanakan menggunakan sifat distributif: $(8 \\times 5) + (8 \\times 3) = 8 \\times \\_?$',
+      placeholder:'___',
+      large:true,
+      answer:'8',
+      hint:'Add the numbers being multiplied by 8: $5 + 3 = ?$',
+      hint_id:'Jumlahkan angka yang dikalikan dengan 8: $5 + 3 = ?$',
+      explanation:'$8 \\times 5 + 8 \\times 3 = 8 \\times (5+3) = 8 \\times 8$.',
+      explanation_id:'$8 \\times 5 + 8 \\times 3 = 8 \\times (5+3) = 8 \\times 8$.'
+    },
+    /* 10. RADIO */
+    {
+      type:'radio',
+      question:'What happens when you multiply any number by 0?',
+      question_id:'Apa yang terjadi ketika kamu mengalikan angka apapun dengan 0?',
+      options:[
+        {en:'The answer is the same number',id:'Jawabannya adalah angka tersebut'},
+        {en:'The answer is 1',id:'Jawabannya adalah 1'},
+        {en:'The answer is 0',id:'Jawabannya adalah 0'},
+        {en:'The answer is 10',id:'Jawabannya adalah 10'}
+      ],
+      answer:2,
+      explanation:'The golden rule of zero: any number multiplied by 0 is always 0.',
+      explanation_id:'Aturan emas nol: angka apapun dikalikan 0 selalu 0.'
+    },
+    /* 11. RESULT */
+    {
+      type:'theory',
+      icon:'🏆',
+      title:'Assignment 4 Complete!',
+      title_id:'Tugas 4 Selesai!',
+      content:`<div class="result-screen">
+        <div class="result-stars">⭐⭐⭐</div>
+        <div class="result-title">Mission Accomplished!<small>Misi Selesai!</small></div>
+        <div style="margin:15px 0; text-align:left; background:#fff; padding:15px; border-radius:12px; border:2px solid #e5e5e5;">
+          <label style="font-weight:800; display:block; margin-bottom:5px;">Student Name: <small>Nama Siswa</small></label>
+          <input type="text" id="print-name-7.4" class="text-input" style="width:100%; text-align:left; font-size:16px;" placeholder="Type name here...">
+          <p style="margin-top:12px; font-weight:800; font-size:18px;">Score: <span id="print-score-7.4">0 / 10</span></p>
+        </div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-secondary" onclick="updateAssignmentData('7.4')">🔄 Update Data</button>
+          <button class="btn btn-blue" onclick="printAssignment('7.4')">🖨️ Print Result</button>
+        </div>
+      </div>`,
+      content_id:'Kamu telah menyelesaikan Tugas 4 dengan sangat baik. Perbarui data dan cetak hasil kerjamu!'
+    }
+  ]
+};
+
+/* ============================================================
+   SECTION 7.5 — ASSIGNMENT 5
+   ============================================================ */
+sections['7.5'] = {
+  title:'Assignment 5: The Final Challenge',
+  title_id:'Tugas 5: Tantangan Terakhir',
+  time:'Homework',
+  banner:'🏆 Assignment 5: The Final Challenge',
+  banner_id:'🏆 Tugas 5: Tantangan Terakhir',
+  tasks:[
+    /* 1. FILL */
+    {
+      type:'fill',
+      question:'What is $9 \\times 9$?',
+      question_id:'Berapakah $9 \\times 9$?',
+      placeholder:'___',
+      large:true,
+      answer:'81',
+      hint:'Use the finger trick! Fold the 9th finger.',
+      hint_id:'Gunakan trik jari! Lipat jari ke-9.',
+      explanation:'Fold the 9th finger. 8 on the left, 1 on the right. $9 \\times 9 = 81$.',
+      explanation_id:'Lipat jari ke-9. 8 di kiri, 1 di kanan. $9 \\times 9 = 81$.'
+    },
+    /* 2. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which of the following multiply to give 48? (Select ALL that apply)',
+      question_id:'Manakah dari berikut ini yang jika dikalikan menghasilkan 48? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'$6 \\times 8$',id:'$6 \\times 8$'},
+        {en:'$8 \\times 6$',id:'$8 \\times 6$'},
+        {en:'$4 \\times 12$',id:'$4 \\times 12$'},
+        {en:'$7 \\times 7$',id:'$7 \\times 7$'}
+      ],
+      answer:[0,1,2],
+      explanation:'$6\\times8=48$, $8\\times6=48$, $4\\times12=48$. $7\\times7=49$.',
+      explanation_id:'$6\\times8=48$, $8\\times6=48$, $4\\times12=48$. $7\\times7=49$.'
+    },
+    /* 3. TRUE/FALSE */
+    {
+      type:'tf',
+      question:'True or False: $7 \\times 6 = 42$, so $42 \\div 6 = 7$.',
+      question_id:'Benar atau Salah: $7 \\times 6 = 42$, maka $42 \\div 6 = 7$.',
+      answer:true,
+      explanation:'True. Fact families show that if $a \\times b = c$, then $c \\div b = a$.',
+      explanation_id:'Benar. Keluarga fakta menunjukkan bahwa jika $a \\times b = c$, maka $c \\div b = a$.'
+    },
+    /* 4. PAIR */
+    {
+      type:'pair',
+      question:'Match each real-world problem to its correct equation.',
+      question_id:'Cocokkan tiap masalah dunia nyata dengan persamaan yang benar.',
+      pairs:[
+        {left:{en:'9 boxes of 7 marbles',id:'9 kotak berisi 7 kelereng'},right:{en:'$9 \\times 7$',id:'$9 \\times 7$',key:'a'}},
+        {left:{en:'8 rows of 6 chairs',id:'8 baris 6 kursi'},right:{en:'$8 \\times 6$',id:'$8 \\times 6$',key:'b'}},
+        {left:{en:'7 groups of 8 students',id:'7 kelompok 8 siswa'},right:{en:'$7 \\times 8$',id:'$7 \\times 8$',key:'c'}}
+      ],
+      explanation:'Match the number of groups to the first factor and items in each group to the second.',
+      explanation_id:'Cocokkan jumlah kelompok dengan faktor pertama dan item di tiap kelompok dengan faktor kedua.'
+    },
+    /* 5. ORDER */
+    {
+      type:'order',
+      question:'Arrange these products in descending order (largest to smallest).',
+      question_id:'Urutkan hasil-hasil ini dari terbesar ke terkecil.',
+      items:[
+        {en:'$81$',id:'$81$'},
+        {en:'$72$',id:'$72$'},
+        {en:'$63$',id:'$63$'},
+        {en:'$56$',id:'$56$'}
+      ],
+      explanation:'81 > 72 > 63 > 56.',
+      explanation_id:'81 > 72 > 63 > 56.'
+    },
+    /* 6. DRAG */
+    {
+      type:'drag',
+      question:'Find the missing factor: $8 \\times \\_ = 64$',
+      question_id:'Temukan faktor yang hilang: $8 \\times \\_ = 64$',
+      instruction:'Drag the correct number into the empty slot.',
+      items:[
+        {en:'7'},{en:'8'},{en:'9'}
+      ],
+      slots:[
+        {label:'$8 \\times$',target:'8'}
+      ],
+      explanation:'$8 \\times 8 = 64$.',
+      explanation_id:'$8 \\times 8 = 64$.'
+    },
+    /* 7. FILL */
+    {
+      type:'fill',
+      question:'Simplify: $(7 \\times 4) + (7 \\times 3) = 7 \\times \\_?$',
+      question_id:'Sederhanakan: $(7 \\times 4) + (7 \\times 3) = 7 \\times \\_?$',
+      placeholder:'___',
+      large:true,
+      answer:'7',
+      hint:'$4 + 3 = ?$',
+      hint_id:'$4 + 3 = ?$',
+      explanation:'$7 \\times 4 + 7 \\times 3 = 7 \\times (4+3) = 7 \\times 7$.',
+      explanation_id:'$7 \\times 4 + 7 \\times 3 = 7 \\times (4+3) = 7 \\times 7$.'
+    },
+    /* 8. RADIO */
+    {
+      type:'radio',
+      question:'Which of the following numbers is NOT a multiple of 9?',
+      question_id:'Manakah dari angka berikut yang BUKAN kelipatan 9?',
+      options:[
+        {en:'$54$',id:'$54$'},
+        {en:'$63$',id:'$63$'},
+        {en:'$65$',id:'$65$'},
+        {en:'$72$',id:'$72$'}
+      ],
+      answer:2,
+      explanation:'The 9s sequence: 9, 18, 27, 36, 45, 54, 63, 72. 65 is not in this list.',
+      explanation_id:'Urutan 9: 9, 18, 27, 36, 45, 54, 63, 72. 65 tidak ada di daftar ini.'
+    },
+    /* 9. FILL */
+    {
+      type:'fill',
+      question:'What is $527 \\times 0$?',
+      question_id:'Berapakah $527 \\times 0$?',
+      placeholder:'___',
+      large:true,
+      answer:'0',
+      hint:'Remember the golden rule of zero!',
+      hint_id:'Ingat aturan emas angka nol!',
+      explanation:'Anything times zero is zero.',
+      explanation_id:'Apapun dikali nol adalah nol.'
+    },
+    /* 10. FILL */
+    {
+      type:'fill',
+      question:'A teacher has 9 boxes of pencils, with 7 pencils in each box. How many pencils are there?',
+      question_id:'Seorang guru memiliki 9 kotak pensil, dengan 7 pensil di tiap kotak. Berapa total pensilnya?',
+      placeholder:'___',
+      large:true,
+      answer:'63',
+      hint:'$9 \\times 7 = ?$',
+      hint_id:'$9 \\times 7 = ?$',
+      explanation:'9 groups of 7 = $9 \\times 7 = 63$ pencils.',
+      explanation_id:'9 kelompok berisi 7 = $9 \\times 7 = 63$ pensil.'
+    },
+    /* 11. RESULT */
+    {
+      type:'theory',
+      icon:'🏆',
+      title:'Assignment 5 Complete!',
+      title_id:'Tugas 5 Selesai!',
+      content:`<div class="result-screen">
+        <div class="result-stars">⭐⭐⭐</div>
+        <div class="result-title">Mission Accomplished!<small>Misi Selesai!</small></div>
+        <div style="margin:15px 0; text-align:left; background:#fff; padding:15px; border-radius:12px; border:2px solid #e5e5e5;">
+          <label style="font-weight:800; display:block; margin-bottom:5px;">Student Name: <small>Nama Siswa</small></label>
+          <input type="text" id="print-name-7.5" class="text-input" style="width:100%; text-align:left; font-size:16px;" placeholder="Type name here...">
+          <p style="margin-top:12px; font-weight:800; font-size:18px;">Score: <span id="print-score-7.5">0 / 10</span></p>
+        </div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-secondary" onclick="updateAssignmentData('7.5')">🔄 Update Data</button>
+          <button class="btn btn-blue" onclick="printAssignment('7.5')">🖨️ Print Result</button>
+        </div>
+      </div>`,
+      content_id:'Kamu telah menyelesaikan Tugas 5 dengan sangat baik. Perbarui data dan cetak hasil kerjamu!'
+    }
+  ]
+};
+
+/* ============================================================
+   SECTION 8 — CONSOLIDATION & REFLECTION
+   ============================================================ */
+sections['8'] = {
+  title:'Consolidation & Reflection',
+  title_id:'Konsolidasi & Refleksi',
+  time:'01:00 – 01:05',
+  tasks:[
+    /* 1. THEORY */
+    {
+      type:'theory',
+      icon:'🎯',
+      title:'Lesson Reflection',
+      title_id:'Refleksi Pelajaran',
+      content:`<p>Awesome job! You have conquered the number monsters today. What was the most memorable lesson? The finger trick for 9s or the golden rule of zero?</p>
+      <div class="formula">$\\text{Practice makes perfect!}$</div>
+      <p>For more practice and to sharpen your memory, log in to the Algonova platform.</p>`,
+      content_id:'Luar biasa! Kamu sudah menaklukkan monster angka hari ini. Apa pelajaran yang paling berkesan? Trik jari angka 9 atau sifat angka nol? Jangan lupa, untuk latihan lebih lanjut agar ingatanmu makin kuat, silakan login ke platform Algonova.'
+    },
+    /* 2. CHECKBOX */
+    {
+      type:'checkbox',
+      question:'Which tricks did you learn today? (Select ALL that apply)',
+      question_id:'Trik apa saja yang kamu pelajari hari ini? (Pilih SEMUA yang benar)',
+      options:[
+        {en:'Finger trick for 9s',id:'Trik jari untuk perkalian 9'},
+        {en:'Commutative Property (Secret Weapon)',id:'Sifat Komutatif (Senjata Rahasia)'},
+        {en:'Rhythm and chanting',id:'Ritme dan lantunan angka'},
+        {en:'Golden rule of zero',id:'Aturan emas angka nol'}
+      ],
+      answer:[0,1,2,3],
+      explanation:'You learned all these fantastic tricks today! Review them anytime you forget.',
+      explanation_id:'Kamu belajar semua trik luar biasa ini hari ini! Tinjau kembali kapan saja jika kamu lupa.'
+    },
+    /* 3. PAIR */
+    {
+      type:'pair',
+      question:'Final review! Match the fact to its answer.',
+      question_id:'Tinjauan akhir! Cocokkan fakta perkalian dengan jawabannya.',
+      pairs:[
+        {left:{en:'$7 \\times 8$',id:'$7 \\times 8$'},right:{en:'$56$',id:'$56$',key:'a'}},
+        {left:{en:'$9 \\times 6$',id:'$9 \\times 6$'},right:{en:'$54$',id:'$54$',key:'b'}},
+        {left:{en:'$8 \\times 8$',id:'$8 \\times 8$'},right:{en:'$64$',id:'$64$',key:'c'}},
+        {left:{en:'$9 \\times 0$',id:'$9 \\times 0$'},right:{en:'$0$',id:'$0$',key:'d'}}
+      ],
+      explanation:'You nailed it! These are the core facts for 6-9 and 0.',
+      explanation_id:'Kerbagus! Ini adalah fakta inti untuk perkalian 6-9 dan 0.'
+    },
+    /* 4. THEORY */
+    {
+      type:'theory',
+      icon:'🚀',
+      title:'Continue Your Journey!',
+      title_id:'Lanjutkan Petualanganmu!',
+      content:`<div class="algonova-card">
+        <h3>Ready for more? / Siap untuk lebih?</h3>
+        <p>Click the link below to log in to your Algonova account and practice daily!</p>
+        <a href="https://learn.algonova.id/login" target="_blank" class="algonova-link">🚀 Login to Algonova</a>
+      </div>
+      <p>See you in the next mission! / Sampai jumpa di misi berikutnya!</p>`,
+      content_id:'Klik tautan di bawah untuk masuk ke akun Algonova-mu dan berlatih setiap hari! Sampai jumpa di misi berikutnya!'
+    }
+  ]
+};
+</script>
+
+</body>
+</html>
