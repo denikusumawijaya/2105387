@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tutoring - Gerak Pembagian</title>
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <!-- KaTeX JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <!-- KaTeX Auto-render -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary: #58cc02;
+            --primary-dark: #46a302;
+            --blue: #1cb0f6;
+            --bg-color: #fff;
+            --text-color: #3c3c3c;
+            --border-color: #e5e5e5;
+            --shadow: 0 2px 0 rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f7f7f7;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .reset-btn {
+            background-color: #ff4b4b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #cc3b3b;
+            transition: transform 0.1s;
+        }
+
+        .reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #cc3b3b;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Sidebar (Path) */
+        .sidebar {
+            width: 300px;
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .path-node {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .path-node:hover {
+            transform: translateX(5px);
+        }
+
+        .path-node::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            width: 4px;
+            height: 25px;
+            background-color: #e5e5e5;
+            z-index: 0;
+        }
+
+        .path-node:last-child::before {
+            display: none;
+        }
+
+        .node-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e5e5e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 1;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #e5e5e5;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .path-node.active .node-icon {
+            background-color: var(--blue);
+            box-shadow: 0 0 0 2px var(--blue);
+            animation: pulse 2s infinite;
+        }
+
+        .path-node.completed .node-icon {
+            background-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(28, 176, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(28, 176, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(28, 176, 246, 0); }
+        }
+
+        .node-info {
+            margin-left: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .node-info small {
+            display: block;
+            color: #afafaf;
+            font-weight: 400;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography & Bilingual */
+        .id-text { font-size: 1.1rem; margin-bottom: 5px; }
+        .en-text { font-size: 0.9rem; color: #777; font-style: italic; margin-bottom: 15px; }
+
+        /* Cards & Elements */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 3px 0 var(--primary-dark); }
+        .btn-blue { background: var(--blue); color: white; box-shadow: 0 3px 0 #0a87bf; }
+        .btn-secondary { background: #e5e5e5; color: #777; box-shadow: 0 3px 0 #c5c5c5; }
+        .btn-danger { background: #ff4b4b; color: white; box-shadow: 0 3px 0 #cc3b3b; }
+        
+        .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.1); }
+        .btn:disabled { background: #e5e5e5; color: #aaa; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Exercise Styles */
+        .exercise-container {
+            margin-top: 20px;
+        }
+        
+        .question-box {
+            background: #f0f8ff;
+            border: 2px solid var(--blue);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #e5e5e5;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .option-btn:hover { border-color: var(--blue); background: #f0f8ff; }
+        .option-btn.selected { border-color: var(--blue); background: #ddf4ff; color: var(--blue); }
+        .option-btn.correct { border-color: var(--primary); background: #e6ffc4; color: var(--primary-dark); }
+        .option-btn.wrong { border-color: #ff4b4b; background: #ffdada; color: #cc3b3b; }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus { border-color: var(--blue); }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .feedback.show { display: block; animation: fadeIn 0.3s; }
+        .feedback.correct { background: #e6ffc4; color: var(--primary-dark); }
+        .feedback.wrong { background: #ffdada; color: #cc3b3b; }
+
+        .collapse-btn {
+            margin-top: 10px;
+            background: none;
+            border: none;
+            color: var(--blue);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: white;
+            border-left: 4px solid var(--blue);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .explanation-box.show { display: block; }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; }
+            header, .sidebar, .controls, .btn, .reset-btn, .collapse-btn, .option-btn { display: none !important; }
+            .content-area { padding: 0; max-width: 100%; }
+            .print-area { display: block !important; }
+            .screen { display: none !important; }
+            @page { size: A4; margin: 1cm; }
+        }
+
+        .print-area { display: none; }
+        
+        svg { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">MATH TUTORING by Deni</div>
+        <button class="reset-btn" onclick="resetAllProgress()">Reset Progres</button>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Nodes will be generated by JS -->
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content-area" id="contentArea">
+            <!-- Screens will be generated by JS -->
+        </main>
+    </div>
+
+    <!-- Print Template -->
+    <div class="print-area" id="printArea">
+        <h1 style="text-align:center;">MATH TUTORING by Deni</h1>
+        <hr>
+        <p><strong>Name:</strong> ..............................</p>
+        <p><strong>Date:</strong> ..............................</p>
+        <p><strong>Topic:</strong> ..............................</p>
+        <p><strong>Assignment Group:</strong> <span id="printGroup">..............................</span></p>
+        <p><strong>Score:</strong> ......./ 10</p>
+        <br>
+        <table style="width:100%; border-collapse: collapse; font-size: 12px;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 5px; width: 5%;">No.</th>
+                    <th style="border: 1px solid black; padding: 5px; width: 35%;">Question</th>
+                    <th style="border: 1px solid black; padding: 5px; width: 20%;">Student Answer</th>
+                    <th style="border: 1px solid black; padding: 5px; width: 20%;">Correct Answer</th>
+                    <th style="border: 1px solid black; padding: 5px; width: 20%;">Note (check/cross)</th>
+                </tr>
+            </thead>
+            <tbody id="printTableBody">
+                <!-- Rows generated by JS -->
+            </tbody>
+        </table>
+        <br><br>
+        <p>Checked by,</p>
+        <br><br>
+        <p><strong>Deni</strong></p>
+    </div>
+
+    <script>
+        // ==========================================
+        // LESSON DATA (Part 1 of 3)
+        // ==========================================
+        const lessonsData = [
+            {
+                id: 'home',
+                title: 'Home',
+                time: '',
+                icon: '🏠',
+                content: [
+                    { type: 'header', text_id: 'Selamat Datang di Kelas Matematika!', text_en: 'Welcome to Math Class!' },
+                    { type: 'text', text_id: 'Topik: Gerak Pembagian (Fakta Keluarga)', text_en: 'Topic: Division Movement (Fact Family)' },
+                    { type: 'rules', rules: [
+                        { id: 'Berbicara secara bergantian', en: 'Take turns speaking' },
+                        { id: 'Meminta izin jika ingin meninggalkan kelas', en: 'Ask permission if you need to leave the class' },
+                        { id: 'Menyalakan kamera dan microphone jika diperlukan', en: 'Turn on camera and microphone if needed' }
+                    ]},
+                    { type: 'button', text: 'Mulai Kelas', action: 'next' }
+                ]
+            },
+            {
+                id: 's1',
+                title: 'Spiral Review Warm-up',
+                time: '00:00-00:10',
+                icon: '🔄',
+                content: [
+                    // Theory 1
+					{ type: 'theory', text_id: 'Sebelum kita masuk ke misi baru, mari kita asah otak detektif kita. Kita akan merakit dan membongkar bilangan.', text_en: "Before we start a new mission, let's sharpen our detective brains. We will assemble and disassemble numbers." },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Rakitlah angka ini: 4 ribuan, 0 ratusan, 7 puluhan, dan 2 satuan. Berapa bilangan tersebut?', question_en: 'Assemble this number: 4 thousands, 0 hundreds, 7 tens, and 2 ones. What is the number?', options: ['4072', '4270', '4720', '4027'], correct: '4072', explanation_id: '4 ribuan (4000) + 0 ratusan (0) + 7 puluhan (70) + 2 satuan (2) = 4072.', explanation_en: '4 thousands (4000) + 0 hundreds (0) + 7 tens (70) + 2 ones (2) = 4072.' },
+					{ type: 'exercise', question_id: 'Bongkarlah angka 8.529 menjadi bentuk panjang (ribuan + ratusan + puluhan + satuan).', question_en: "Disassemble the number 8,529 into long form (thousands + hundreds + tens + ones).", input: true, correct: '8000+500+20+9', explanation_id: '8000 + 500 + 20 + 9. Jangan lupa tanda tambahnya.', explanation_en: "8000 + 500 + 20 + 9. Don't forget the plus sign." },
+                    { type: 'exercise', question_id: 'Jika di awan ada angka 15, 20, dan 25, pola apa yang kamu lihat?', question_en: 'If the clouds have numbers 15, 20, and 25, what pattern do you see?', options: ['Bertambah 5', 'Berkurang 5', 'Bertambah 10', 'Kelipatan 2'], correct: 'Bertambah 5', explanation_id: 'Setiap bilangan bertambah 5 dari bilangan sebelumnya (15+5=20, 20+5=25).', explanation_en: 'Each number increases by 5 from the previous one.' },
+                    // Theory 2
+                    { type: 'theory', text_id: 'Hebat! Sekarang mari kita berlatih membandingkan bilangan.', text_en: "Great! Now let's practice comparing numbers." },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Manakah yang lebih besar, 3.450 atau 3.540?', question_en: 'Which is larger, 3,450 or 3,540?', options: ['3.450', '3.540', 'Sama besar'], correct: '3.540', explanation_id: 'Bandingkan dari ratusan. 5 ratusan lebih besar dari 4 ratusan.', explanation_en: 'Compare the hundreds. 5 hundreds is bigger than 4 hundreds.' },
+                    { type: 'exercise', question_id: 'Urutkan bilangan ini dari terkecil ke terbesar: 1.200, 2.100, 1.020.', question_en: 'Order these numbers from smallest to largest: 1,200, 2,100, 1,020.', input: true, correct: '1020,1200,2100', explanation_id: '1.020 paling kecil, lalu 1.200, dan 2.100 paling besar.', explanation_en: '1,020 is smallest, then 1,200, and 2,100 is largest.' },
+                    { type: 'exercise', question_id: 'Pola 12, 24, 36, ... apa bilangan selanjutnya?', question_en: 'Pattern 12, 24, 36, ... what is the next number?', options: ['38', '48', '40', '50'], correct: '48', explanation_id: 'Pola bertambah 12. 36 + 12 = 48.', explanation_en: 'The pattern adds 12. 36 + 12 = 48.' },
+                    // Theory 3
+                    { type: 'theory', text_id: 'Detektif yang hebat! Kita sudah siap untuk misi utama hari ini.', text_en: "Great detective work! We are ready for today's main mission." },
+                    // 4 Exercises
+                    { type: 'exercise', question_id: 'Tulis angka: 6 ribuan, 2 ratusan, 5 puluhan, 8 satuan.', question_en: 'Write the number: 6 thousands, 2 hundreds, 5 tens, 8 ones.', input: true, correct: '6258', explanation_id: '6000 + 200 + 50 + 8 = 6258.', explanation_en: '6000 + 200 + 50 + 8 = 6258.' },
+                    { type: 'exercise', question_id: 'Tulis bentuk panjang dari 9.403.', question_en: 'Write the long form of 9,403.', input: true, correct: '9000+400+0+3', explanation_id: '9000 + 400 + 0 + 3.', explanation_en: '9000 + 400 + 0 + 3.' },
+                    { type: 'exercise', question_id: 'Manakah yang lebih besar: 5.999 atau 6.001?', question_en: 'Which is larger: 5,999 or 6,001?', options: ['5.999', '6.001'], correct: '6.001', explanation_id: '6.001 memiliki 6 ribuan, sedangkan 5.999 hanya 5 ribuan.', explanation_en: '6,001 has 6 thousands, while 5,999 only has 5 thousands.' },
+                    { type: 'exercise', question_id: 'Pola berkurang 10: 80, 70, 60, ... berapa selanjutnya?', question_en: 'Subtract pattern 10: 80, 70, 60, ... what is next?', input: true, correct: '50', explanation_id: '60 dikurangi 10 sama dengan 50.', explanation_en: '60 minus 10 equals 50.' }
+                ]
+            },
+            {
+                id: 's2',
+                title: 'Introduction & Real-World',
+                time: '00:10-00:15',
+                icon: '🌍',
+                content: [
+                    // Theory 1
+                    { type: 'theory', text_id: 'Bayangkan kamu adalah seorang pemimpin tim penyelamat. Kamu punya 20 kotak bantuan yang harus dibagikan sama rata ke 4 desa. Pembagian adalah tentang berbagi secara adil.', text_en: 'Imagine you are a rescue team leader. You have 20 boxes of aid to distribute equally to 4 villages. Division is about sharing fairly.' },
+                    { type: 'svg', svg: 'boxes' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Jika 20 kotak dibagi rata ke 4 desa, berapa kotak yang diterima setiap desa?', question_en: 'If 20 boxes are divided equally into 4 villages, how many boxes does each village get?', options: ['4', '5', '6', '10'], correct: '5', explanation_id: '20 dibagi 4 sama dengan 5.', explanation_en: '20 divided by 4 equals 5.' },
+                    { type: 'exercise', question_id: 'Ada 12 roti untuk 4 anak. Berapa roti tiap anak?', question_en: 'There are 12 breads for 4 children. How many breads per child?', input: true, correct: '3', explanation_id: '12 dibagi 4 sama dengan 3.', explanation_en: '12 divided by 4 equals 3.' },
+                    { type: 'exercise', question_id: '15 permen dibagi rata ke 3 teman. Berapa bagian tiap teman?', question_en: '15 candies divided equally among 3 friends. How many per friend?', options: ['4', '5', '6', '8'], correct: '5', explanation_id: '15 dibagi 3 sama dengan 5.', explanation_en: '15 divided by 3 equals 5.' },
+                    // Theory 2
+                    { type: 'theory', text_id: 'Simbol pembagian adalah ÷. Simbol ini berarti kita memisahkan sesuatu menjadi bagian yang sama besar.', text_en: 'The division symbol is ÷. This symbol means we separate something into equal parts.' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Manakah simbol matematika yang benar untuk "10 dibagi 2"?', question_en: 'Which math symbol is correct for "10 divided by 2"?', options: ['10 x 2', '10 + 2', '10 ÷ 2', '10 - 2'], correct: '10 ÷ 2', explanation_id: 'Kata "dibagi" menggunakan simbol ÷.', explanation_en: 'The word "divided by" uses the ÷ symbol.' },
+                    { type: 'exercise', question_id: '8 ÷ 4 = ?', question_en: '8 ÷ 4 = ?', input: true, correct: '2', explanation_id: '8 dibagi 4 sama dengan 2.', explanation_en: '8 divided by 4 equals 2.' },
+                    { type: 'exercise', question_id: '9 ÷ 3 = ?', question_en: '9 ÷ 3 = ?', options: ['2', '3', '4', '6'], correct: '3', explanation_id: '9 dibagi 3 sama dengan 3.', explanation_en: '9 divided by 3 equals 3.' },
+                    // Theory 3
+                    { type: 'theory', text_id: 'Dalam pembagian, kita harus memastikan bahwa setiap kelompok mendapat jumlah yang sama. Ini disebut pembagian yang adil.', text_en: 'In division, we must ensure that each group gets the same amount. This is called fair division.' },
+                    // 4 Exercises
+                    { type: 'exercise', question_id: 'Apakah 10 dibagi ke 3 orang bisa dibagi sama rata tanpa sisa?', question_en: 'Can 10 divided among 3 people be divided equally without a remainder?', options: ['Ya', 'Tidak'], correct: 'Tidak', explanation_id: '10 tidak bisa dibagi 3 secara rata, ada sisa 1.', explanation_en: '10 cannot be divided by 3 evenly, there is a remainder of 1.' },
+                    { type: 'exercise', question_id: '14 ÷ 2 = ?', question_en: '14 ÷ 2 = ?', input: true, correct: '7', explanation_id: '14 dibagi 2 sama dengan 7.', explanation_en: '14 divided by 2 equals 7.' },
+                    { type: 'exercise', question_id: '16 dibagi 4 sama dengan...', question_en: '16 divided by 4 equals...', options: ['3', '4', '5', '6'], correct: '4', explanation_id: '16 dibagi 4 sama dengan 4.', explanation_en: '16 divided by 4 equals 4.' },
+                    { type: 'exercise', question_id: 'Pilih situasi pembagian yang adil: 18 permen untuk 6 anak.', question_en: 'Choose the fair division situation: 18 candies for 6 children.', options: ['Tiap anak dapat 2', 'Tiap anak dapat 3', 'Tiap anak dapat 4'], correct: 'Tiap anak dapat 3', explanation_id: '18 dibagi 6 adalah 3. Jadi tiap anak dapat 3.', explanation_en: '18 divided by 6 is 3. So each child gets 3.' }
+                ]
+            },
+            {
+                id: 's3',
+                title: 'Review of Prior Knowledge',
+                time: '00:15-00:20',
+                icon: '📖',
+                content: [
+                    // Theory 1
+                    { type: 'theory', text_id: 'Coba ingat tabel perkalian 5. Kalau 4 dikali 5 hasilnya 20. Perkalian adalah dasar dari pembagian.', text_en: 'Try to remember the 5 times table. If 4 times 5 equals 20. Multiplication is the basis of division.' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: '4 x 5 = ?', question_en: '4 x 5 = ?', options: ['15', '20', '25', '9'], correct: '20', explanation_id: '4 dikali 5 sama dengan 20.', explanation_en: '4 times 5 equals 20.' },
+                    { type: 'exercise', question_id: '6 x 3 = ?', question_en: '6 x 3 = ?', input: true, correct: '18', explanation_id: '6 dikali 3 sama dengan 18.', explanation_en: '6 times 3 equals 18.' },
+                    { type: 'exercise', question_id: '7 x 4 = ?', question_en: '7 x 4 = ?', options: ['28', '21', '24', '32'], correct: '28', explanation_id: '7 dikali 4 sama dengan 28.', explanation_en: '7 times 4 equals 28.' },
+                    // Theory 2
+                    { type: 'theory', text_id: 'Jika 4 x 5 = 20, menurutmu apa yang terjadi jika 20 kita bagi dengan 5? Hasilnya pasti 4! Ini adalah hubungan timbal balik (inverse).', text_en: 'If 4 x 5 = 20, what do you think happens if we divide 20 by 5? The result must be 4! This is an inverse relationship.' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Jika 6 x 4 = 24, maka 24 ÷ 4 = ?', question_en: 'If 6 x 4 = 24, then 24 ÷ 4 = ?', input: true, correct: '6', explanation_id: 'Karena 24 adalah hasil dari 6x4, maka 24 dibagi 4 adalah 6.', explanation_en: 'Because 24 is the result of 6x4, 24 divided by 4 is 6.' },
+                    { type: 'exercise', question_id: 'Jika 7 x 3 = 21, maka 21 ÷ 3 = ?', question_en: 'If 7 x 3 = 21, then 21 ÷ 3 = ?', options: ['3', '4', '7', '24'], correct: '7', explanation_id: '21 dibagi 3 adalah 7.', explanation_en: '21 divided by 3 is 7.' },
+                    { type: 'exercise', question_id: 'Jika 8 x 5 = 40, maka 40 ÷ 8 = ?', question_en: 'If 8 x 5 = 40, then 40 ÷ 8 = ?', options: ['5', '8', '4', '10'], correct: '5', explanation_id: '40 dibagi 8 adalah 5.', explanation_en: '40 divided by 8 is 5.' },
+                    // Theory 3
+                    { type: 'theory', text_id: 'Hubungan timbal balik ini dinamakan "Fact Family" atau Keluarga Fakta. 3 angka dalam perkalian bisa membentuk 2 perkalian dan 2 pembagian.', text_en: 'This inverse relationship is called "Fact Family". 3 numbers in multiplication can form 2 multiplications and 2 divisions.' },
+                    // 4 Exercises
+                    { type: 'exercise', question_id: 'Tuliskan 2 kalimat perkalian dari angka 3, 5, dan 15. (Pisahkan dengan koma)', question_en: 'Write 2 multiplication sentences from 3, 5, and 15. (Separate with comma)', input: true, correct: '3x5=15,5x3=15', explanation_id: '3x5=15 dan 5x3=15.', explanation_en: '3x5=15 and 5x3=15.' },
+                    { type: 'exercise', question_id: 'Berdasarkan angka 3, 5, dan 15, berapakah 15 ÷ 3?', question_en: 'Based on 3, 5, and 15, what is 15 ÷ 3?', options: ['3', '5', '15', '8'], correct: '5', explanation_id: '15 dibagi 3 adalah 5.', explanation_en: '15 divided by 3 is 5.' },
+                    { type: 'exercise', question_id: 'Berdasarkan angka 3, 5, dan 15, berapakah 15 ÷ 5?', question_en: 'Based on 3, 5, and 15, what is 15 ÷ 5?', input: true, correct: '3', explanation_id: '15 dibagi 5 adalah 3.', explanation_en: '15 divided by 5 is 3.' },
+                    { type: 'exercise', question_id: 'Dari keluarga fakta 4, 6, 24. Manakah pernyataan yang SALAH?', question_en: 'From the fact family 4, 6, 24. Which statement is WRONG?', options: ['4 x 6 = 24', '24 ÷ 4 = 6', '6 x 24 = 4', '24 ÷ 6 = 4'], correct: '6 x 24 = 4', explanation_id: '6 x 24 hasilnya bukan 4, melainkan 144.', explanation_en: '6 x 24 is not 4, it is 144.' }
+                ]
+            },
+            {
+                id: 's4',
+                title: 'Problem Introduction',
+                time: '00:20-00:30',
+                icon: '🔺',
+                content: [
+                    // Theory 1
+                    { type: 'theory', text_id: 'Sekarang lihat Segitiga Ajaib (Fact Family Triangle). Di puncaknya ada angka terbesar (hasil kali), dan di kedua kaki sudutnya ada angka faktor. Dari angka 24, 6, dan 4, kita bisa membuat kalimat matematika.', text_en: 'Now look at the Magic Triangle (Fact Family Triangle). At the top is the largest number (product), and at the bottom corners are the factor numbers. From 24, 6, and 4, we can make math sentences.' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Dari angka 24, 6, dan 4, manakah yang merupakan hasil kali (produk)?', question_en: 'From 24, 6, and 4, which one is the product?', options: ['4', '6', '24', '10'], correct: '24', explanation_id: '24 adalah angka terbesar dan merupakan hasil dari $6 \\times 4$.', explanation_en: '24 is the largest number and is the result of $6 \\times 4$.' },
+                    { type: 'exercise', question_id: 'Tuliskan kalimat perkalian dari faktor 6 dan 4. (Gunakan format: $a \\times b = c$ tanpa spasi)', question_en: 'Write the multiplication sentence for factors 6 and 4. (Use format: $a \\times b = c$ without spaces)', input: true, correct: '6\\times4=24', explanation_id: 'Urutan perkaliannya adalah $6 \\times 4 = 24$.', explanation_en: 'The multiplication order is $6 \\times 4 = 24$.' },
+                    { type: 'exercise', question_id: 'Bagaimana jika urutan faktornya dibalik? Tuliskan kalimatnya.', question_en: 'What if the order of factors is reversed? Write the sentence.', options: ['$4 \\times 6 = 24$', '$4 \\times 24 = 6$', '$24 \\times 6 = 4$'], correct: '$4 \\times 6 = 24$', explanation_id: 'Sifat perkalian adalah komutatif, jadi $4 \\times 6 = 24$ juga benar.', explanation_en: 'Multiplication is commutative, so $4 \\times 6 = 24$ is also correct.' },
+                    // Theory 2
+                    { type: 'theory', text_id: 'Karena pembagian adalah kebalikan dari perkalian, kita tinggal membalik posisi hasil kali dan salah satu faktor. Hasil kali (24) selalu menjadi bilangan yang dibagi (dividen).', text_en: 'Since division is the inverse of multiplication, we just reverse the position of the product and one of the factors. The product (24) always becomes the number being divided (dividend).' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Jika $24$ kita bagi dengan $6$, berapa hasilnya?', question_en: 'If we divide $24$ by $6$, what is the result?', input: true, correct: '4', explanation_id: 'Karena $6 \\times 4 = 24$, maka $24 \\div 6 = 4$.', explanation_en: 'Because $6 \\times 4 = 24$, then $24 \\div 6 = 4$.' },
+                    { type: 'exercise', question_id: 'Jika $24$ kita bagi dengan $4$, berapa hasilnya?', question_en: 'If we divide $24$ by $4$, what is the result?', options: ['4', '6', '24', '28'], correct: '6', explanation_id: 'Karena $4 \\times 6 = 24$, maka $24 \\div 4 = 6$.', explanation_en: 'Because $4 \\times 6 = 24$, then $24 \\div 4 = 6$.' },
+                    { type: 'exercise', question_id: 'Manakah di bawah ini yang BUKAN merupakan anggota Keluarga Fakta dari 24, 6, dan 4?', question_en: 'Which of the following is NOT a member of the Fact Family of 24, 6, and 4?', options: ['$6 \\div 4 = 24$', '$24 \\div 6 = 4$', '$4 \\times 6 = 24$', '$24 \\div 4 = 6$'], correct: '$6 \\div 4 = 24$', explanation_id: '$6 \\div 4$ hasilnya bukan 24. Hasil kali tidak pernah dibagi oleh faktor.', explanation_en: '$6 \\div 4$ is not 24. A product is never divided by a factor.' },
+                    // Theory 3
+                    { type: 'theory', text_id: 'Hebat! Dari satu segitiga, kita mendapatkan 4 kalimat matematika: $6 \\times 4 = 24$, $4 \\times 6 = 24$, $24 \\div 6 = 4$, dan $24 \\div 4 = 6$. Inilah yang disebut Keluarga Fakta.', text_en: 'Great! From one triangle, we get 4 math sentences: $6 \\times 4 = 24$, $4 \\times 6 = 24$, $24 \\div 6 = 4$, and $24 \\div 4 = 6$. This is called a Fact Family.' },
+                    // 4 Exercises
+                    { type: 'exercise', question_id: 'Lengkapi titik-titik: $\\_ \\times 4 = 24$', question_en: 'Fill in the blanks: $\\_ \\times 4 = 24$', input: true, correct: '6', explanation_id: '24 dibagi 4 sama dengan 6.', explanation_en: '24 divided by 4 equals 6.' },
+                    { type: 'exercise', question_id: 'Lengkapi titik-titik: $24 \\div \\_ = 4$', question_en: 'Fill in the blanks: $24 \\div \\_ = 4$', options: ['4', '6', '20', '28'], correct: '6', explanation_id: 'Karena $6 \\times 4 = 24$, maka 24 dibagi 6 adalah 4.', explanation_en: 'Because $6 \\times 4 = 24$, 24 divided by 6 is 4.' },
+                    { type: 'exercise', question_id: 'Tuliskan 4 kalimat matematika dari keluarga fakta 3, 8, dan 24. (Pisahkan dengan koma, tanpa spasi)', question_en: 'Write 4 math sentences from the fact family 3, 8, and 24. (Separate with commas, no spaces)', input: true, correct: '3\\times8=24,8\\times3=24,24\\div3=8,24\\div8=3', explanation_id: 'Dua perkalian: $3 \\times 8 = 24, 8 \\times 3 = 24$. Dua pembagian: $24 \\div 3 = 8, 24 \\div 8 = 3$.', explanation_en: 'Two multiplications and two divisions.' },
+                    { type: 'exercise', question_id: 'Jika diketahui $7 \\times 5 = 35$, tanpa menghitung ulang, berapakah $35 \\div 5$?', question_en: 'If $7 \\times 5 = 35$, without recalculating, what is $35 \\div 5$?', options: ['5', '7', '30', '40'], correct: '7', explanation_id: 'Menggunakan keluarga fakta, $35 \\div 5$ sama dengan faktor lainnya, yaitu 7.', explanation_en: 'Using the fact family, $35 \\div 5$ equals the other factor, which is 7.' }
+                ]
+            },
+            {
+                id: 's5',
+                title: 'Guided Practice',
+                time: '00:30-00:45',
+                icon: '🧑‍🏫',
+                content: [
+                    // Theory 1
+                    { type: 'theory', text_id: 'Saatnya berlatih! Kamu punya 18 kelereng yang harus dikelompokkan menjadi 3 bagian sama besar. Berapa kelereng di setiap kelompok?', text_en: 'Time to practice! You have 18 marbles to be grouped into 3 equal parts. How many marbles in each group?' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Berapa hasil dari $18 \\div 3$?', question_en: 'What is the result of $18 \\div 3$?', options: ['4', '5', '6', '9'], correct: '6', explanation_id: '18 dibagi 3 sama dengan 6.', explanation_en: '18 divided by 3 equals 6.' },
+                    { type: 'exercise', question_id: 'Berdasarkan soal di atas, tuliskan kalimat perkaliannya. (Gunakan format: $a \\times b = c$ tanpa spasi)', question_en: 'Based on the question above, write the multiplication sentence. (Use format: $a \\times b = c$ no spaces)', input: true, correct: '3\\times6=18', explanation_id: 'Karena 18 dibagi 3 adalah 6, maka $3 \\times 6 = 18$.', explanation_en: 'Because 18 divided by 3 is 6, then $3 \\times 6 = 18$.' },
+                    { type: 'exercise', question_id: 'Jika 18 kelereng dibagi menjadi 6 kelompok, berapa kelereng di tiap kelompok?', question_en: 'If 18 marbles are divided into 6 groups, how many marbles in each group?', input: true, correct: '3', explanation_id: '18 dibagi 6 sama dengan 3.', explanation_en: '18 divided by 6 equals 3.' },
+                    // Theory 2
+					{ type: 'theory', text_id: 'Dari kegiatan tadi, kita menemukan keluarga fakta untuk angka 18, 3, dan 6. Mari kita tulis keempat kalimatnya: $3 \\times 6 = 18$, $6 \\times 3 = 18$, $18 \\div 3 = 6$, dan $18 \\div 6 = 3$.', text_en: "From the previous activity, we found the fact family for 18, 3, and 6. Let's write the four sentences: $3 \\times 6 = 18$, $6 \\times 3 = 18$, $18 \\div 3 = 6$, and $18 \\div 6 = 3$." },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Manakah kalimat matematika yang benar dari keluarga fakta 18, 3, dan 6?', question_en: 'Which math sentence is correct from the fact family 18, 3, and 6?', options: ['$3 \\times 18 = 6$', '$18 \\div 6 = 3$', '$6 \\div 3 = 18$'], correct: '$18 \\div 6 = 3$', explanation_id: '18 (hasil kali) dibagi oleh 6 (faktor) menghasilkan 3 (faktor).', explanation_en: '18 (product) divided by 6 (factor) results in 3 (factor).' },
+                    { type: 'exercise', question_id: 'Lengkapi: $\\_ \\times 3 = 18$', question_en: 'Fill in: $\\_ \\times 3 = 18$', options: ['3', '6', '15', '21'], correct: '6', explanation_id: '18 dibagi 3 adalah 6.', explanation_en: '18 divided by 3 is 6.' },
+                    { type: 'exercise', question_id: 'Lengkapi: $18 \\div \\_ = 6$', question_en: 'Fill in: $18 \\div \\_ = 6$', input: true, correct: '3', explanation_id: 'Karena $3 \\times 6 = 18$, maka $18 \\div 3 = 6$.', explanation_en: 'Because $3 \\times 6 = 18$, then $18 \\div 3 = 6$.' },
+                    // Theory 3
+                    { type: 'theory', text_id: 'Sekarang, mari kita buat cerita! Misalnya: Zainal punya 18 permen. Ia membagikannya kepada 3 temannya. Berapa permen yang diterima setiap teman?', text_en: "Now, let's make a story! For example: Zainal has 18 candies. He distributes them to 3 friends. How many candies does each friend receive?" },
+                    // 4 Exercises
+                    { type: 'exercise', question_id: 'Pilih kalimat matematika yang sesuai dengan cerita "18 permen untuk 3 teman".', question_en: 'Choose the math sentence that fits the story "18 candies for 3 friends".', options: ['$18 \\div 3 = 6$', '$18 \\times 3 = 54$', '$18 - 3 = 15$'], correct: '$18 \\div 3 = 6$', explanation_id: 'Karena membagi kepada 3 teman secara rata, gunakan $18 \\div 3 = 6$.', explanation_en: 'Because dividing among 3 friends equally, use $18 \\div 3 = 6$.' },
+                    { type: 'exercise', question_id: 'Jika 18 permen dimasukkan ke dalam 6 kantong plastik sama rata, berapa permen di tiap kantong?', question_en: 'If 18 candies are put into 6 plastic bags equally, how many candies in each bag?', input: true, correct: '3', explanation_id: '$18 \\div 6 = 3$ permen tiap kantong.', explanation_en: '$18 \\div 6 = 3$ candies per bag.' },
+                    { type: 'exercise', question_id: 'Buatlah kalimat pembagian dari cerita: "Ada 18 apel, dimasukkan 3 apel per piring. Ada berapa piring?"', question_en: 'Make a division sentence from the story: "There are 18 apples, put 3 apples per plate. How many plates?"', input: true, correct: '18\\div3=6', explanation_id: '18 apel dibagi 3 apel per piring sama dengan 6 piring.', explanation_en: '18 apples divided by 3 apples per plate equals 6 plates.' },
+                    { type: 'exercise', question_id: 'Berdasarkan keluarga fakta 18, 3, 6. Manakah pernyataan yang benar?', question_en: 'Based on fact family 18, 3, 6. Which statement is true?', options: ['$6 \\times 3 = 18$', '$18 \\times 3 = 6$', '$3 \\div 18 = 6$'], correct: '$6 \\times 3 = 18$', explanation_id: 'Faktor dikali faktor menghasilkan hasil kali.', explanation_en: 'Factor times factor equals product.' }
+                ]
+            },
+            {
+                id: 's6',
+                title: 'Independent Practice',
+                time: '00:50-01:00',
+                icon: '🧠',
+                content: [
+                    // Theory 1
+                    { type: 'theory', text_id: 'Saatnya mengerjakan tantangan mandiri! Selesaikan Segitiga Keluarga Fakta berikut. Set pertama: 32, 8, dan 4.', text_en: 'Time for the independent challenge! Complete the following Fact Family Triangles. First set: 32, 8, and 4.' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Tuliskan kalimat perkalian dari 8 dan 4. (Format: $a \\times b = c$ tanpa spasi)', question_en: 'Write the multiplication sentence for 8 and 4. (Format: $a \\times b = c$ no spaces)', input: true, correct: '8\\times4=32', explanation_id: '8 dikali 4 sama dengan 32.', explanation_en: '8 times 4 equals 32.' },
+                    { type: 'exercise', question_id: 'Berapakah $32 \\div 8$?', question_en: 'What is $32 \\div 8$?', input: true, correct: '4', explanation_id: '32 dibagi 8 adalah 4.', explanation_en: '32 divided by 8 is 4.' },
+                    { type: 'exercise', question_id: 'Berapakah $32 \\div 4$?', question_en: 'What is $32 \\div 4$?', options: ['4', '8', '28', '36'], correct: '8', explanation_id: '32 dibagi 4 adalah 8.', explanation_en: '32 divided by 4 is 8.' },
+                    // Theory 2
+                    { type: 'theory', text_id: 'Kerja bagus! Set kedua: 45, 9, dan 5. Ingat, angka terbesar selalu di puncak segitiga.', text_en: 'Good job! Second set: 45, 9, and 5. Remember, the largest number is always at the top of the triangle.' },
+                    // 3 Exercises
+                    { type: 'exercise', question_id: 'Berapakah $9 \\times 5$?', question_en: 'What is $9 \\times 5$?', options: ['35', '40', '45', '50'], correct: '45', explanation_id: '9 dikali 5 sama dengan 45.', explanation_en: '9 times 5 equals 45.' },
+                    { type: 'exercise', question_id: 'Berapakah $45 \\div 9$?', question_en: 'What is $45 \\div 9$?', input: true, correct: '5', explanation_id: '45 dibagi 9 adalah 5.', explanation_en: '45 divided by 9 is 5.' },
+                    { type: 'exercise', question_id: 'Berapakah $45 \\div 5$?', question_en: 'What is $45 \\div 5$?', input: true, correct: '9', explanation_id: '45 dibagi 5 adalah 9.', explanation_en: '45 divided by 5 is 9.' },
+                    // Theory 3
+                    { type: 'theory', text_id: 'Luar biasa! Set ketiga: 42, 7, dan 6. Tuliskan seluruh anggota keluarga fakta dan buat cerita pendeknya.', text_en: 'Excellent! Third set: 42, 7, and 6. Write down all members of the fact family and make a short story.' },
+                    // 4 Exercises
+                    { type: 'exercise', question_id: 'Tuliskan kalimat perkalian pertama (faktor 7 dan 6). (Tanpa spasi)', question_en: 'Write the first multiplication sentence (factors 7 and 6). (No spaces)', input: true, correct: '7\\times6=42', explanation_id: '7 dikali 6 sama dengan 42.', explanation_en: '7 times 6 equals 42.' },
+                    { type: 'exercise', question_id: 'Tuliskan kalimat pembagian pertama (42 dibagi 7). (Tanpa spasi)', question_en: 'Write the first division sentence (42 divided by 7). (No spaces)', input: true, correct: '42\\div7=6', explanation_id: '42 dibagi 7 sama dengan 6.', explanation_en: '42 divided by 7 equals 6.' },
+                    { type: 'exercise', question_id: 'Tuliskan kalimat pembagian kedua (42 dibagi 6). (Tanpa spasi)', question_en: 'Write the second division sentence (42 divided by 6). (No spaces)', input: true, correct: '42\\div6=7', explanation_id: '42 dibagi 6 sama dengan 7.', explanation_en: '42 divided by 6 equals 7.' },
+                    { type: 'exercise', question_id: 'Pilih cerita yang sesuai dengan keluarga fakta 42, 7, dan 6.', question_en: 'Choose the story that matches the fact family 42, 7, and 6.', options: ['42 siswa dibagi ke 7 kelompok, tiap kelompok 6 siswa', '7 siswa dibagi ke 42 kelompok', '42 siswa dikali 7 kelompok'], correct: '42 siswa dibagi ke 7 kelompok, tiap kelompok 6 siswa', explanation_id: 'Cerita pembagian yang adil: 42 dibagi 7 kelompok menghasilkan 6 per kelompok.', explanation_en: 'Fair division story: 42 divided into 7 groups results in 6 per group.' }
+                ]
+            },
+            {
+                id: 'a1',
+                title: 'Assignment 1',
+                time: 'Tugas 1',
+                icon: '✍️',
+                content: [
+                    { type: 'exercise', question_id: 'Lengkapi keluarga fakta untuk angka: 7, 8, dan 56. (Tulis 4 kalimat, pisahkan koma tanpa spasi)', question_en: 'Complete the fact family for: 7, 8, and 56. (Write 4 sentences, comma separated, no spaces)', input: true, correct: '7\\times8=56,8\\times7=56,56\\div7=8,56\\div8=7', explanation_id: 'Dua perkalian dan dua pembagian.', explanation_en: 'Two multiplications and two divisions.' },
+                    { type: 'exercise', question_id: 'Jika $9 \\times 4 = 36$, maka $36 \\div 9 = ...$', question_en: 'If $9 \\times 4 = 36$, then $36 \\div 9 = ...$', input: true, correct: '4', explanation_id: 'Karena $9 \\times 4 = 36$, maka $36 \\div 9 = 4$.', explanation_en: 'Because $9 \\times 4 = 36$, $36 \\div 9 = 4$.' },
+                    { type: 'exercise', question_id: 'Jika $9 \\times 4 = 36$, maka $36 \\div 4 = ...$', question_en: 'If $9 \\times 4 = 36$, then $36 \\div 4 = ...$', input: true, correct: '9', explanation_id: 'Karena $9 \\times 4 = 36$, maka $36 \\div 4 = 9$.', explanation_en: 'Because $9 \\times 4 = 36$, $36 \\div 4 = 9$.' },
+                    { type: 'exercise', question_id: 'Tuliskan 4 kalimat matematika untuk angka 5, 10, dan 50. (Pisahkan koma tanpa spasi)', question_en: 'Write 4 math sentences for 5, 10, and 50. (Separate with commas, no spaces)', input: true, correct: '5\\times10=50,10\\times5=50,50\\div10=5,50\\div5=10', explanation_id: 'Faktor dikali faktor, hasil kali dibagi faktor.', explanation_en: 'Factor times factor, product divided by factor.' },
+                    { type: 'exercise', question_id: 'Berapa 48 dibagi 6? Gunakan fakta perkalian untuk membuktikannya.', question_en: 'What is 48 divided by 6? Use multiplication fact to prove it.', options: ['6', '7', '8', '9'], correct: '8', explanation_id: 'Karena $6 \\times 8 = 48$, maka $48 \\div 6 = 8$.', explanation_en: 'Because $6 \\times 8 = 48$, $48 \\div 6 = 8$.' },
+                    { type: 'exercise', question_id: 'Lengkapi keluarga fakta: 3, 9, 27. (Tulis 4 kalimat, pisahkan koma tanpa spasi)', question_en: 'Complete the fact family: 3, 9, 27. (Write 4 sentences, comma separated, no spaces)', input: true, correct: '3\\times9=27,9\\times3=27,27\\div3=9,27\\div9=3', explanation_id: 'Dua perkalian dan dua pembagian.', explanation_en: 'Two multiplications and two divisions.' },
+                    { type: 'exercise', question_id: 'Jika $6 \\times 7 = 42$, maka $42 \\div 6 = ...$', question_en: 'If $6 \\times 7 = 42$, then $42 \\div 6 = ...$', input: true, correct: '7', explanation_id: 'Karena $6 \\times 7 = 42$, maka $42 \\div 6 = 7$.', explanation_en: 'Because $6 \\times 7 = 42$, $42 \\div 6 = 7$.' },
+                    { type: 'exercise', question_id: 'Jika $6 \\times 7 = 42$, maka $42 \\div 7 = ...$', question_en: 'If $6 \\times 7 = 42$, then $42 \\div 7 = ...$', input: true, correct: '6', explanation_id: 'Karena $6 \\times 7 = 42$, maka $42 \\div 7 = 6$.', explanation_en: 'Because $6 \\times 7 = 42$, $42 \\div 7 = 6$.' },
+                    { type: 'exercise', question_id: 'Manakah yang BUKAN anggota keluarga fakta dari 6, 7, dan 42?', question_en: 'Which is NOT a member of the fact family of 6, 7, and 42?', options: ['$6 \\times 7 = 42$', '$42 \\div 6 = 7$', '$7 \\div 6 = 42$', '$42 \\div 7 = 6$'], correct: '$7 \\div 6 = 42$', explanation_id: 'Faktor tidak boleh dibagi oleh faktor lain untuk menghasilkan hasil kali.', explanation_en: 'A factor cannot be divided by another factor to get the product.' },
+                    { type: 'exercise', question_id: 'Jika $8 \\times 8 = 64$, maka $64 \\div 8 = ...$', question_en: 'If $8 \\times 8 = 64$, then $64 \\div 8 = ...$', input: true, correct: '8', explanation_id: 'Karena $8 \\times 8 = 64$, maka $64 \\div 8 = 8$.', explanation_en: 'Because $8 \\times 8 = 64$, $64 \\div 8 = 8$.' },
+                    { type: 'print_button', group: 'Assignment 1' }
+                ]
+            },
+            {
+                id: 'a2',
+                title: 'Assignment 2',
+                time: 'Tugas 2',
+                icon: '📝',
+                content: [
+                    { type: 'exercise', question_id: '72 apel dibagi ke 9 keranjang. Berapa apel per keranjang?', question_en: '72 apples divided into 9 baskets. How many apples per basket?', input: true, correct: '8', explanation_id: '$72 \\div 9 = 8$ apel.', explanation_en: '$72 \\div 9 = 8$ apples.' },
+                    { type: 'exercise', question_id: 'Tuliskan anggota keluarga fakta dari soal 72 apel dan 9 keranjang. (Pisahkan koma tanpa spasi)', question_en: 'Write the fact family members for 72 apples and 9 baskets. (Separate with commas, no spaces)', input: true, correct: '9\\times8=72,8\\times9=72,72\\div9=8,72\\div8=9', explanation_id: 'Faktor 9 dan 8, hasil kali 72.', explanation_en: 'Factors 9 and 8, product 72.' },
+                    { type: 'exercise', question_id: 'Ada 63 siswa naik bus. Setiap bus memuat 7 orang. Berapa bus yang dibutuhkan?', question_en: '63 students ride buses. Each bus holds 7 people. How many buses are needed?', input: true, correct: '9', explanation_id: '$63 \\div 7 = 9$ bus.', explanation_en: '$63 \\div 7 = 9$ buses.' },
+                    { type: 'exercise', question_id: 'Tuliskan kalimat pembagian dari cerita 63 siswa dan bus. (Format: $a \\div b = c$ tanpa spasi)', question_en: 'Write the division sentence for the story of 63 students and buses. (Format: $a \\div b = c$ no spaces)', input: true, correct: '63\\div7=9', explanation_id: '63 dibagi 7 sama dengan 9.', explanation_en: '63 divided by 7 equals 9.' },
+                    { type: 'exercise', question_id: '24 permen dibagi rata ke 4 anak. Berapa permen per anak?', question_en: '24 candies divided equally among 4 children. How many candies per child?', options: ['4', '6', '8', '20'], correct: '6', explanation_id: '$24 \\div 4 = 6$ permen.', explanation_en: '$24 \\div 4 = 6$ candies.' },
+                    { type: 'exercise', question_id: '45 kue dibagi ke 9 toples. Berapa kue per toples?', question_en: '45 cookies divided into 9 jars. How many cookies per jar?', input: true, correct: '5', explanation_id: '$45 \\div 9 = 5$ kue.', explanation_en: '$45 \\div 9 = 5$ cookies.' },
+                    { type: 'exercise', question_id: '32 buku dibagi ke 8 meja. Berapa buku per meja?', question_en: '32 books divided onto 8 tables. How many books per table?', input: true, correct: '4', explanation_id: '$32 \\div 8 = 4$ buku.', explanation_en: '$32 \\div 8 = 4$ books.' },
+                    { type: 'exercise', question_id: '18 bola dibagi ke 3 tim. Berapa bola per tim?', question_en: '18 balls divided among 3 teams. How many balls per team?', input: true, correct: '6', explanation_id: '$18 \\div 3 = 6$ bola.', explanation_en: '$18 \\div 3 = 6$ balls.' },
+                    { type: 'exercise', question_id: '36 lembar kertas dibagi ke 6 siswa. Berapa kertas per siswa?', question_en: '36 sheets of paper divided among 6 students. How many sheets per student?', options: ['4', '6', '30', '42'], correct: '6', explanation_id: '$36 \\div 6 = 6$ lembar.', explanation_en: '$36 \\div 6 = 6$ sheets.' },
+                    { type: 'exercise', question_id: '49 pensil dibagi ke 7 kotak. Berapa pensil per kotak?', question_en: '49 pencils divided into 7 boxes. How many pencils per box?', input: true, correct: '7', explanation_id: '$49 \\div 7 = 7$ pensil.', explanation_en: '$49 \\div 7 = 7$ pencils.' },
+                    { type: 'print_button', group: 'Assignment 2' }
+                ]
+            },
+            {
+                id: 'a3',
+                title: 'Assignment 3',
+                time: 'Tugas 3',
+                icon: '🔍',
+                content: [
+                    { type: 'exercise', question_id: 'Temukan angka yang hilang: $... \\div 7 = 9$', question_en: 'Find the missing number: $... \\div 7 = 9$', input: true, correct: '63', explanation_id: 'Karena $7 \\times 9 = 63$, maka $63 \\div 7 = 9$.', explanation_en: 'Because $7 \\times 9 = 63$, $63 \\div 7 = 9$.' },
+                    { type: 'exercise', question_id: 'Tuliskan kalimat perkaliannya. (Format: $a \\times b = c$ tanpa spasi)', question_en: 'Write the multiplication sentence. (Format: $a \\times b = c$ no spaces)', input: true, correct: '7\\times9=63', explanation_id: '7 dikali 9 sama dengan 63.', explanation_en: '7 times 9 equals 63.' },
+                    { type: 'exercise', question_id: 'Temukan angka hilang: $48 \\div ... = 6$', question_en: 'Find the missing number: $48 \\div ... = 6$', input: true, correct: '8', explanation_id: 'Karena $6 \\times 8 = 48$, maka $48 \\div 8 = 6$.', explanation_en: 'Because $6 \\times 8 = 48$, $48 \\div 8 = 6$.' },
+                    { type: 'exercise', question_id: 'Jika $72 \\div 8 = 9$, jelaskan mengapa $72 \\div 9$ pasti hasilnya 8.', question_en: 'If $72 \\div 8 = 9$, explain why $72 \\div 9$ must be 8.', options: ['Karena mereka dalam satu keluarga fakta yang sama.', 'Karena 72 dikali 9 adalah 8', 'Karena pembagian selalu sama'], correct: 'Karena mereka dalam satu keluarga fakta yang sama.', explanation_id: 'Angka 8, 9, dan 72 adalah satu keluarga fakta.', explanation_en: 'Numbers 8, 9, and 72 are one fact family.' },
+                    { type: 'exercise', question_id: '$... \\times 6 = 54$', question_en: '$... \\times 6 = 54$', input: true, correct: '9', explanation_id: '54 dibagi 6 sama dengan 9.', explanation_en: '54 divided by 6 equals 9.' },
+                    { type: 'exercise', question_id: '$36 \\div ... = 4$', question_en: '$36 \\div ... = 4$', options: ['8', '9', '6', '4'], correct: '9', explanation_id: 'Karena $4 \\times 9 = 36$.', explanation_en: 'Because $4 \\times 9 = 36$.' },
+                    { type: 'exercise', question_id: '$... \\div 5 = 8$', question_en: '$... \\div 5 = 8$', input: true, correct: '40', explanation_id: 'Karena $5 \\times 8 = 40$.', explanation_en: 'Because $5 \\times 8 = 40$.' },
+                    { type: 'exercise', question_id: 'Jika $5 \\times 7 = 35$, maka $35 \\div 5 = ...$', question_en: 'If $5 \\times 7 = 35$, then $35 \\div 5 = ...$', input: true, correct: '7', explanation_id: '35 dibagi 5 sama dengan 7.', explanation_en: '35 divided by 5 equals 7.' },
+                    { type: 'exercise', question_id: 'Jika $9 \\times 3 = 27$, maka $27 \\div 9 = ...$', question_en: 'If $9 \\times 3 = 27$, then $27 \\div 9 = ...$', input: true, correct: '3', explanation_id: '27 dibagi 9 sama dengan 3.', explanation_en: '27 divided by 9 equals 3.' },
+                    { type: 'exercise', question_id: '$56 \\div ... = 7$', question_en: '$56 \\div ... = 7$', options: ['8', '7', '9', '6'], correct: '8', explanation_id: 'Karena $7 \\times 8 = 56$.', explanation_en: 'Because $7 \\times 8 = 56$.' },
+                    { type: 'print_button', group: 'Assignment 3' }
+                ]
+            },
+            {
+                id: 'a4',
+                title: 'Assignment 4',
+                time: 'Tugas 4',
+                icon: '💡',
+                content: [
+                    { type: 'exercise', question_id: 'Gunakan angka 8, 9, dan 72. Tuliskan 4 kalimat keluarga fakta. (Pisahkan koma tanpa spasi)', question_en: 'Use 8, 9, and 72. Write 4 fact family sentences. (Separate with commas, no spaces)', input: true, correct: '8\\times9=72,9\\times8=72,72\\div8=9,72\\div9=8', explanation_id: 'Dua perkalian dan dua pembagian.', explanation_en: 'Two multiplications and two divisions.' },
+                    { type: 'exercise', question_id: 'Tantangan: Jika $12 \\times 5 = 60$, buatlah 2 soal pembagian berbeda. (Pisahkan koma tanpa spasi)', question_en: 'Challenge: If $12 \\times 5 = 60$, make 2 different division problems. (Separate with commas, no spaces)', input: true, correct: '60\\div5=12,60\\div12=5', explanation_id: '60 dibagi 5 sama dengan 12, dan 60 dibagi 12 sama dengan 5.', explanation_en: '60 divided by 5 is 12, and 60 divided by 12 is 5.' },
+                    { type: 'exercise', question_id: 'Buatlah keluarga fakta dari angka 6, 8, 48. (Tulis 4 kalimat, pisahkan koma tanpa spasi)', question_en: 'Make a fact family from 6, 8, 48. (Write 4 sentences, comma separated, no spaces)', input: true, correct: '6\\times8=48,8\\times6=48,48\\div6=8,48\\div8=6', explanation_id: 'Faktor 6 dan 8, hasil kali 48.', explanation_en: 'Factors 6 and 8, product 48.' },
+                    { type: 'exercise', question_id: 'Jika $7 \\times 8 = 56$, berapakah $56 \\div 8$?', question_en: 'If $7 \\times 8 = 56$, what is $56 \\div 8$?', input: true, correct: '7', explanation_id: '56 dibagi 8 sama dengan 7.', explanation_en: '56 divided by 8 equals 7.' },
+                    { type: 'exercise', question_id: 'Tantangan: 100 dibagi 10 sama dengan...', question_en: 'Challenge: 100 divided by 10 equals...', options: ['5', '10', '20', '90'], correct: '10', explanation_id: 'Karena $10 \\times 10 = 100$.', explanation_en: 'Because $10 \\times 10 = 100$.' },
+                    { type: 'exercise', question_id: '81 dibagi 9 sama dengan...', question_en: '81 divided by 9 equals...', input: true, correct: '9', explanation_id: 'Karena $9 \\times 9 = 81$.', explanation_en: 'Because $9 \\times 9 = 81$.' },
+                    { type: 'exercise', question_id: 'Angka favoritmu 4, 9, 36. Tuliskan 4 kalimat fakta. (Pisahkan koma tanpa spasi)', question_en: 'Favorite numbers 4, 9, 36. Write 4 fact sentences. (Separate with commas, no spaces)', input: true, correct: '4\\times9=36,9\\times4=36,36\\div4=9,36\\div9=4', explanation_id: 'Dua perkalian dan dua pembagian.', explanation_en: 'Two multiplications and two divisions.' },
+                    { type: 'exercise', question_id: '64 dibagi 8 sama dengan...', question_en: '64 divided by 8 equals...', input: true, correct: '8', explanation_id: 'Karena $8 \\times 8 = 64$.', explanation_en: 'Because $8 \\times 8 = 64$.' },
+                    { type: 'exercise', question_id: '90 dibagi 9 sama dengan...', question_en: '90 divided by 9 equals...', options: ['8', '9', '10', '11'], correct: '10', explanation_id: 'Karena $9 \\times 10 = 90$.', explanation_en: 'Because $9 \\times 10 = 90$.' },
+                    { type: 'exercise', question_id: 'Tantangan: $11 \\times 4 = 44$. Maka $44 \\div 11 = ...$', question_en: 'Challenge: $11 \\times 4 = 44$. So $44 \\div 11 = ...$', input: true, correct: '4', explanation_id: '44 dibagi 11 sama dengan 4.', explanation_en: '44 divided by 11 equals 4.' },
+                    { type: 'print_button', group: 'Assignment 4' }
+                ]
+            },
+            {
+                id: 'a5',
+                title: 'Assignment 5',
+                time: 'Tugas 5',
+                icon: '🏆',
+                content: [
+                    { type: 'exercise', question_id: '$42 \\div 7 = ...$', question_en: '$42 \\div 7 = ...$', input: true, correct: '6', explanation_id: '42 dibagi 7 sama dengan 6.', explanation_en: '42 divided by 7 equals 6.' },
+                    { type: 'exercise', question_id: '$30 \\div 5 = ...$', question_en: '$30 \\div 5 = ...$', input: true, correct: '6', explanation_id: '30 dibagi 5 sama dengan 6.', explanation_en: '30 divided by 5 equals 6.' },
+                    { type: 'exercise', question_id: 'Jika $6 \\times 6 = 36$, maka $36 \\div 6 = ...$', question_en: 'If $6 \\times 6 = 36$, then $36 \\div 6 = ...$', options: ['5', '6', '7', '8'], correct: '6', explanation_id: '36 dibagi 6 sama dengan 6.', explanation_en: '36 divided by 6 equals 6.' },
+                    { type: 'exercise', question_id: '$72 \\div 9 = ...$', question_en: '$72 \\div 9 = ...$', input: true, correct: '8', explanation_id: '72 dibagi 9 sama dengan 8.', explanation_en: '72 divided by 9 equals 8.' },
+                    { type: 'exercise', question_id: 'Manakah BUKAN keluarga fakta 5, 8, 40?', question_en: 'Which is NOT the fact family of 5, 8, 40?', options: ['$5 \\times 8 = 40$', '$40 \\div 5 = 8$', '$8 \\div 5 = 40$', '$40 \\div 8 = 5$'], correct: '$8 \\div 5 = 40$', explanation_id: 'Faktor tidak dibagi oleh faktor lain.', explanation_en: 'A factor is not divided by another factor.' },
+                    { type: 'exercise', question_id: '$... \\div 6 = 8$', question_en: '$... \\div 6 = 8$', input: true, correct: '48', explanation_id: 'Karena $6 \\times 8 = 48$.', explanation_en: 'Because $6 \\times 8 = 48$.' },
+                    { type: 'exercise', question_id: '$24 \\div 8 = ...$', question_en: '$24 \\div 8 = ...$', options: ['3', '4', '6', '8'], correct: '3', explanation_id: '24 dibagi 8 sama dengan 3.', explanation_en: '24 divided by 8 equals 3.' },
+                    { type: 'exercise', question_id: '$54 \\div 9 = ...$', question_en: '$54 \\div 9 = ...$', input: true, correct: '6', explanation_id: '54 dibagi 9 sama dengan 6.', explanation_en: '54 divided by 9 equals 6.' },
+                    { type: 'exercise', question_id: 'Jika $4 \\times 8 = 32$, maka $32 \\div 8 = ...$', question_en: 'If $4 \\times 8 = 32$, then $32 \\div 8 = ...$', input: true, correct: '4', explanation_id: '32 dibagi 8 sama dengan 4.', explanation_en: '32 divided by 8 equals 4.' },
+                    { type: 'exercise', question_id: '$15 \\div 3 = ...$', question_en: '$15 \\div 3 = ...$', input: true, correct: '5', explanation_id: '15 dibagi 3 sama dengan 5.', explanation_en: '15 divided by 3 equals 5.' },
+                    { type: 'print_button', group: 'Assignment 5' }
+                ]
+            },
+            {
+                id: 'final',
+                title: 'Consolidation',
+                time: '01:00-01:05',
+                icon: '🏁',
+                content: [
+                    { type: 'theory', text_id: 'Kerja bagus! Kamu sudah berhasil menguasai Gerak Pembagian hari ini. Ingat, pembagian itu mudah jika kita tahu perkaliannya.', text_en: 'Great job! You have successfully mastered Division Movement today. Remember, division is easy if we know the multiplication.' },
+                    { type: 'text', text_id: 'Refleksi: Apa satu hal baru yang paling kamu ingat hari ini?', text_en: 'Reflection: What is one new thing you remember most today?' },
+                    { type: 'input_box', placeholder: 'Tulis jawabanmu di sini... (Write your answer here...)' },
+                    { type: 'link', text: 'Login ke LMS Algonova', url: 'https://learn.algonova.id/login' }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // ADDITIONAL RENDER FUNCTIONS (Place inside the main script tag)
+        // ==========================================
+        // 1. Tambahkan fungsi ini di bawah fungsi renderItem()
+        
+        function printAssignment(groupName) {
+            const section = lessonsData.find(s => s.title === groupName);
+            if(!section) return;
+            let tableHTML = '';
+            let exCount = 1;
+            section.content.forEach(item => {
+                if(item.type === 'exercise') {
+                    // Clean up KaTeX syntax for plain text printing
+                    let q = item.question_id.replace(/\$\$/g, '').replace(/\$/g, '').replace(/\\times/g, 'x').replace(/\\div/g, ':');
+                    let c = item.correct.replace(/\$\$/g, '').replace(/\$/g, '').replace(/\\times/g, 'x').replace(/\\div/g, ':');
+                    tableHTML += `<tr>
+                        <td style="border: 1px solid black; padding: 5px; text-align:center;">${exCount}</td>
+                        <td style="border: 1px solid black; padding: 5px;">${q}</td>
+                        <td style="border: 1px solid black; padding: 5px;"></td>
+                        <td style="border: 1px solid black; padding: 5px; text-align:center;">${c}</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align:center;"></td>
+                    </tr>`;
+                    exCount++;
+                }
+            });
+            document.getElementById('printTableBody').innerHTML = tableHTML;
+            document.getElementById('printGroup').innerText = groupName;
+            
+            window.print();
+        }
+
+        // ==========================================
+        // GLOBAL STATE & FUNCTIONS
+        // ==========================================
+        let currentSectionIndex = 0;
+        let currentExerciseIndex = 0; // Tracks exercise index within a section
+        let progress = JSON.parse(localStorage.getItem('mathProgress')) || {};
+
+        function saveProgress() {
+            localStorage.setItem('mathProgress', JSON.stringify(progress));
+        }
+
+        function resetAllProgress() {
+            if(confirm("Apakah kamu yakin ingin mereset semua progres belajar?")) {
+                localStorage.removeItem('mathProgress');
+                progress = {};
+                currentSectionIndex = 0;
+                currentExerciseIndex = 0;
+                renderSidebar();
+                showScreen(0);
+                alert("Progres berhasil direset!");
+            }
+        }
+
+        function renderSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.innerHTML = '';
+            lessonsData.forEach((section, index) => {
+                let status = '';
+                if (progress[section.id] === 'completed') status = 'completed';
+                if (index === currentSectionIndex) status = 'active';
+
+                const node = document.createElement('div');
+                node.className = `path-node ${status}`;
+                node.onclick = () => showScreen(index);
+                
+                node.innerHTML = `
+                    <div class="node-icon">${progress[section.id] === 'completed' ? '✓' : section.icon}</div>
+                    <div class="node-info">
+                        ${section.title}<br>
+                        <small>${section.time || 'Assignment'}</small>
+                    </div>
+                `;
+                sidebar.appendChild(node);
+            });
+        }
+
+        function showScreen(index) {
+            currentSectionIndex = index;
+            currentExerciseIndex = 0;
+            const section = lessonsData[index];
+            const contentArea = document.getElementById('contentArea');
+            
+            let html = `<div class="screen active">`;
+            html += `<div class="id-text"><h2>${section.title}</h2></div>`;
+            if(section.time) html += `<div class="en-text" style="margin-bottom:20px;">Time: ${section.time}</div>`;
+            
+            section.content.forEach((item, itemIndex) => {
+                html += renderItem(item, itemIndex, section.id);
+            });
+
+            html += `<div class="controls">
+                        <button class="btn btn-secondary" onclick="prevSection()" ${index === 0 ? 'disabled' : ''}>Sebelumnya</button>
+                        <button class="btn btn-primary" onclick="nextSection()" ${index === lessonsData.length - 1 ? 'disabled' : ''}>Selanjutnya</button>
+                     </div>`;
+            html += `</div>`;
+            
+            contentArea.innerHTML = html;
+            renderSidebar();
+            renderMath();
+        }
+
+        function nextSection() {
+            if (currentSectionIndex < lessonsData.length - 1) {
+                showScreen(currentSectionIndex + 1);
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function prevSection() {
+            if (currentSectionIndex > 0) {
+                showScreen(currentSectionIndex - 1);
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function renderItem(item, index, sectionId) {
+            let html = '';
+            if (item.type === 'header') {
+                html += `<div class="card" style="text-align:center; border-color:var(--primary); background:#f0ffe0;">
+                            <h1 class="id-text">${item.text_id}</h1>
+                            <p class="en-text">${item.text_en}</p>
+                         </div>`;
+            } else if (item.type === 'text') {
+                html += `<div class="card">
+                            <p class="id-text">${item.text_id}</p>
+                            <p class="en-text">${item.text_en}</p>
+                         </div>`;
+            } else if (item.type === 'theory') {
+                html += `<div class="card" style="border-left: 5px solid var(--blue);">
+                            <p class="id-text">💡 ${item.text_id}</p>
+                            <p class="en-text">${item.text_en}</p>
+                         </div>`;
+            } else if (item.type === 'rules') {
+                html += `<div class="card">
+                            <p class="id-text"><strong>Aturan Kelas:</strong></p>
+                            <p class="en-text"><em>Class Rules:</em></p>
+                            <ul>`;
+                item.rules.forEach(rule => {
+                    html += `<li class="id-text">${rule.id} <small class="en-text">(${rule.en})</small></li>`;
+                });
+                html += `</ul></div>`;
+            } else if (item.type === 'button') {
+                html += `<div style="text-align:center; margin: 20px 0;">
+                            <button class="btn btn-primary" onclick="nextSection()">${item.text}</button>
+                         </div>`;
+            } else if (item.type === 'svg') {
+                html += `<div style="text-align:center; margin:20px 0;">
+                            ${getSVG(item.svg)}
+                         </div>`;
+            } else if (item.type === 'exercise') {
+                html += renderExercise(item, index, sectionId);
+            } else if (item.type === 'print_button') {
+                html += `<div style="text-align:center; margin: 20px 0;">
+                            <button class="btn btn-blue" onclick="printAssignment('${item.group}')">Print Hasil ${item.group}</button>
+                         </div>`;
+            } else if (item.type === 'input_box') {
+                html += `<textarea style="width:100%; padding:15px; border:2px solid #e5e5e5; border-radius:12px; min-height:100px; margin-top:10px;" placeholder="${item.placeholder}"></textarea>`;
+            } else if (item.type === 'link') {
+                html += `<div style="text-align:center; margin: 20px 0;">
+                            <a href="${item.url}" target="_blank" class="btn btn-primary">${item.text}</a>
+                         </div>`;
+            }
+            return html;
+        }
+
+        function renderExercise(item, index, sectionId) {
+            const exId = `${sectionId}-ex-${index}`;
+            let html = `<div class="card exercise-container" id="card-${exId}">`;
+            html += `<div class="question-box">
+                        <p class="id-text"><strong>Soal:</strong> ${item.question_id}</p>
+                        <p class="en-text"><em>Question:</em> ${item.question_en}</p>
+                     </div>`;
+            
+            if (item.options) {
+                html += `<div class="options-grid">`;
+                item.options.forEach(opt => {
+                    html += `<button class="option-btn" onclick="selectOption(this, '${exId}', '${opt.replace(/'/g, "\\'")}', '${item.correct.replace(/'/g, "\\'")}')">${opt}</button>`;
+                });
+                html += `</div>`;
+            } else if (item.input) {
+                html += `<input type="text" id="input-${exId}" placeholder="Ketik jawaban di sini..." onkeyup="checkEnter(event, '${exId}', \`${item.correct}\`)">`;
+                html += `<button class="btn btn-blue" style="margin-top:10px; width:100%;" onclick="checkInput('${exId}', \`${item.correct}\`)">Periksa Jawaban</button>`;
+            }
+
+            html += `<div class="feedback" id="feedback-${exId}"></div>`;
+            html += `<button class="collapse-btn" id="collapse-${exId}" style="display:none;" onclick="toggleExplanation('${exId}')">Lihat Penjelasan</button>`;
+            html += `<div class="explanation-box" id="explanation-${exId}">
+                        <p class="id-text"><strong>Penjelasan:</strong> ${item.explanation_id}</p>
+                        <p class="en-text"><em>Explanation:</em> ${item.explanation_en}</p>
+                     </div>`;
+            
+            html += `<div class="controls" style="margin-top:15px;">
+                        <button class="btn btn-danger" onclick="resetExercise('${exId}')">Reset</button>
+                     </div>`;
+            html += `</div>`;
+            return html;
+        }
+
+        function selectOption(btn, exId, selected, correct) {
+            // Remove previous selections
+            const options = btn.parentNode.querySelectorAll('.option-btn');
+            options.forEach(o => o.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            const feedback = document.getElementById(`feedback-${exId}`);
+            const collapseBtn = document.getElementById(`collapse-${exId}`);
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '✓ Jawaban Benar! (Correct!)';
+                markExerciseCompleted(exId);
+            } else {
+                btn.classList.add('wrong');
+                feedback.className = 'feedback show wrong';
+                feedback.innerHTML = '✗ Jawaban Kurang Tepat. Coba lagi! (Try again!)';
+            }
+            collapseBtn.style.display = 'block';
+            renderMath();
+        }
+
+        function checkInput(exId, correct) {
+            const input = document.getElementById(`input-${exId}`);
+            const val = input.value.trim().replace(/\s/g, '').toLowerCase();
+            const corr = correct.replace(/\s/g, '').toLowerCase();
+            
+            const feedback = document.getElementById(`feedback-${exId}`);
+            const collapseBtn = document.getElementById(`collapse-${exId}`);
+
+            if (val === corr) {
+                input.style.borderColor = 'var(--primary)';
+                input.style.backgroundColor = '#e6ffc4';
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '✓ Jawaban Benar! (Correct!)';
+                markExerciseCompleted(exId);
+            } else {
+                input.style.borderColor = '#ff4b4b';
+                input.style.backgroundColor = '#ffdada';
+                feedback.className = 'feedback show wrong';
+                feedback.innerHTML = '✗ Jawaban Kurang Tepat. Coba lagi! (Try again!)';
+            }
+            collapseBtn.style.display = 'block';
+        }
+
+        function checkEnter(event, exId, correct) {
+            if (event.key === 'Enter') {
+                checkInput(exId, correct);
+            }
+        }
+
+        function toggleExplanation(exId) {
+            const box = document.getElementById(`explanation-${exId}`);
+            const btn = document.getElementById(`collapse-${exId}`);
+            if (box.classList.contains('show')) {
+                box.classList.remove('show');
+                btn.innerText = 'Lihat Penjelasan';
+            } else {
+                box.classList.add('show');
+                btn.innerText = 'Sembunyikan Penjelasan';
+                renderMath();
+            }
+        }
+
+        function resetExercise(exId) {
+            const card = document.getElementById(`card-${exId}`);
+            card.querySelectorAll('.option-btn').forEach(o => {
+                o.classList.remove('selected', 'correct', 'wrong');
+            });
+            const input = document.getElementById(`input-${exId}`);
+            if(input) {
+                input.value = '';
+                input.style.borderColor = '#e5e5e5';
+                input.style.backgroundColor = 'white';
+            }
+            const feedback = document.getElementById(`feedback-${exId}`);
+            feedback.className = 'feedback';
+            feedback.innerHTML = '';
+            document.getElementById(`collapse-${exId}`).style.display = 'none';
+            document.getElementById(`explanation-${exId}`).classList.remove('show');
+        }
+
+        function markExerciseCompleted(exId) {
+            // Logic to mark entire section completed can be added here
+            // For simplicity, we just track if they got it right.
+        }
+
+        function getSVG(type) {
+            if (type === 'boxes') {
+                return `<svg width="200" height="150" viewBox="0 0 200 150">
+                            <rect x="10" y="50" width="40" height="40" fill="#f4a261" stroke="#333" stroke-width="2"/>
+                            <rect x="60" y="50" width="40" height="40" fill="#f4a261" stroke="#333" stroke-width="2"/>
+                            <rect x="110" y="50" width="40" height="40" fill="#f4a261" stroke="#333" stroke-width="2"/>
+                            <rect x="160" y="50" width="40" height="40" fill="#f4a261" stroke="#333" stroke-width="2"/>
+                            <path d="M0 100 L100 100 L100 150 L0 150 Z" fill="#e9c46a" stroke="#333" stroke-width="2"/>
+                            <path d="M100 100 L200 100 L200 150 L100 150 Z" fill="#e9c46a" stroke="#333" stroke-width="2"/>
+                            <text x="50" y="130" font-size="12" text-anchor="middle">Desa 1</text>
+                            <text x="150" y="130" font-size="12" text-anchor="middle">Desa 2</text>
+                        </svg>`;
+            }
+            return '';
+        }
+
+        function renderMath() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            }
+        }
+
+        // Init
+        window.onload = () => {
+            renderSidebar();
+            showScreen(0);
+        };
+    </script>
+</body>
+</html>
