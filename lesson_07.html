@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATH TUTORING by Deni - Multiples of 10, 11, 12</title>
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #58cc02;
+            --primary-dark: #46a302;
+            --bg: #131f24;
+            --card-bg: #1e2d3d;
+            --text-main: #ffffff;
+            --text-sub: #b8b8b8;
+            --border: #37464f;
+            --error: #ff4b4b;
+            --warning: #ffc800;
+            --node-locked: #6b6b6b;
+            --node-current: #58cc02;
+            --node-completed: #58cc02;
+        }
+        body {
+            font-family: 'Nunito', sans-serif; /* Duolingo style font approximation */
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* Top Navigation Bar */
+        .top-bar {
+            background-color: var(--card-bg);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            z-index: 100;
+        }
+        .brand { font-weight: 800; font-size: 1.2rem; color: var(--primary); }
+        .reset-all-btn {
+            background: var(--error); color: white; border: none; padding: 8px 15px;
+            border-radius: 12px; cursor: pointer; font-weight: 700; border-bottom: 4px solid #cc0000;
+            transition: all 0.1s;
+        }
+        .reset-all-btn:active { border-bottom-width: 2px; transform: translateY(2px); }
+
+        /* Duolingo Path Container */
+        .path-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scroll-behavior: smooth;
+        }
+        .node-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+        }
+        .node-circle {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            border: 4px solid #4a4a4a;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px; color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+		
+        .node-circle.available i { color: #131f24; }
+        .node-circle.completed i { color: white; }
+		
+        .node-circle.available {
+            background-color: var(--warning); /* Warna Kuning/Gold seperti Duolingo */
+            border: 4px solid #e6b000;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #cc9e00; /* Efek 3D tombol Duolingo */
+        }
+        .node-circle.available:hover { 
+            filter: brightness(1.1); 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 0 #cc9e00; 
+        }
+        .node-circle.available:active { 
+            transform: translateY(2px); 
+            box-shadow: 0 2px 0 #cc9e00; 
+        }
+
+        .node-circle.completed {
+            background-color: var(--node-completed); /* Warna Hijau */
+            border: 4px solid var(--primary-dark);
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+        .node-circle.completed:hover { 
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 var(--primary-dark);
+        }
+        .node-circle.completed:active { 
+            transform: translateY(2px); 
+            box-shadow: 0 2px 0 var(--primary-dark); 
+        }
+        
+        .node-line {
+            width: 6px; height: 40px; background-color: #4a4a4a; z-index: 1; border-radius: 3px;
+        }
+        .node-line.completed { background-color: var(--primary); }
+
+        .node-title {
+            margin-top: 10px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+        .node-circle.available + .node-title, .node-circle.completed + .node-title { color: var(--text-main); }
+
+        /* Lesson Content Area */
+        .lesson-area {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            background-color: var(--bg);
+        }
+        .lesson-area.active { display: flex; }
+
+        .lesson-header {
+            background: var(--card-bg); padding: 15px; border-bottom: 2px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .back-btn {
+            background: transparent; border: 2px solid var(--border); color: var(--text-main);
+            padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700;
+        }
+        .progress-bar-container { flex: 1; margin: 0 20px; background: #37464f; height: 10px; border-radius: 5px; }
+        .progress-bar-fill { height: 100%; background: var(--primary); border-radius: 5px; width: 0%; transition: width 0.3s; }
+
+        .lesson-content {
+            flex: 1; overflow-y: auto; padding: 30px 20px; display: flex; flex-direction: column; align-items: center;
+        }
+        .content-box {
+            background: var(--card-bg); border: 2px solid var(--border); border-radius: 16px;
+            padding: 20px; width: 100%; max-width: 600px; margin-bottom: 20px;
+            box-shadow: 0 4px 0 var(--border);
+        }
+        .bilingual { margin-bottom: 15px; }
+        .indo { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+        .eng { font-size: 0.9rem; font-weight: 600; color: var(--text-sub); font-style: italic; }
+
+        /* KaTeX overrides for dark theme */
+        .katex { color: var(--text-main); font-size: 1.2em; }
+        .math-display { margin: 15px 0; text-align: center; overflow-x: auto; }
+
+        /* Exercise Styles */
+        .exercise-box { border-color: var(--warning); }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .option-btn {
+            background: var(--card-bg); border: 2px solid var(--border); color: var(--text-main);
+            padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center; min-height: 50px;
+            transition: all 0.1s; position: relative;
+        }
+        .option-btn:active { transform: translateY(2px); }
+        .option-btn.selected { border-color: var(--warning); color: var(--warning); background: #3a3a00; }
+        .option-btn.correct { border-color: var(--primary); color: var(--primary); background: #1a3a00; border-bottom-width: 4px; }
+        .option-btn.wrong { border-color: var(--error); color: var(--error); background: #3a0000; border-bottom-width: 4px; }
+
+        .input-answer {
+            background: #2b3b4b; border: 2px solid var(--border); border-radius: 12px;
+            color: var(--text-main); padding: 12px; font-size: 1.2rem; width: 100%;
+            text-align: center; font-weight: 700;
+        }
+        .input-answer:focus { outline: none; border-color: var(--warning); }
+
+        /* Explanation Collapse */
+        .explanation-collapse { margin-top: 15px; background: #253545; border-radius: 12px; overflow: hidden; max-height: 0; transition: max-height 0.3s ease-out; }
+        .explanation-collapse.open { max-height: 500px; border: 1px solid var(--border); padding: 15px; }
+        .explanation-title { font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+        .explanation-text { color: var(--text-sub); font-size: 0.95rem; }
+
+        /* Bottom Navigation in Lesson */
+        .lesson-footer {
+            background: var(--card-bg); padding: 15px 20px; border-top: 2px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-btn {
+            padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; color: white;
+        }
+        .nav-btn.prev { background: #37464f; border-bottom: 4px solid #253545; }
+        .nav-btn.next { background: var(--primary); border-bottom: 4px solid var(--primary-dark); }
+		.nav-btn.check { background: var(--warning); border-bottom: 4px solid #e6b000; color: #131f24; font-weight: 800; }
+        .nav-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .nav-btn.reset-current { background: var(--error); border-bottom: 4px solid #cc0000; }
+
+        /* SVG Illustration styles */
+        .svg-illo { width: 100%; max-width: 200px; margin: 10px auto; display: block; }
+
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .shake { animation: shake 0.3s; }
+
+        /* Print CSS - STRICT A4 FORMAT */
+        @media print {
+            body { background: white; color: black; height: auto; overflow: visible; }
+            .top-bar, .lesson-footer, .path-container, .nav-btn, .option-btn, .explanation-collapse, .lesson-area { display: none !important; }
+            .print-area {
+                display: block !important; width: 100%; margin: 0; padding: 10mm; font-size: 11pt; color: black;
+                font-family: Arial, sans-serif;
+            }
+            .print-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            .print-table th, .print-table td { border: 1px solid black; padding: 4px; text-align: left; font-size: 10pt; }
+            .print-table th { background-color: #eee; }
+            .print-signature { margin-top: 30px; text-align: right; }
+        }
+        .print-area { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="brand"><i class="fas fa-calculator"></i> MATH TUTORING by Deni</div>
+        <button class="reset-all-btn" onclick="resetAllProgress()"><i class="fas fa-trash-alt"></i> Reset All</button>
+    </div>
+
+    <!-- PATH CONTAINER (Duolingo Style) -->
+    <div class="path-container" id="pathContainer">
+        <!-- Nodes will be injected via JS -->
+    </div>
+
+    <!-- LESSON AREA (Hidden by default) -->
+    <div class="lesson-area" id="lessonArea">
+        <div class="lesson-header">
+            <button class="back-btn" onclick="showPath()"><i class="fas fa-arrow-left"></i> Kembali</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <span id="progressText" style="font-weight:700; color:var(--text-sub)">0/0</span>
+        </div>
+
+        <div class="lesson-content" id="lessonContent">
+            <!-- Content injected via JS -->
+        </div>
+
+        <div class="lesson-footer">
+            <button class="nav-btn prev" id="btnPrev" onclick="prevStep()"><i class="fas fa-chevron-left"></i> Kembali</button>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="nav-btn check" id="btnCheck" onclick="checkAnswer()" style="display:none"><i class="fas fa-check-circle"></i> Periksa</button>
+                <button class="nav-btn reset-current" id="btnResetCurrent" onclick="resetCurrentExercise()" style="display:none"><i class="fas fa-redo"></i> Coba Lagi</button>
+            </div>
+
+            <button class="nav-btn next" id="btnNext" onclick="nextStep()">Lanjut <i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <!-- PRINT AREA (Hidden, used only for printing) -->
+    <div class="print-area" id="printArea">
+        <h2 style="text-align: center; margin-bottom: 0;">MATH TUTORING by Deni</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;">
+            <div><strong>Name:</strong> ________________________</div>
+            <div><strong>Date:</strong> ________________________</div>
+            <div><strong>Topic:</strong> Tabel Perkalian 10, 11, 12 dan Kelipatannya</div>
+            <div><strong>Assignment Group:</strong> <span id="printGroup"></span></div>
+            <div><strong>Score:</strong> <span id="printScore"></span> / 10</div>
+        </div>
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Question</th>
+                    <th>Student Answer</th>
+                    <th>Correct Answer</th>
+                    <th>Note (✅/❌)</th>
+                </tr>
+            </thead>
+            <tbody id="printTableBody"></tbody>
+        </table>
+        <div class="print-signature">
+            <p>Checked by,</p>
+            <br><br>
+            <p><strong>Deni</strong></p>
+        </div>
+    </div>
+
+    <!-- KaTeX JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let appState = {
+            currentSectionIndex: 0,
+            currentStepIndex: 0,
+            progress: [] // Array of objects: { completed: bool }
+        };
+
+        // --- COURSE DATA STRUCTURE ---
+        const courseData = [
+            {
+                id: "home",
+                title: "Home & Rules",
+                icon: "fa-home",
+                type: "info",
+                steps: [
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Selamat datang di sesi bimbingan belajar!</p><p class="eng">Welcome to the tutoring session!</p></div>
+                        <div class="bilingual"><p class="indo">Topik hari ini: <strong>Tabel Perkalian 10, 11, 12 dan Kelipatannya</strong></p><p class="eng">Today's topic: <strong>Multiplication Table of 10, 11, 12 and Their Multiples</strong></p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#58cc02"/><text x="50" y="55" font-family="Arial" font-size="20" fill="white" text-anchor="middle">10,11,12</text></svg>
+                        <div class="bilingual"><p class="indo">Peraturan kelas:</p><p class="eng">Class rules:</p></div>
+                        <ul>
+                            <li class="bilingual"><p class="indo">1. Berbicara secara bergantian.</p><p class="eng">1. Take turns speaking.</p></li>
+                            <li class="bilingual"><p class="indo">2. Meminta izin jika ingin meninggalkan kelas.</p><p class="eng">2. Ask permission if you want to leave the class.</p></li>
+                            <li class="bilingual"><p class="indo">3. Menyalakan kamera dan microphone jika diperlukan.</p><p class="eng">3. Turn on camera and microphone if needed.</p></li>
+                        </ul>
+                    `}
+                ]
+            },
+            {
+                id: "sec1",
+                title: "Spiral Review Warm-up (00:00-00:10)",
+                icon: "fa-fire",
+                type: "section",
+                steps: [
+                    // THEORY 1
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Sebelum kita masuk ke misi baru, mari kita asah otak dengan tantangan kilat dari petualangan sebelumnya!</p><p class="eng">Before we enter a new mission, let's sharpen our brains with a quick challenge from the previous adventure!</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" fill="#ffc800"/><text x="50" y="55" font-family="Arial" font-size="14" fill="#131f24" text-anchor="middle">Rakit & Bongkar</text></svg>
+                        <div class="bilingual"><p class="indo">Merakit Bilangan: Rakitlah bilangan ini: 4 ribuan, 0 ratusan, 7 puluhan, dan 2 satuan.</p><p class="eng">Assembling Numbers: Assemble this number: 4 thousands, 0 hundreds, 7 tens, and 2 units.</p></div>
+                        <div class="math-display">\\( 4000 + 0 + 70 + 2 = 4072 \\)</div>
+                    `},
+                    // EXERCISE 1-3 (Merakit & Bongkar)
+                    { type: "exercise", question: "<p class='indo'>Rakitlah bilangan: 3 ribuan + 5 ratusan + 2 satuan = ...</p><p class='eng'>Assemble the number: 3 thousands + 5 hundreds + 2 units = ...</p>", options: ["3502", "3520", "3025", "3052"], answer: "3502", explanation: "<p class='indo'>3 ribuan (3000) + 5 ratusan (500) + 0 puluhan (0) + 2 satuan (2) = 3502.</p><p class='eng'>3 thousands (3000) + 5 hundreds (500) + 0 tens (0) + 2 units (2) = 3502.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Bongkar bilangan 8.530 menjadi ribuan, ratusan, dan puluhan!</p><p class='eng'>Break down the number 8,530 into thousands, hundreds, and tens!</p>", options: ["8000 + 500 + 30", "8000 + 50 + 30", "800 + 500 + 30", "8000 + 500 + 3"], answer: "8000 + 500 + 30", explanation: "<p class='indo'>8.530 terdiri dari 8 ribuan (8000), 5 ratusan (500), dan 3 puluhan (30).</p><p class='eng'>8,530 consists of 8 thousands (8000), 5 hundreds (500), and 3 tens (30).</p>" },
+                    { type: "exercise", question: "<p class='indo'>Di awan bilangan, mana yang lebih besar: 3.409 atau 3.490?</p><p class='eng'>In the number cloud, which is larger: 3,409 or 3,490?</p>", options: ["3.409", "3.490", "Sama besar", "Tidak bisa ditentukan"], answer: "3.490", explanation: "<p class='indo'>Bandikan puluhannya: 90 lebih besar dari 09, jadi 3.490 lebih besar.</p><p class='eng'>Compare the tens: 90 is larger than 09, so 3,490 is larger.</p>" },
+                    // THEORY 2
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Membongkar bilangan sangat membantu kita memahami nilai tempat setiap angka.</p><p class="eng">Breaking down numbers really helps us understand the place value of each digit.</p></div>
+                        <div class="bilingual"><p class="indo">Contoh lainnya, bongkar 7.890!</p><p class='eng'>Another example, break down 7,890!</p></div>
+                        <div class="math-display">\\( 7890 = 7000 + 800 + 90 + 0 \\)</div>
+                        <div class="bilingual"><p class="indo">Urutkan dari terkecil: 1.200, 1.020, 2.100.</p><p class="eng">Sort from smallest: 1,200, 1,020, 2,100.</p></div>
+                        <div class="math-display">\\( 1020 < 1200 < 2100 \\)</div>
+                    `},
+                    // EXERCISE 4-6 (Diagnostik Awan)
+                    { type: "exercise", question: "<p class='indo'>Urutkan bilangan ini dari terkecil ke terbesar: 4.500, 5.400, 4.050.</p><p class='eng'>Sort these numbers from smallest to largest: 4,500, 5,400, 4,050.</p>", options: ["4.050, 4.500, 5.400", "4.500, 4.050, 5.400", "5.400, 4.500, 4.050", "4.500, 5.400, 4.050"], answer: "4.050, 4.500, 5.400", explanation: "<p class='indo'>Ratusan 0 lebih kecil dari 5, jadi 4.050 < 4.500. Lalu 4 ribuan lebih kecil dari 5 ribuan.</p><p class='eng'>Hundreds 0 is smaller than 5, so 4,050 < 4,500. Then 4 thousands is smaller than 5 thousands.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Rakitlah bilangan: 6 ribuan + 8 ratusan + 0 puluhan + 9 satuan = ...</p><p class='eng'>Assemble the number: 6 thousands + 8 hundreds + 0 tens + 9 units = ...</p>", options: ["6809", "6890", "6089", "6908"], answer: "6809", explanation: "<p class='indo'>6000 + 800 + 0 + 9 = 6809.</p><p class='eng'>6000 + 800 + 0 + 9 = 6809.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah nilai tempat ratusan pada bilangan 3.542?</p><p class='eng'>What is the place value of hundreds in the number 3,542?</p>", options: ["500", "50", "5", "400"], answer: "500", explanation: "<p class='indo'>Angka 5 ada di posisi ratusan, jadi nilainya 500.</p><p class='eng'>The digit 5 is in the hundreds position, so its value is 500.</p>" },
+                    // THEORY 3
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Diagnostik Cepat! Jika kita punya uang, menghitungnya menggunakan kelipatan sangat penting.</p><p class="eng">Quick Diagnostic! If we have money, counting it using multiples is very important.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" rx="5" fill="#58cc02"/><text x="50" y="55" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Rp 1000</text></svg>
+                        <div class="bilingual"><p class="indo">Jika aku punya 5 lembar uang 1.000, berapa total nilainya?</p><p class="eng">If I have 5 pieces of 1,000 money, what is the total value?</p></div>
+                        <div class="math-display">\\( 5 \\times 1000 = 5000 \\)</div>
+                    `},
+                    // EXERCISE 7-10 (Uang & Diagnostik Cepat)
+                    { type: "exercise", question: "<p class='indo'>Jika kamu punya 8 lembar uang Rp1.000, berapa total nilainya?</p><p class='eng'>If you have 8 pieces of Rp1,000 money, what is the total value?</p>", options: ["8.000", "800", "80.000", "1.008"], answer: "8.000", explanation: "<p class='indo'>8 x 1.000 = 8.000.</p><p class='eng'>8 x 1,000 = 8,000.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Toko punya 3 kotak isi 10 telur. Berapa total telur?</p><p class='eng'>The store has 3 boxes containing 10 eggs. How many total eggs?</p>", options: ["30", "13", "300", "10"], answer: "30", explanation: "<p class='indo'>3 x 10 = 30 telur.</p><p class='eng'>3 x 10 = 30 eggs.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Mana yang lebih besar: 2.300 atau 3.200?</p><p class='eng'>Which is larger: 2,300 or 3,200?</p>", input: true, answer: "3.200", explanation: "<p class='indo'>3 ribuan lebih besar dari 2 ribuan.</p><p class='eng'>3 thousands is larger than 2 thousands.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Bongkar bilangan 9.009!</p><p class='eng'>Break down the number 9,009!</p>", options: ["9000 + 9", "900 + 9", "9000 + 90", "9 + 9"], answer: "9000 + 9", explanation: "<p class='indo'>9 ribuan (9000) + 0 ratusan + 0 puluhan + 9 satuan (9).</p><p class='eng'>9 thousands (9000) + 0 hundreds + 0 tens + 9 units (9).</p>" }
+                ]
+            },
+
+            // --- SECTION 2: INTRODUCTION & REAL-WORLD CONNECTION ---
+            {
+                id: "sec2",
+                title: "Introduction & Real-World Connection (00:10-00:15)",
+                icon: "fa-globe",
+                type: "section",
+                steps: [
+                    // THEORY 1
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Hebat! Kamu masih ingat semuanya. Hari ini kita akan menjadi <strong>detektif pola</strong>.</p><p class="eng">Great! You still remember everything. Today we will become <strong>pattern detectives</strong>.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100"><circle cx="50" cy="40" r="25" fill="#ffc800"/><rect x="30" y="65" width="40" height="20" rx="5" fill="#58cc02"/><text x="50" y="80" font-family="Arial" font-size="10" fill="white" text-anchor="middle">PATTERN</text></svg>
+                        <div class="bilingual"><p class="indo">Pernahkah kamu melihat jam atau menghitung telur dalam kotak? Biasanya mereka berkelompok 12 (lusin) atau 10 (puluhan).</p><p class="eng">Have you ever seen a clock or counted eggs in a carton? Usually they are grouped in 12s (dozens) or 10s (tens).</p></div>
+                    `},
+                    // EXERCISE 1-3
+                    { type: "exercise", question: "<p class='indo'>Jika satu kotak berisi 10 telur, berapa telur dalam 3 kotak?</p><p class='eng'>If one box contains 10 eggs, how many eggs are in 3 boxes?</p>", options: ["30", "13", "300", "10"], answer: "30", explanation: "<p class='indo'>3 kelompok dari 10 = 3 x 10 = 30 telur.</p><p class='eng'>3 groups of 10 = 3 x 10 = 30 eggs.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Satu lusin (12) pensil dibeli oleh 2 orang. Berapa total pensil?</p><p class='eng'>One dozen (12) of pencils is bought by 2 people. How many total pencils?</p>", options: ["24", "14", "12", "22"], answer: "24", explanation: "<p class='indo'>2 kelompok dari 12 = 2 x 12 = 24 pensil.</p><p class='eng'>2 groups of 12 = 2 x 12 = 24 pencils.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Jam dinding menunjukkan angka 1 sampai 12. Berapakah setengah dari 12?</p><p class='eng'>A wall clock shows numbers from 1 to 12. What is half of 12?</p>", options: ["6", "5", "7", "4"], answer: "6", explanation: "<p class='indo'>Setengah dari 12 adalah 12 dibagi 2 = 6.</p><p class='eng'>Half of 12 is 12 divided by 2 = 6.</p>" },
+                    // THEORY 2
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Memahami perkalian 10, 11, dan 12 akan membuatmu bisa menghitung barang dalam jumlah besar hanya dalam hitungan detik!</p><p class="eng">Understanding multiplication of 10, 11, and 12 will let you count large quantities of items in just seconds!</p></div>
+                        <div class="bilingual"><p class="indo">Daripada menghitung 1, 2, 3... kita bisa <strong>melompat</strong> (skip counting)!</p><p class="eng">Instead of counting 1, 2, 3... we can <strong>jump</strong> (skip counting)!</p></div>
+                        <div class="math-display">\\( 10 \\rightarrow 20 \\rightarrow 30 \\rightarrow 40 \\)</div>
+                    `},
+                    // EXERCISE 4-6
+                    { type: "exercise", question: "<p class='indo'>Lengkapi lompatan kelipatan 10: 10, 20, 30, ...</p><p class='eng'>Complete the skip counting by 10: 10, 20, 30, ...</p>", options: ["40", "31", "50", "13"], answer: "40", explanation: "<p class='indo'>Kelipatan 10 bertambah 10 setiap langkah: 30 + 10 = 40.</p><p class='eng'>Multiples of 10 increase by 10 each step: 30 + 10 = 40.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Lengkapi lompatan kelipatan 12: 12, 24, ..., 48</p><p class='eng'>Complete the skip counting by 12: 12, 24, ..., 48</p>", options: ["36", "35", "30", "32"], answer: "36", explanation: "<p class='indo'>Kelipatan 12 bertambah 12: 24 + 12 = 36.</p><p class='eng'>Multiples of 12 increase by 12: 24 + 12 = 36.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Sebuah paket isi 10 permen. Jika aku beli 5 paket, berapa permenku?</p><p class='eng'>A pack contains 10 candies. If I buy 5 packs, how many candies do I have?</p>", options: ["50", "15", "5", "100"], answer: "50", explanation: "<p class='indo'>5 paket x 10 permen = 50 permen.</p><p class='eng'>5 packs x 10 candies = 50 candies.</p>" },
+                    // THEORY 3
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Kelompok barang bisa ditulis dalam bentuk perkalian. Kelompok 10 berarti dikali 10. Kelompok 12 berarti dikali 12.</p><p class="eng">Groups of items can be written as multiplication. Groups of 10 means multiplied by 10. Groups of 12 means multiplied by 12.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100">
+                            <rect x="5" y="30" width="20" height="20" fill="#58cc02"/>
+                            <rect x="30" y="30" width="20" height="20" fill="#58cc02"/>
+                            <rect x="55" y="30" width="20" height="20" fill="#58cc02"/>
+                            <text x="50" y="75" font-family="Arial" font-size="14" fill="white" text-anchor="middle">3 x 10 = 30</text>
+                        </svg>
+                    `},
+                    // EXERCISE 7-10
+                    { type: "exercise", question: "<p class='indo'>4 rak buku, masing-masing berisi 10 buku. Berapa total buku?</p><p class='eng'>4 bookshelves, each containing 10 books. How many total books?</p>", options: ["40", "14", "400", "410"], answer: "40", explanation: "<p class='indo'>4 x 10 = 40 buku.</p><p class='eng'>4 x 10 = 40 books.</p>" },
+                    { type: "exercise", question: "<p class='indo'>3 lusin (12) mangga. Berapa total mangga?</p><p class='eng'>3 dozens (12) of mangoes. How many total mangoes?</p>", input: true, answer: "36", explanation: "<p class='indo'>3 x 12 = 36 mangga.</p><p class='eng'>3 x 12 = 36 mangoes.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Kalender 1 tahun memiliki 12 bulan. Berapa bulan dalam 2 tahun?</p><p class='eng'>A 1-year calendar has 12 months. How many months in 2 years?</p>", options: ["24", "14", "12", "22"], answer: "24", explanation: "<p class='indo'>2 tahun x 12 bulan = 24 bulan.</p><p class='eng'>2 years x 12 months = 24 months.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Manakah perkalian yang mewakili '5 kotak berisi 11 krayon'?</p><p class='eng'>Which multiplication represents '5 boxes containing 11 crayons'?</p>", options: ["5 x 11", "11 x 5", "5 + 11", "55"], answer: "5 x 11", explanation: "<p class='indo'>5 kelompok (kotak) masing-masing berisi 11 = 5 x 11.</p><p class='eng'>5 groups (boxes) each containing 11 = 5 x 11.</p>" }
+                ]
+            },
+            // --- SECTION 3: REVIEW OF PRIOR KNOWLEDGE ---
+            {
+                id: "sec3",
+                title: "Review of Prior Knowledge (00:15-00:20)",
+                icon: "fa-brain",
+                type: "section",
+                steps: [
+                    // THEORY 1
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Sebelum kita lanjut, mari kita ingat perkalian dasar 1-9.</p><p class="eng">Before we continue, let's recall basic multiplication 1-9.</p></div>
+                        <div class="bilingual"><p class="indo">Kalau \\( 5 \\times 2 = 10 \\), menurutmu apa pola yang terjadi jika kita mengalikan dengan bilangan yang lebih besar?</p><p class="eng">If \\( 5 \\times 2 = 10 \\), what pattern do you think happens when we multiply by larger numbers?</p></div>
+                        <div class="math-display">\\( 5 \\times 2 = 10 \\)</div>
+                    `},
+                    // EXERCISE 1-3
+                    { type: "exercise", question: "<p class='indo'>Hitunglah: \\( 6 \\times 2 = ... \\)</p><p class='eng'>Calculate: \\( 6 \\times 2 = ... \\)</p>", options: ["12", "8", "10", "14"], answer: "12", explanation: "<p class='indo'>6 kelompok dari 2 adalah 12.</p><p class='eng'>6 groups of 2 is 12.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah: \\( 4 \\times 5 = ... \\)</p><p class='eng'>Calculate: \\( 4 \\times 5 = ... \\)</p>", options: ["20", "9", "25", "15"], answer: "20", explanation: "<p class='indo'>4 kelompok dari 5 adalah 20.</p><p class='eng'>4 groups of 5 is 20.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Lengkapi kelipatan 5: 5, 10, 15, ...</p><p class='eng'>Complete multiples of 5: 5, 10, 15, ...</p>", options: ["20", "25", "30", "16"], answer: "20", explanation: "<p class='indo'>15 + 5 = 20.</p><p class='eng'>15 + 5 = 20.</p>" },
+                    // THEORY 2
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Mari kita lihat garis bilangan ini. Kelipatan 2 melompat 2 angka. Kelipatan 5 melompat 5 angka.</p><p class="eng">Let's look at this number line. Multiples of 2 jump 2 numbers. Multiples of 5 jump 5 numbers.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 200 50">
+                            <line x1="10" y1="25" x2="190" y2="25" stroke="white" stroke-width="2"/>
+                            <circle cx="10" cy="25" r="4" fill="#ffc800"/><text x="10" y="40" font-size="10" fill="white" text-anchor="middle">0</text>
+                            <circle cx="50" cy="25" r="4" fill="#ffc800"/><text x="50" y="40" font-size="10" fill="white" text-anchor="middle">10</text>
+                            <circle cx="90" cy="25" r="4" fill="#ffc800"/><text x="90" y="40" font-size="10" fill="white" text-anchor="middle">20</text>
+                            <circle cx="130" cy="25" r="4" fill="#ffc800"/><text x="130" y="40" font-size="10" fill="white" text-anchor="middle">30</text>
+                            <circle cx="170" cy="25" r="4" fill="#ffc800"/><text x="170" y="40" font-size="10" fill="white" text-anchor="middle">40</text>
+                        </svg>
+                    `},
+                    // EXERCISE 4-6
+                    { type: "exercise", question: "<p class='indo'>Apa kelipatan ke-7 dari bilangan 2?</p><p class='eng'>What is the 7th multiple of the number 2?</p>", options: ["14", "12", "16", "9"], answer: "14", explanation: "<p class='indo'>7 x 2 = 14.</p><p class='eng'>7 x 2 = 14.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Apa kelipatan ke-4 dari bilangan 5?</p><p class='eng'>What is the 4th multiple of the number 5?</p>", input: true, answer: "20", explanation: "<p class='indo'>4 x 5 = 20.</p><p class='eng'>4 x 5 = 20.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Mana yang merupakan kelipatan dari 2 DAN 5?</p><p class='eng'>Which is a multiple of BOTH 2 AND 5?</p>", options: ["10", "7", "12", "15"], answer: "10", explanation: "<p class='indo'>10 bisa dibagi 2 (5x2) dan dibagi 5 (2x5).</p><p class='eng'>10 can be divided by 2 (5x2) and divided by 5 (2x5).</p>" },
+                    // THEORY 3
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Karena \\( 5 \\times 2 = 10 \\), mengalikan dengan 10 seperti mengalikan dengan 5 lalu dikali 2 lagi! Atau lebih gampang: <strong>cukup tambahkan nol di akhir!</strong></p><p class="eng">Since \\( 5 \\times 2 = 10 \\), multiplying by 10 is like multiplying by 5 then by 2 again! Or easier: <strong>just add a zero at the end!</strong></p></div>
+                        <div class="math-display">\\( 3 \\times 10 = 3 \\times 5 \\times 2 = 30 \\)</div>
+                    `},
+                    // EXERCISE 7-10
+                    { type: "exercise", question: "<p class='indo'>Jika \\( 3 \\times 1 = 3 \\), maka \\( 3 \\times 10 = ... \\)</p><p class='eng'>If \\( 3 \\times 1 = 3 \\), then \\( 3 \\times 10 = ... \\)</p>", options: ["30", "13", "300", "3"], answer: "30", explanation: "<p class='indo'>Tambahkan 1 nol di belakang angka 3 -> 30.</p><p class='eng'>Add 1 zero behind the number 3 -> 30.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Jika \\( 7 \\times 1 = 7 \\), maka \\( 7 \\times 10 = ... \\)</p><p class='eng'>If \\( 7 \\times 1 = 7 \\), then \\( 7 \\times 10 = ... \\)</p>", input: true, answer: "70", explanation: "<p class='indo'>Tambahkan 1 nol di belakang angka 7 -> 70.</p><p class='eng'>Add 1 zero behind the number 7 -> 70.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah: \\( 2 \\times 5 \\times 2 = ... \\)</p><p class='eng'>Calculate: \\( 2 \\times 5 \\times 2 = ... \\)</p>", options: ["20", "10", "9", "12"], answer: "20", explanation: "<p class='indo'>2 x 5 = 10, lalu 10 x 2 = 20.</p><p class='eng'>2 x 5 = 10, then 10 x 2 = 20.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( 5 \\times 10 \\)?</p><p class='eng'>What is \\( 5 \\times 10 \\)?</p>", options: ["50", "15", "500", "510"], answer: "50", explanation: "<p class='indo'>5 ditambah nol = 50.</p><p class='eng'>5 plus zero = 50.</p>" }
+                ]
+            },
+            // --- SECTION 4: PROBLEM INTRODUCTION ---
+            {
+                id: "sec4",
+                title: "Problem Introduction (00:20-00:30)",
+                icon: "fa-wand-magic-sparkles",
+                type: "section",
+                steps: [
+                    // THEORY 1 (Trik Perkalian 10)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Sekarang, perhatikan layar. Aku akan menunjukkan <strong>'Trik Rahasia Detektif'</strong>.</p><p class="eng">Now, look at the screen. I will show you the <strong>'Detective's Secret Trick'</strong>.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="#58cc02"/><text x="50" y="50" font-family="Arial" font-size="10" fill="white" text-anchor="middle">SECRET</text></svg>
+                        <div class="bilingual"><p class="indo">Untuk perkalian 10, cukup <strong>tambahkan nol</strong> di belakang angka!</p><p class="eng">For multiplication of 10, just <strong>add a zero</strong> behind the number!</p></div>
+                        <div class="math-display">\\( 4 \\times 10 = 40 \\)</div>
+                    `},
+                    // EXERCISE 1-3 (Latihan Trik 10)
+                    { type: "exercise", question: "<p class='indo'>Gunakan trik nol: \\( 8 \\times 10 = ... \\)</p><p class='eng'>Use the zero trick: \\( 8 \\times 10 = ... \\)</p>", options: ["80", "8", "18", "800"], answer: "80", explanation: "<p class='indo'>Tambahkan nol di belakang 8 -> 80.</p><p class='eng'>Add zero behind 8 -> 80.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Gunakan trik nol: \\( 12 \\times 10 = ... \\)</p><p class='eng'>Use the zero trick: \\( 12 \\times 10 = ... \\)</p>", input: true, answer: "120", explanation: "<p class='indo'>Tambahkan nol di belakang 12 -> 120.</p><p class='eng'>Add zero behind 12 -> 120.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Jika hasil perkalian dengan 10 adalah 90, berapakah bilangan aslinya?</p><p class='eng'>If the result of multiplication by 10 is 90, what is the original number?</p>", options: ["9", "90", "19", "900"], answer: "9", explanation: "<p class='indo'>Hilangkan nol dari 90 -> 9. (9 x 10 = 90).</p><p class='eng'>Remove zero from 90 -> 9. (9 x 10 = 90).</p>" },
+                    // THEORY 2 (Trik Perkalian 11)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Untuk perkalian 11 (satuan 1-9), angka itu <strong>kembar</strong>!</p><p class="eng">For multiplication of 11 (units 1-9), the numbers are <strong>twins</strong>!</p></div>
+                        <div class="math-display">\\( 11 \\times 2 = 22 \\)</div>
+                        <div class="math-display">\\( 11 \\times 5 = 55 \\)</div>
+                        <div class="bilingual"><p class="indo">Pola ini berlaku hingga \\( 11 \\times 9 = 99 \\).</p><p class="eng">This pattern applies up to \\( 11 \\times 9 = 99 \\).</p></div>
+                    `},
+                    // EXERCISE 4-6 (Latihan Trik 11)
+                    { type: "exercise", question: "<p class='indo'>Gunakan trik kembar: \\( 11 \\times 4 = ... \\)</p><p class='eng'>Use the twin trick: \\( 11 \\times 4 = ... \\)</p>", options: ["44", "11", "4", "444"], answer: "44", explanation: "<p class='indo'>Angka 4 menjadi kembar -> 44.</p><p class='eng'>Number 4 becomes twins -> 44.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Gunakan trik kembar: \\( 11 \\times 7 = ... \\)</p><p class='eng'>Use the twin trick: \\( 11 \\times 7 = ... \\)</p>", options: ["77", "7", "17", "777"], answer: "77", explanation: "<p class='indo'>Angka 7 menjadi kembar -> 77.</p><p class='eng'>Number 7 becomes twins -> 77.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Jika hasil perkalian dengan 11 adalah 88, berapakah bilangan aslinya?</p><p class='eng'>If the result of multiplication by 11 is 88, what is the original number?</p>", input: true, answer: "8", explanation: "<p class='indo'>Pisahkan kembar 88 -> 8.</p><p class='eng'>Split the twin 88 -> 8.</p>" },
+                    // THEORY 3 (Trik Perkalian 12)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Tapi bagaimana dengan 12? Kita akan <strong>memecah 12</strong> menjadi \\( (10 + 2) \\).</p><p class="eng">But what about 12? We will <strong>break 12 down</strong> into \\( (10 + 2) \\).</p></div>
+                        <div class="bilingual"><p class="indo">Mari kita coba pecahkan misteri \\( 12 \\times 3 \\):</p><p class="eng">Let's try to solve the mystery of \\( 12 \\times 3 \\):</p></div>
+                        <div class="math-display">\\( 12 \\times 3 = (10 \\times 3) + (2 \\times 3) \\)</div>
+                        <div class="math-display">\\( = 30 + 6 = 36 \\)</div>
+                    `},
+                    // EXERCISE 7-10 (Latihan Trik 12)
+                    { type: "exercise", question: "<p class='indo'>Pecahkan \\( 12 \\times 4 \\): \\( (10 \\times 4) + (2 \\times 4) = ... \\)</p><p class='eng'>Break down \\( 12 \\times 4 \\): \\( (10 \\times 4) + (2 \\times 4) = ... \\)</p>", options: ["48", "40", "8", "16"], answer: "48", explanation: "<p class='indo'>40 + 8 = 48.</p><p class='eng'>40 + 8 = 48.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Pecahkan \\( 12 \\times 5 \\): \\( (10 \\times 5) + (2 \\times 5) = ... \\)</p><p class='eng'>Break down \\( 12 \\times 5 \\): \\( (10 \\times 5) + (2 \\times 5) = ... \\)</p>", input: true, answer: "60", explanation: "<p class='indo'>50 + 10 = 60.</p><p class='eng'>50 + 10 = 60.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 2 \\) menggunakan trik pecah!</p><p class='eng'>Calculate \\( 12 \\times 2 \\) using the break down trick!</p>", options: ["24", "20", "4", "12"], answer: "24", explanation: "<p class='indo'>(10x2) + (2x2) = 20 + 4 = 24.</p><p class='eng'>(10x2) + (2x2) = 20 + 4 = 24.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 6 \\) menggunakan trik pecah!</p><p class='eng'>Calculate \\( 12 \\times 6 \\) using the break down trick!</p>", options: ["72", "60", "12", "66"], answer: "72", explanation: "<p class='indo'>(10x6) + (2x6) = 60 + 12 = 72.</p><p class='eng'>(10x6) + (2x6) = 60 + 12 = 72.</p>" }
+                ]
+            },
+
+            // --- SECTION 5: GUIDED PRACTICE ---
+            {
+                id: "sec5",
+                title: "Guided Practice (00:30-00:45)",
+                icon: "fa-chalkboard-user",
+                type: "section",
+                steps: [
+                    // THEORY 1 (Garis Bilangan KPK)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Ayo kita latihan bersama di papan tulis virtual. Aku akan menggambar garis bilangan.</p><p class="eng">Let's practice together on the virtual whiteboard. I will draw a number line.</p></div>
+                        <div class="bilingual"><p class="indo">Kita akan mencari di mana kelipatan 10 dan 12 <strong>bertemu untuk pertama kalinya</strong>. Ini yang disebut <strong>KPK (Kelipatan Persekutuan Terkecil)</strong>!</p><p class="eng">We will find where the multiples of 10 and 12 <strong>meet for the first time</strong>. This is called <strong>LCM (Least Common Multiple)</strong>!</p></div>
+                        <div class="bilingual"><p class="indo">Kita tandai kelipatan 10 dengan warna <span style="color:#4fc3f7">biru</span> dan 12 dengan warna <span style="color:#ff5252">merah</span>.</p><p class="eng">We mark multiples of 10 in <span style="color:#4fc3f7">blue</span> and 12 in <span style="color:#ff5252">red</span>.</p></div>
+                    `},
+                    // EXERCISE 1-3 (Dasar Garis Bilangan)
+                    { type: "exercise", question: "<p class='indo'>Apa 3 kelipatan pertama dari 10?</p><p class='eng'>What are the first 3 multiples of 10?</p>", options: ["10, 20, 30", "1, 2, 3", "10, 11, 12", "100, 200, 300"], answer: "10, 20, 30", explanation: "<p class='indo'>Kelipatan 10 didapat dari 10x1, 10x2, 10x3.</p><p class='eng'>Multiples of 10 are obtained from 10x1, 10x2, 10x3.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Apa 3 kelipatan pertama dari 12?</p><p class='eng'>What are the first 3 multiples of 12?</p>", options: ["12, 24, 36", "1, 2, 3", "12, 14, 16", "120, 240, 360"], answer: "12, 24, 36", explanation: "<p class='indo'>Kelipatan 12 didapat dari 12x1, 12x2, 12x3.</p><p class='eng'>Multiples of 12 are obtained from 12x1, 12x2, 12x3.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Apakah 20 merupakan kelipatan dari 10 dan 12?</p><p class='eng'>Is 20 a multiple of both 10 and 12?</p>", options: ["Tidak, hanya kelipatan 10", "Ya, kelipatan keduanya", "Tidak, hanya kelipatan 12", "Ya, tapi bukan kelipatan"], answer: "Tidak, hanya kelipatan 10", explanation: "<p class='indo'>20 adalah 10x2, tapi 20 tidak bisa dibagi 12.</p><p class='eng'>20 is 10x2, but 20 cannot be divided by 12.</p>" },
+                    // THEORY 2 (Visualisasi KPK 10 dan 12)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Mari kita lihat garis bilangan sampai angka 60!</p><p class="eng">Let's look at the number line up to 60!</p></div>
+                        <svg class="svg-illo" viewBox="0 0 300 80" style="max-width:300px; width:100%">
+                            <line x1="10" y1="40" x2="290" y2="40" stroke="white" stroke-width="2"/>
+                            <!-- Kelipatan 10 (Biru) -->
+                            <circle cx="50" cy="30" r="3" fill="#4fc3f7"/><text x="50" y="55" font-size="10" fill="#4fc3f7" text-anchor="middle">10</text>
+                            <circle cx="90" cy="30" r="3" fill="#4fc3f7"/><text x="90" y="55" font-size="10" fill="#4fc3f7" text-anchor="middle">20</text>
+                            <circle cx="130" cy="30" r="3" fill="#4fc3f7"/><text x="130" y="55" font-size="10" fill="#4fc3f7" text-anchor="middle">30</text>
+                            <circle cx="170" cy="30" r="3" fill="#4fc3f7"/><text x="170" y="55" font-size="10" fill="#4fc3f7" text-anchor="middle">40</text>
+                            <circle cx="210" cy="30" r="3" fill="#4fc3f7"/><text x="210" y="55" font-size="10" fill="#4fc3f7" text-anchor="middle">50</text>
+                            <!-- Titik Temu 60 -->
+                            <circle cx="250" cy="30" r="6" fill="#ffc800"/><text x="250" y="55" font-size="12" fill="#ffc800" font-weight="bold" text-anchor="middle">60</text>
+                            <!-- Kelipatan 12 (Merah) -->
+                            <circle cx="70" cy="50" r="3" fill="#ff5252"/><text x="70" y="70" font-size="10" fill="#ff5252" text-anchor="middle">12</text>
+                            <circle cx="130" cy="50" r="3" fill="#ff5252"/><text x="130" y="70" font-size="10" fill="#ff5252" text-anchor="middle">24</text>
+                            <circle cx="190" cy="50" r="3" fill="#ff5252"/><text x="190" y="70" font-size="10" fill="#ff5252" text-anchor="middle">36</text>
+                            <circle cx="250" cy="50" r="6" fill="#ffc800"/>
+                        </svg>
+                        <div class="math-display">\\( \\text{KPK}(10, 12) = 60 \\)</div>
+                        <div class="bilingual"><p class="indo">Angka 60 adalah titik pertama di mana <span style="color:#4fc3f7">biru</span> dan <span style="color:#ff5252">merah</span> bertemu!</p><p class="eng">60 is the first point where <span style="color:#4fc3f7">blue</span> and <span style="color:#ff5252">red</span> meet!</p></div>
+                    `},
+                    // EXERCISE 4-6 (Konsep KPK)
+                    { type: "exercise", question: "<p class='indo'>Berapakah KPK dari 10 dan 12?</p><p class='eng'>What is the LCM of 10 and 12?</p>", options: ["60", "120", "10", "12"], answer: "60", explanation: "<p class='indo'>60 adalah kelipatan terkecil yang bisa dibagi 10 dan 12.</p><p class='eng'>60 is the smallest multiple divisible by both 10 and 12.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Apakah 120 juga merupakan kelipatan persekutuan dari 10 dan 12?</p><p class='eng'>Is 120 also a common multiple of 10 and 12?</p>", options: ["Ya", "Tidak"], answer: "Ya", explanation: "<p class='indo'>120 bisa dibagi 10 dan 12, tapi KPK tetap 60 karena 60 lebih kecil.</p><p class='eng'>120 can be divided by 10 and 12, but LCM remains 60 because 60 is smaller.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah KPK dari 5 dan 10?</p><p class='eng'>What is the LCM of 5 and 10?</p>", options: ["10", "5", "50", "15"], answer: "10", explanation: "<p class='indo'>10 adalah kelipatan terkecil dari 5 dan 10 (5x2=10, 10x1=10).</p><p class='eng'>10 is the smallest multiple of 5 and 10 (5x2=10, 10x1=10).</p>" },
+                    // THEORY 3 (Latihan Oral Cepat)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Sekarang, mari kita uji kecepatanmu dengan <strong>Latihan Oral Cepat</strong>!</p><p class="eng">Now, let's test your speed with <strong>Quick Oral Practice</strong>!</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#58cc02"/><text x="50" y="45" font-family="Arial" font-size="14" fill="white" text-anchor="middle">5</text><text x="50" y="60" font-family="Arial" font-size="8" fill="white" text-anchor="middle">SECONDS</text></svg>
+                        <div class="bilingual"><p class="indo">Gunakan trik rahasia detektif untuk menjawab dalam 5 detik!</p><p class="eng">Use the detective's secret tricks to answer in 5 seconds!</p></div>
+                    `},
+                    // EXERCISE 7-10 (Trik Kilat)
+                    { type: "exercise", question: "<p class='indo'>Trik Kilat: \\( 11 \\times 6 = ... \\)</p><p class='eng'>Quick Trick: \\( 11 \\times 6 = ... \\)</p>", options: ["66", "56", "11", "6"], answer: "66", explanation: "<p class='indo'>Trik kembar untuk 11: 6 menjadi 66.</p><p class='eng'>Twin trick for 11: 6 becomes 66.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Trik Kilat: \\( 10 \\times 9 = ... \\)</p><p class='eng'>Quick Trick: \\( 10 \\times 9 = ... \\)</p>", input: true, answer: "90", explanation: "<p class='indo'>Trik nol untuk 10: 9 ditambah 0 = 90.</p><p class='eng'>Zero trick for 10: 9 plus 0 = 90.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Trik Kilat: \\( 12 \\times 7 = ... \\) (Pecah menjadi 10x7 + 2x7)</p><p class='eng'>Quick Trick: \\( 12 \\times 7 = ... \\) (Break into 10x7 + 2x7)</p>", options: ["84", "70", "14", "72"], answer: "84", explanation: "<p class='indo'>10x7 = 70, 2x7 = 14. 70 + 14 = 84.</p><p class='eng'>10x7 = 70, 2x7 = 14. 70 + 14 = 84.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Trik Kilat: \\( 12 \\times 8 = ... \\)</p><p class='eng'>Quick Trick: \\( 12 \\times 8 = ... \\)</p>", options: ["96", "80", "16", "88"], answer: "96", explanation: "<p class='indo'>10x8=80, 2x8=16. 80+16=96.</p><p class='eng'>10x8=80, 2x8=16. 80+16=96.</p>" }
+                ]
+            },
+            // --- SECTION 6: INDEPENDENT PRACTICE ---
+            {
+                id: "sec6",
+                title: "Independent Practice (00:50-01:00)",
+                icon: "fa-user-graduate",
+                type: "section",
+                steps: [
+                    // THEORY 1 (Misi Kotak Misteri & Kelipatan 11)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Giliranmu untuk beraksi sendiri! Di layarmu ada 5 kotak misteri.</p><p class="eng">Your turn to act independently! On your screen there are 5 mystery boxes.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100">
+                            <rect x="10" y="10" width="30" height="30" rx="5" fill="#ffc800"/><text x="25" y="30" font-family="Arial" font-size="14" fill="#131f24" text-anchor="middle">?</text>
+                            <rect x="60" y="10" width="30" height="30" rx="5" fill="#ffc800"/><text x="75" y="30" font-family="Arial" font-size="14" fill="#131f24" text-anchor="middle">?</text>
+                            <rect x="10" y="60" width="30" height="30" rx="5" fill="#ffc800"/><text x="25" y="80" font-family="Arial" font-size="14" fill="#131f24" text-anchor="middle">?</text>
+                            <rect x="60" y="60" width="30" height="30" rx="5" fill="#ffc800"/><text x="75" y="80" font-family="Arial" font-size="14" fill="#131f24" text-anchor="middle">?</text>
+                        </svg>
+                        <div class="bilingual"><p class="indo">Selesaikan tantangan di dalamnya untuk membuka kunci brankas detektif. Mulai dari menghitung kelipatan 11 sampai 132.</p><p class="eng">Complete the challenges inside to unlock the detective's safe. Start by calculating multiples of 11 up to 132.</p></div>
+                        <div class="math-display">\\( 11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132 \\)</div>
+                    `},
+                    // EXERCISE 1-3 (Kelipatan 11 lanjutan)
+                    { type: "exercise", question: "<p class='indo'>Apa kelipatan ke-10 dari 11?</p><p class='eng'>What is the 10th multiple of 11?</p>", options: ["110", "100", "121", "99"], answer: "110", explanation: "<p class='indo'>10 x 11 = 110.</p><p class='eng'>10 x 11 = 110.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Apa kelipatan ke-12 dari 11?</p><p class='eng'>What is the 12th multiple of 11?</p>", input: true, answer: "132", explanation: "<p class='indo'>12 x 11 = 132. (10x11=110, 2x11=22. 110+22=132).</p><p class='eng'>12 x 11 = 132. (10x11=110, 2x11=22. 110+22=132).</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( 11 \\times 9 \\)?</p><p class='eng'>What is \\( 11 \\times 9 \\)?</p>", options: ["99", "90", "108", "119"], answer: "99", explanation: "<p class='indo'>Trik kembar untuk satuan 9: 9 x 11 = 99.</p><p class='eng'>Twin trick for unit 9: 9 x 11 = 99.</p>" },
+                    // THEORY 2 (KPK Visual 5 dan 10)
+                    { type: "theory", content: `
+						<div class="bilingual"><p class="indo">Kotak Misteri selanjutnya: Tentukan KPK dari 5 dan 10 secara visual.</p><p class="eng">Next Mystery Box: Determine the LCM of 5 and 10 visually.</p></div>
+                        <div class="bilingual"><p class="indo">Kelipatan 5: 5, 10, 15, 20. Kelipatan 10: 10, 20.</p><p class='eng'>Multiples of 5: 5, 10, 15, 20. Multiples of 10: 10, 20.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 200 80" style="max-width:200px; width:100%">
+                            <line x1="10" y1="40" x2="190" y2="40" stroke="white" stroke-width="2"/>
+                            <circle cx="30" cy="25" r="3" fill="#4fc3f7"/><text x="30" y="55" font-size="10" fill="white" text-anchor="middle">5</text>
+                            <circle cx="70" cy="25" r="6" fill="#ffc800"/><text x="70" y="55" font-size="12" fill="#ffc800" font-weight="bold" text-anchor="middle">10</text>
+                            <circle cx="110" cy="25" r="3" fill="#4fc3f7"/><text x="110" y="55" font-size="10" fill="white" text-anchor="middle">15</text>
+                            <circle cx="150" cy="50" r="3" fill="#ff5252"/><text x="150" y="55" font-size="10" fill="white" text-anchor="middle">20</text>
+                            <circle cx="70" cy="50" r="6" fill="#ffc800"/>
+                        </svg>
+                        <div class="math-display">\\( \\text{KPK}(5, 10) = 10 \\)</div>
+                    `},
+                    // EXERCISE 4-6 (KPK Dasar Independen)
+                    { type: "exercise", question: "<p class='indo'>Berapakah KPK dari 5 dan 10?</p><p class='eng'>What is the LCM of 5 and 10?</p>", options: ["10", "5", "50", "15"], answer: "10", explanation: "<p class='indo'>10 adalah kelipatan terkecil yang sama dari 5 dan 10.</p><p class='eng'>10 is the smallest common multiple of 5 and 10.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah KPK dari 2 dan 4?</p><p class='eng'>What is the LCM of 2 and 4?</p>", input: true, answer: "4", explanation: "<p class='indo'>Kelipatan 2: 2,4,6,8. Kelipatan 4: 4,8. Pertama bertemu di 4.</p><p class='eng'>Multiples of 2: 2,4,6,8. Multiples of 4: 4,8. First meet at 4.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah KPK dari 3 dan 6?</p><p class='eng'>What is the LCM of 3 and 6?</p>", options: ["6", "3", "18", "9"], answer: "6", explanation: "<p class='indo'>Kelipatan 3: 3,6,9. Kelipatan 6: 6,12. Pertama bertemu di 6.</p><p class='eng'>Multiples of 3: 3,6,9. Multiples of 6: 6,12. First meet at 6.</p>" },
+                    // THEORY 3 (Soal Cerita Kontekstual)
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Kotak Misteri Terakhir: Memecahkan masalah kontekstual!</p><p class="eng">Last Mystery Box: Solving contextual problems!</p></div>
+                        <div class="bilingual"><p class="indo">"Jika satu kotak berisi 12 donat, berapa donat dalam 6 kotak?"</p><p class="eng">"If one box contains 12 donuts, how many donuts are in 6 boxes?"</p></div>
+                        <div class="math-display">\\( 6 \\times 12 = (6 \\times 10) + (6 \\times 2) \\)</div>
+                        <div class="math-display">\\( = 60 + 12 = 72 \\text{ donat} \\)</div>
+                    `},
+                    // EXERCISE 7-10 (Soal Cerita)
+                    { type: "exercise", question: "<p class='indo'>1 kotak berisi 12 donat. Berapa donat dalam 6 kotak?</p><p class='eng'>1 box contains 12 donuts. How many donuts in 6 boxes?</p>", options: ["72", "60", "12", "18"], answer: "72", explanation: "<p class='indo'>6 x 12 = 72 donat.</p><p class='eng'>6 x 12 = 72 donuts.</p>" },
+                    { type: "exercise", question: "<p class='indo'>1 paket krayon berisi 10 warna. Jika kamu beli 9 paket, berapa total warna?</p><p class='eng'>1 crayon pack contains 10 colors. If you buy 9 packs, how many total colors?</p>", input: true, answer: "90", explanation: "<p class='indo'>9 x 10 = 90 warna.</p><p class='eng'>9 x 10 = 90 colors.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Toko menjual pensil dalam lusin (12). Jika kamu beli 4 lusin, berapa pensil yang kamu punya?</p><p class='eng'>The store sells pencils in dozens (12). If you buy 4 dozens, how many pencils do you have?</p>", options: ["48", "40", "12", "24"], answer: "48", explanation: "<p class='indo'>4 x 12 = 48 pensil.</p><p class='eng'>4 x 12 = 48 pencils.</p>" },
+                    { type: "exercise", question: "<p class='indo'>1 tahun = 12 bulan. Berapa bulan dalam 3 tahun?</p><p class='eng'>1 year = 12 months. How many months in 3 years?</p>", options: ["36", "12", "3", "24"], answer: "36", explanation: "<p class='indo'>3 x 12 = 36 bulan.</p><p class='eng'>3 x 12 = 36 months.</p>" }
+                ]
+            },
+			
+            // --- ASSIGNMENT 1: Pola Perkalian 10 dan 11 ---
+            {
+                id: "assign1",
+                title: "Assignment 1",
+                icon: "fa-pencil",
+                type: "assignment",
+                steps: [
+                    { type: "exercise", question: "<p class='indo'>Hitunglah hasil dari \\( 11 \\times 6 \\) menggunakan pola angka kembar.</p><p class='eng'>Calculate the result of \\( 11 \\times 6 \\) using the twin number pattern.</p>", options: ["66", "60", "16", "6"], answer: "66", explanation: "<p class='indo'>Pola kembar 11: angka 6 ditulis dua kali menjadi 66.</p><p class='eng'>Twin pattern 11: digit 6 is written twice to become 66.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah hasil dari \\( 11 \\times 8 \\).</p><p class='eng'>Calculate the result of \\( 11 \\times 8 \\).</p>", options: ["88", "18", "80", "818"], answer: "88", explanation: "<p class='indo'>Pola kembar 11: angka 8 ditulis dua kali menjadi 88.</p><p class='eng'>Twin pattern 11: digit 8 is written twice to become 88.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah hasil dari \\( 11 \\times 7 \\) menggunakan pola angka kembar.</p><p class='eng'>Calculate the result of \\( 11 \\times 7 \\) using the twin number pattern.</p>", input: true, answer: "77", explanation: "<p class='indo'>Pola kembar 11: angka 7 ditulis dua kali menjadi 77.</p><p class='eng'>Twin pattern 11: digit 7 is written twice to become 77.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 10 \\times 9 \\).</p><p class='eng'>Calculate \\( 10 \\times 9 \\).</p>", options: ["90", "9", "19", "900"], answer: "90", explanation: "<p class='indo'>Trik nol: tambahkan 0 di belakang 9.</p><p class='eng'>Zero trick: add 0 behind 9.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 10 \\times 4 \\).</p><p class='eng'>Calculate \\( 10 \\times 4 \\).</p>", options: ["40", "4", "14", "400"], answer: "40", explanation: "<p class='indo'>Trik nol: tambahkan 0 di belakang 4.</p><p class='eng'>Zero trick: add 0 behind 4.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 10 \\times 12 \\).</p><p class='eng'>Calculate \\( 10 \\times 12 \\).</p>", input: true, answer: "120", explanation: "<p class='indo'>Trik nol: tambahkan 0 di belakang 12 -> 120.</p><p class='eng'>Zero trick: add 0 behind 12 -> 120.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 10 \\times 0 \\).</p><p class='eng'>Calculate \\( 10 \\times 0 \\).</p>", options: ["0", "10", "100", "1"], answer: "0", explanation: "<p class='indo'>Semua bilangan dikali 0 hasilnya 0.</p><p class='eng'>Any number multiplied by 0 is 0.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 11 \\times 5 \\).</p><p class='eng'>Calculate \\( 11 \\times 5 \\).</p>", options: ["55", "50", "15", "510"], answer: "55", explanation: "<p class='indo'>Pola kembar 11: 5 menjadi 55.</p><p class='eng'>Twin pattern 11: 5 becomes 55.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 11 \\times 3 \\).</p><p class='eng'>Calculate \\( 11 \\times 3 \\).</p>", input: true, answer: "33", explanation: "<p class='indo'>Pola kembar 11: 3 menjadi 33.</p><p class='eng'>Twin pattern 11: 3 becomes 33.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Jika \\( 11 \\times N = 44 \\), berapakah nilai \\( N \\)?</p><p class='eng'>If \\( 11 \\times N = 44 \\), what is the value of \\( N \\)?</p>", options: ["4", "44", "11", "2"], answer: "4", explanation: "<p class='indo'>44 adalah angka kembar dari 4, jadi N = 4.</p><p class='eng'>44 is the twin of 4, so N = 4.</p>" }
+                ]
+            },
+            // --- ASSIGNMENT 2: Pola Perkalian 12 ---
+            {
+                id: "assign2",
+                title: "Assignment 2",
+                icon: "fa-pencil",
+                type: "assignment",
+                steps: [
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 1 \\).</p><p class='eng'>Calculate \\( 12 \\times 1 \\).</p>", options: ["12", "1", "11", "21"], answer: "12", explanation: "<p class='indo'>Semua bilangan dikali 1 hasilnya bilangan itu sendiri.</p><p class='eng'>Any number multiplied by 1 is the number itself.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 2 \\).</p><p class='eng'>Calculate \\( 12 \\times 2 \\).</p>", input: true, answer: "24", explanation: "<p class='indo'>12 + 12 = 24.</p><p class='eng'>12 + 12 = 24.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 3 \\) dengan memecah menjadi \\( (10 \\times 3) + (2 \\times 3) \\).</p><p class='eng'>Calculate \\( 12 \\times 3 \\) by breaking it into \\( (10 \\times 3) + (2 \\times 3) \\).</p>", options: ["36", "30", "6", "26"], answer: "36", explanation: "<p class='indo'>30 + 6 = 36.</p><p class='eng'>30 + 6 = 36.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 4 \\).</p><p class='eng'>Calculate \\( 12 \\times 4 \\).</p>", options: ["48", "40", "8", "16"], answer: "48", explanation: "<p class='indo'>(10x4) + (2x4) = 40 + 8 = 48.</p><p class='eng'>(10x4) + (2x4) = 40 + 8 = 48.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Tentukan 5 kelipatan pertama dari bilangan 12.</p><p class='eng'>Determine the first 5 multiples of the number 12.</p>", options: ["12, 24, 36, 48, 60", "12, 22, 32, 42, 52", "1, 2, 3, 4, 5", "120, 240, 360, 480, 600"], answer: "12, 24, 36, 48, 60", explanation: "<p class='indo'>Kelipatan 12: 12x1=12, 12x2=24, 12x3=36, 12x4=48, 12x5=60.</p><p class='eng'>Multiples of 12: 12x1=12, 12x2=24, 12x3=36, 12x4=48, 12x5=60.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 5 \\).</p><p class='eng'>Calculate \\( 12 \\times 5 \\).</p>", input: true, answer: "60", explanation: "<p class='indo'>(10x5) + (2x5) = 50 + 10 = 60.</p><p class='eng'>(10x5) + (2x5) = 50 + 10 = 60.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 6 \\).</p><p class='eng'>Calculate \\( 12 \\times 6 \\).</p>", options: ["72", "60", "12", "66"], answer: "72", explanation: "<p class='indo'>(10x6) + (2x6) = 60 + 12 = 72.</p><p class='eng'>(10x6) + (2x6) = 60 + 12 = 72.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 7 \\).</p><p class='eng'>Calculate \\( 12 \\times 7 \\).</p>", options: ["84", "70", "14", "77"], answer: "84", explanation: "<p class='indo'>(10x7) + (2x7) = 70 + 14 = 84.</p><p class='eng'>(10x7) + (2x7) = 70 + 14 = 84.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 8 \\).</p><p class='eng'>Calculate \\( 12 \\times 8 \\).</p>", input: true, answer: "96", explanation: "<p class='indo'>(10x8) + (2x8) = 80 + 16 = 96.</p><p class='eng'>(10x8) + (2x8) = 80 + 16 = 96.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 9 \\).</p><p class='eng'>Calculate \\( 12 \\times 9 \\).</p>", options: ["108", "90", "18", "99"], answer: "108", explanation: "<p class='indo'>(10x9) + (2x9) = 90 + 18 = 108.</p><p class='eng'>(10x9) + (2x9) = 90 + 18 = 108.</p>" }
+                ]
+            },
+            // --- ASSIGNMENT 3: Pecahan dan Campuran ---
+            {
+                id: "assign3",
+                title: "Assignment 3",
+                icon: "fa-pencil",
+                type: "assignment",
+                steps: [
+                    { type: "exercise", question: "<p class='indo'>Berapakah hasil dari \\( (10 \\times 8) + (11 \\times 2) \\)?</p><p class='eng'>What is the result of \\( (10 \\times 8) + (11 \\times 2) \\)?</p>", options: ["102", "80", "22", "98"], answer: "102", explanation: "<p class='indo'>80 + 22 = 102.</p><p class='eng'>80 + 22 = 102.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Hitunglah \\( 12 \\times 15 \\) dengan cara memecah 12 menjadi \\( (10 + 2) \\). Tunjukkan langkahmu!</p><p class='eng'>Calculate \\( 12 \\times 15 \\) by breaking 12 into \\( (10 + 2) \\). Show your steps!</p>", options: ["180", "150", "30", "125"], answer: "180", explanation: "<p class='indo'>(10x15) + (2x15) = 150 + 30 = 180.</p><p class='eng'>(10x15) + (2x15) = 150 + 30 = 180.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( (10 \\times 5) + (2 \\times 5) \\)?</p><p class='eng'>What is \\( (10 \\times 5) + (2 \\times 5) \\)?</p>", input: true, answer: "60", explanation: "<p class='indo'>50 + 10 = 60. Ini sama dengan 12 x 5.</p><p class='eng'>50 + 10 = 60. This is the same as 12 x 5.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( (10 \\times 4) + (2 \\times 4) \\)?</p><p class='eng'>What is \\( (10 \\times 4) + (2 \\times 4) \\)?</p>", options: ["48", "40", "8", "14"], answer: "48", explanation: "<p class='indo'>40 + 8 = 48. Ini sama dengan 12 x 4.</p><p class='eng'>40 + 8 = 48. This is the same as 12 x 4.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( (10 \\times 7) + (2 \\times 7) \\)?</p><p class='eng'>What is \\( (10 \\times 7) + (2 \\times 7) \\)?</p>", options: ["84", "70", "14", "17"], answer: "84", explanation: "<p class='indo'>70 + 14 = 84. Ini sama dengan 12 x 7.</p><p class='eng'>70 + 14 = 84. This is the same as 12 x 7.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( (10 \\times 3) + (2 \\times 3) \\)?</p><p class='eng'>What is \\( (10 \\times 3) + (2 \\times 3) \\)?</p>", input: true, answer: "36", explanation: "<p class='indo'>30 + 6 = 36. Ini sama dengan 12 x 3.</p><p class='eng'>30 + 6 = 36. This is the same as 12 x 3.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( 12 \\times 11 \\)? (Petunjuk: 12 x 10 + 12 x 1)</p><p class='eng'>What is \\( 12 \\times 11 \\)? (Hint: 12 x 10 + 12 x 1)</p>", options: ["132", "120", "12", "121"], answer: "132", explanation: "<p class='indo'>120 + 12 = 132.</p><p class='eng'>120 + 12 = 132.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( 10 \\times 6 + 2 \\times 6 \\)?</p><p class='eng'>What is \\( 10 \\times 6 + 2 \\times 6 \\)?</p>", options: ["72", "60", "12", "16"], answer: "72", explanation: "<p class='indo'>60 + 12 = 72.</p><p class='eng'>60 + 12 = 72.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( 10 \\times 10 \\)?</p><p class='eng'>What is \\( 10 \\times 10 \\)?</p>", input: true, answer: "100", explanation: "<p class='indo'>Trik nol: 10 ditambah dua nol = 100.</p><p class='eng'>Zero trick: 10 plus two zeros = 100.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Berapakah \\( (10 \\times 2) + (11 \\times 0) \\)?</p><p class='eng'>What is \\( (10 \\times 2) + (11 \\times 0) \\)?</p>", options: ["20", "2", "0", "22"], answer: "20", explanation: "<p class='indo'>20 + 0 = 20.</p><p class='eng'>20 + 0 = 20.</p>" }
+                ]
+            },
+            // --- ASSIGNMENT 4: KPK (Kelipatan Persekutuan Terkecil) ---
+            {
+                id: "assign4",
+                title: "Assignment 4",
+                icon: "fa-pencil",
+                type: "assignment",
+                steps: [
+                    { type: "exercise", question: "<p class='indo'>Carilah KPK dari 4 dan 10 menggunakan bantuan garis bilangan sederhana.</p><p class='eng'>Find the LCM of 4 and 10 using a simple number line.</p>", options: ["20", "10", "4", "40"], answer: "20", explanation: "<p class='indo'>Kelipatan 4: 4,8,12,16,20. Kelipatan 10: 10,20. KPK = 20.</p><p class='eng'>Multiples of 4: 4,8,12,16,20. Multiples of 10: 10,20. LCM = 20.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Carilah KPK dari 10 dan 12.</p><p class='eng'>Find the LCM of 10 and 12.</p>", options: ["60", "120", "10", "12"], answer: "60", explanation: "<p class='indo'>Kelipatan 10: 10,20,30,40,50,60. Kelipatan 12: 12,24,36,48,60. KPK = 60.</p><p class='eng'>Multiples of 10: 10,20,30,40,50,60. Multiples of 12: 12,24,36,48,60. LCM = 60.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Tentukan KPK dari 10, 11, dan 12. Petunjuk: Cari angka yang bisa dibagi oleh ketiganya.</p><p class='eng'>Determine the LCM of 10, 11, and 12. Hint: Find a number divisible by all three.</p>", input: true, answer: "660", explanation: "<p class='indo'>KPK 10 & 12 adalah 60. Lalu KPK 60 & 11 adalah 660 (60x11).</p><p class='eng'>LCM of 10 & 12 is 60. Then LCM of 60 & 11 is 660 (60x11).</p>" },
+                    { type: "exercise", question: "<p class='indo'>Carilah KPK dari 2 dan 12.</p><p class='eng'>Find the LCM of 2 and 12.</p>", options: ["12", "2", "6", "24"], answer: "12", explanation: "<p class='indo'>12 sudah bisa dibagi 2 dan 12.</p><p class='eng'>12 is already divisible by 2 and 12.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Carilah KPK dari 5 dan 10.</p><p class='eng'>Find the LCM of 5 and 10.</p>", options: ["10", "5", "50", "15"], answer: "10", explanation: "<p class='indo'>10 sudah bisa dibagi 5 dan 10.</p><p class='eng'>10 is already divisible by 5 and 10.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Carilah KPK dari 3 dan 12.</p><p class='eng'>Find the LCM of 3 and 12.</p>", input: true, answer: "12", explanation: "<p class='indo'>12 sudah bisa dibagi 3 dan 12.</p><p class='eng'>12 is already divisible by 3 and 12.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Dua buah lampu berkedip. Lampu A setiap 10 detik, Lampu B setiap 12 detik. Pada detik ke berapa keduanya berkedip bersamaan untuk pertama kalinya?</p><p class='eng'>Two lights blink. Light A every 10 seconds, Light B every 12 seconds. At what second do they blink together for the first time?</p>", options: ["60", "120", "10", "12"], answer: "60", explanation: "<p class='indo'>Ini sama dengan mencari KPK 10 dan 12 = 60.</p><p class='eng'>This is the same as finding LCM of 10 and 12 = 60.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Lampu A (10 detik) dan Lampu B (12 detik). Pada detik ke berapa keduanya berkedip bersamaan untuk kedua kalinya?</p><p class='eng'>Light A (10s) and Light B (12s). At what second do they blink together for the second time?</p>", options: ["120", "60", "180", "240"], answer: "120", explanation: "<p class='indo'>Kedipan kedua = KPK x 2 = 60 x 2 = 120.</p><p class='eng'>Second blink = LCM x 2 = 60 x 2 = 120.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Carilah KPK dari 6 dan 12.</p><p class='eng'>Find the LCM of 6 and 12.</p>", options: ["12", "6", "24", "36"], answer: "12", explanation: "<p class='indo'>12 sudah bisa dibagi 6 dan 12.</p><p class='eng'>12 is already divisible by 6 and 12.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Carilah KPK dari 10 dan 100.</p><p class='eng'>Find the LCM of 10 and 100.</p>", input: true, answer: "100", explanation: "<p class='indo'>100 sudah bisa dibagi 10 dan 100.</p><p class='eng'>100 is already divisible by 10 and 100.</p>" }
+                ]
+            },
+            // --- ASSIGNMENT 5: Soal Cerita Kontekstual ---
+            {
+                id: "assign5",
+                title: "Assignment 5",
+                icon: "fa-pencil",
+                type: "assignment",
+                steps: [
+                    { type: "exercise", question: "<p class='indo'>Sebuah toko buku memiliki 12 rak. Jika setiap rak berisi 11 buku petualangan, berapa total buku di toko tersebut?</p><p class='eng'>A bookstore has 12 shelves. If each shelf contains 11 adventure books, how many total books are in the store?</p>", options: ["132", "120", "23", "144"], answer: "132", explanation: "<p class='indo'>12 x 11 = 132 buku.</p><p class='eng'>12 x 11 = 132 books.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Seorang anak ingin membeli 120 permen. Jika satu bungkus berisi 12 permen, berapa bungkus yang harus dibeli?</p><p class='eng'>A child wants to buy 120 candies. If one pack contains 12 candies, how many packs must be bought?</p>", input: true, answer: "10", explanation: "<p class='indo'>120 dibagi 12 = 10 bungkus.</p><p class='eng'>120 divided by 12 = 10 packs.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Jika hari ini adalah kelipatan ke-5 dari 12, angka berapakah itu?</p><p class='eng'>If today is the 5th multiple of 12, what number is it?</p>", options: ["60", "50", "12", "48"], answer: "60", explanation: "<p class='indo'>5 x 12 = 60.</p><p class='eng'>5 x 12 = 60.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Jika besok adalah kelipatan ke-6 dari 11, angka berapakah itu?</p><p class='eng'>If tomorrow is the 6th multiple of 11, what number is it?</p>", options: ["66", "60", "11", "56"], answer: "66", explanation: "<p class='indo'>6 x 11 = 66.</p><p class='eng'>6 x 11 = 66.</p>" },
+                    { type: "exercise", question: "<p class='indo'>1 lusin = 12. Jika kamu membeli 5 lusin mangga, berapa jumlah mangga yang kamu punya?</p><p class='eng'>1 dozen = 12. If you buy 5 dozens of mangoes, how many mangoes do you have?</p>", options: ["60", "50", "12", "48"], answer: "60", explanation: "<p class='indo'>5 x 12 = 60 mangga.</p><p class='eng'>5 x 12 = 60 mangoes.</p>" },
+                    { type: "exercise", question: "<p class='indo'>1 tahun memiliki 12 bulan. Berapa bulan dalam 10 tahun?</p><p class='eng'>1 year has 12 months. How many months in 10 years?</p>", input: true, answer: "120", explanation: "<p class='indo'>10 x 12 = 120 bulan.</p><p class='eng'>10 x 12 = 120 months.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Kotak A berisi 10 telur. Kotak B berisi 12 telur. Berapa total telur dalam 1 kotak A dan 1 kotak B?</p><p class='eng'>Box A contains 10 eggs. Box B contains 12 eggs. How many total eggs in 1 Box A and 1 Box B?</p>", options: ["22", "10", "12", "120"], answer: "22", explanation: "<p class='indo'>10 + 12 = 22 telur.</p><p class='eng'>10 + 12 = 22 eggs.</p>" },
+                    { type: "exercise", question: "<p class='indo'>1 rak berisi 11 buku. Jika ada 5 rak, berapa total buku?</p><p class='eng'>1 shelf contains 11 books. If there are 5 shelves, how many total books?</p>", options: ["55", "50", "11", "16"], answer: "55", explanation: "<p class='indo'>5 x 11 = 55 buku.</p><p class='eng'>5 x 11 = 55 books.</p>" },
+                    { type: "exercise", question: "<p class='indo'>Sepeda berjarak 12 km per jam. Berapa jarak dalam 3 jam?</p><p class='eng'>A bicycle travels 12 km per hour. What is the distance in 3 hours?</p>", input: true, answer: "36", explanation: "<p class='indo'>3 x 12 = 36 km.</p><p class='eng'>3 x 12 = 36 km.</p>" },
+                    { type: "exercise", question: "<p class='indo'>10 orang masing-masing membawa 12 kelereng. Berapa total kelereng?</p><p class='eng'>10 people each bring 12 marbles. How many total marbles?</p>", options: ["120", "100", "12", "22"], answer: "120", explanation: "<p class='indo'>10 x 12 = 120 kelereng.</p><p class='eng'>10 x 12 = 120 marbles.</p>" }
+                ]
+            },
+            // --- SECTION 7: CONSOLIDATION & REFLECTION ---
+            {
+                id: "sec7",
+                title: "Consolidation & Reflection (01:00-01:05)",
+                icon: "fa-flag-checkered",
+                type: "section",
+                steps: [
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Luar biasa, Detektif Angka! Hari ini kamu belajar trik kilat 10, 11, dan 12.</p><p class="eng">Amazing, Number Detective! Today you learned the quick tricks for 10, 11, and 12.</p></div>
+                        <svg class="svg-illo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#ffc800"/><text x="50" y="50" font-family="Arial" font-size="20" fill="#131f24" text-anchor="middle">🏆</text></svg>
+                        <div class="bilingual"><p class="indo">Ingat, latihan membuatmu semakin cepat!</p><p class="eng">Remember, practice makes you faster!</p></div>
+                        <div class="math-display">\\( \\text{Trik 10: Tambahkan 0} \\)</div>
+                        <div class="math-display">\\( \\text{Trik 11: Angka Kembar} \\)</div>
+                        <div class="math-display">\\( \\text{Trik 12: Pecah (10+2)} \\)</div>
+                    `},
+                    { type: "theory", content: `
+                        <div class="bilingual"><p class="indo">Refleksi diri: 'Satu hal baru yang aku pelajari hari ini adalah...'</p><p class="eng'>Self-reflection: 'One new thing I learned today is...'</p></div>
+                        <input type="text" class="input-answer" placeholder="Tulis jawabanmu di sini..." style="margin-bottom: 15px;">
+                        <div class="bilingual"><p class="indo">Jangan lupa cek tugasmu di platform ya!</p><p class="eng'>Don't forget to check your assignments on the platform!</p></div>
+                        <a href="https://learn.algonova.id/login" target="_blank" style="display: inline-block; padding: 15px 30px; background-color: var(--primary); color: white; text-decoration: none; font-weight: 700; border-radius: 12px; border-bottom: 4px solid var(--primary-dark); text-align: center; width: 100%; box-sizing: border-box;">
+                            <i class="fas fa-external-link-alt"></i> Lanjut Misi di learn.algonova.id
+                        </a>
+                    `}
+                ]
+            }
+        ]; // PENUTUP ARRAY courseData
+
+        // --- CORE FUNCTIONS ---
+        
+        // Initialize App (Protected)
+        function initApp() {
+            let savedProgress = null;
+            try {
+                savedProgress = localStorage.getItem('mathTutorProgress');
+            } catch (e) {
+                console.warn("localStorage diblokir. Memulai sesi baru tanpa data lama.");
+            }
+
+            if (savedProgress) {
+                appState.progress = JSON.parse(savedProgress);
+                // Migration: ensure old progress format gets studentAnswer properties
+                appState.progress.forEach(p => {
+                    if(p.studentAnswer === undefined) p.studentAnswer = "";
+                    if(p.correct === undefined) p.correct = false;
+                });
+            } else {
+                // Build fresh progress array with detailed tracking
+                let totalSteps = 0;
+                courseData.forEach(sec => { totalSteps += sec.steps.length; });
+                for(let i=0; i<totalSteps; i++) { appState.progress.push({ completed: false, correct: false, studentAnswer: "" }); }
+            }
+            renderPath();
+        }
+
+        // Save Progress (Protected)
+        function saveProgress() {
+            try {
+                localStorage.setItem('mathTutorProgress', JSON.stringify(appState.progress));
+            } catch (e) {
+                console.warn("localStorage diblokir oleh browser (file:// mode). Progress tidak akan tersimpan saat refresh.");
+            }
+        }
+
+        // Reset All (Protected)
+        function resetAllProgress() {
+            if(confirm('Apakah kamu yakin ingin menghapus semua progres? / Are you sure you want to delete all progress?')) {
+                try {
+                    localStorage.removeItem('mathTutorProgress');
+                } catch (e) {
+                    console.warn("localStorage diblokir, data tidak bisa dihapus dari storage.");
+                }
+                // Selalu reset array state walau localStorage gagal
+                let totalSteps = 0;
+                courseData.forEach(sec => { totalSteps += sec.steps.length; });
+                appState.progress = [];
+                for(let i=0; i<totalSteps; i++) { appState.progress.push({ completed: false, correct: false, studentAnswer: "" }); }
+                
+                initApp();
+                showPath();
+            }
+        }
+
+        // Render Duolingo Path
+        function renderPath() {
+            const container = document.getElementById('pathContainer');
+            container.innerHTML = '';
+            let stepCounter = 0;
+
+            courseData.forEach((sec, secIndex) => {
+                // Add Line (if not first)
+                if(secIndex !== 0) {
+                    let line = document.createElement('div');
+                    line.className = 'node-line';
+                    // Garis berubah hijau jika node sebelumnya sudah selesai
+                    if(appState.progress[stepCounter-1].completed) line.classList.add('completed');
+                    container.appendChild(line);
+                }
+
+                // Add Node Circle
+                let wrapper = document.createElement('div');
+                wrapper.className = 'node-wrapper';
+                
+                let circle = document.createElement('div');
+                circle.className = 'node-circle';
+                
+                // Determine node state (available or completed)
+                let isCompleted = true;
+                for(let i=0; i<sec.steps.length; i++) {
+                    if(!appState.progress[stepCounter+i].completed) isCompleted = false;
+                }
+
+                if(isCompleted) {
+                    // NODE HIJAU (Sudah selesai)
+                    circle.classList.add('completed');
+                    circle.innerHTML = `<i class="fas fa-star"></i>`; // Ganti icon dengan bintang
+                    circle.onclick = () => startLesson(secIndex);
+                } else {
+                    // NODE KUNING (Belum selesai, tapi bisa diakses)
+                    circle.classList.add('available');
+                    circle.innerHTML = `<i class="fas ${sec.icon}"></i>`; // Pakai icon section asli
+                    circle.onclick = () => startLesson(secIndex);
+                }
+
+                let title = document.createElement('div');
+                title.className = 'node-title';
+                title.innerText = sec.title;
+
+                wrapper.appendChild(circle);
+                wrapper.appendChild(title);
+                container.appendChild(wrapper);
+
+                stepCounter += sec.steps.length;
+            });
+        }
+
+        // Start Lesson / Show Lesson Area
+        function startLesson(secIndex) {
+            appState.currentSectionIndex = secIndex;
+            appState.currentStepIndex = 0;
+            
+            // Find first uncompleted step in this section
+            let globalStart = getGlobalIndex(secIndex, 0);
+            for(let i=0; i<courseData[secIndex].steps.length; i++) {
+                if(!appState.progress[globalStart + i].completed) {
+                    appState.currentStepIndex = i;
+                    break;
+                }
+            }
+
+            document.getElementById('pathContainer').style.display = 'none';
+            document.getElementById('lessonArea').classList.add('active');
+            renderStep();
+        }
+
+        // Show Path (Back button) - Core definition
+        function showPath() {
+            document.getElementById('lessonArea').classList.remove('active');
+            document.getElementById('pathContainer').style.display = 'flex';
+            renderPath();
+        }
+
+        // Get Global Index from Section and Step
+        function getGlobalIndex(secIdx, stepIdx) {
+            let count = 0;
+            for(let s=0; s<secIdx; s++) { count += courseData[s].steps.length; }
+            return count + stepIdx;
+        }
+
+        // Render Current Step Content
+        function renderStep() {
+            const sec = courseData[appState.currentSectionIndex];
+            const step = sec.steps[appState.currentStepIndex];
+            const globalIdx = getGlobalIndex(appState.currentSectionIndex, appState.currentStepIndex);
+            const isCompleted = appState.progress[globalIdx].completed;
+
+            // Update Progress Bar
+            let completedInSec = 0;
+            for(let i=0; i<sec.steps.length; i++) {
+                if(appState.progress[getGlobalIndex(appState.currentSectionIndex, i)].completed) completedInSec++;
+            }
+            document.getElementById('progressBar').style.width = `${(completedInSec / sec.steps.length) * 100}%`;
+            document.getElementById('progressText').innerText = `${completedInSec}/${sec.steps.length}`;
+
+            // Render Content
+            const contentArea = document.getElementById('lessonContent');
+            contentArea.innerHTML = '';
+
+            if(step.type === 'theory') {
+                contentArea.innerHTML = `<div class="content-box animated fadeInUp">${step.content}</div>`;
+                // Nav visibility for Theory
+                document.getElementById('btnCheck').style.display = 'none';
+                document.getElementById('btnResetCurrent').style.display = 'none';
+            } else if(step.type === 'exercise') {
+                let exHTML = `<div class="content-box exercise-box animated fadeInUp">
+                    <div class="bilingual"><p class="indo" style="color:var(--warning)"><i class="fas fa-question-circle"></i> Latihan</p><p class="eng">Exercise</p></div>
+                    ${step.question}`;
+                
+                if(step.options) {
+                    exHTML += `<div class="options-grid" id="optGrid">`;
+                    step.options.forEach(opt => {
+                        exHTML += `<button class="option-btn" onclick="selectOption(this, '${opt}')">${opt}</button>`;
+                    });
+                    exHTML += `</div>`;
+                } else if(step.input) {
+                    exHTML += `<input type="text" class="input-answer" id="inputField" placeholder="Ketik jawaban... / Type answer...">`;
+                }
+
+                exHTML += `<div class="explanation-collapse" id="exCollapse">
+                    <div class="explanation-title"><i class="fas fa-lightbulb"></i> Penjelasan / Explanation</div>
+                    <div class="explanation-text">${step.explanation}</div>
+                </div></div>`;
+                
+                contentArea.innerHTML = exHTML;
+                
+                // Nav visibility for Exercise
+                document.getElementById('btnCheck').style.display = isCompleted ? 'none' : 'inline-block';
+                document.getElementById('btnResetCurrent').style.display = 'inline-block';
+                
+                if(isCompleted) {
+                    autoShowExplanation();
+                }
+            }
+
+            // NAVIGASI SELALU AKTIF
+            document.getElementById('btnPrev').disabled = (appState.currentStepIndex === 0);
+            document.getElementById('btnNext').disabled = false; // Selalu bisa lanjut
+
+            // Re-render Math
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "\\(", right: "\\)", display: false},
+                    {left: "\\[", right: "\\]", display: true}
+                ]
+            });
+        }
+
+        // Exercise Logic
+        function selectOption(btn, val) {
+            if(appState.progress[getGlobalIndex(appState.currentSectionIndex, appState.currentStepIndex)].completed) return;
+            const grid = document.getElementById('optGrid');
+            Array.from(grid.children).forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            document.getElementById('btnNext').disabled = false;
+        }
+
+        // Exercise Logic
+        function checkAnswer() {
+            const step = courseData[appState.currentSectionIndex].steps[appState.currentStepIndex];
+            const globalIdx = getGlobalIndex(appState.currentSectionIndex, appState.currentStepIndex);
+            let userAnswer = '';
+
+            // Validasi: Harus isi jawaban sebelum periksa
+            if(step.options) {
+                const selected = document.querySelector('.option-btn.selected');
+                if(!selected) {
+                    alert("Pilih jawaban terlebih dahulu! / Select an answer first!");
+                    return;
+                }
+                userAnswer = selected.innerText;
+            } else if(step.input) {
+                userAnswer = document.getElementById('inputField').value.trim();
+                if(!userAnswer) {
+                    alert("Ketik jawaban terlebih dahulu! / Type an answer first!");
+                    return;
+                }
+            }
+
+            const isCorrect = (userAnswer === step.answer);
+            
+            // Update state
+            appState.progress[globalIdx].completed = true;
+            appState.progress[globalIdx].correct = isCorrect;
+            appState.progress[globalIdx].studentAnswer = userAnswer;
+            saveProgress();
+
+            // Update UI Jawaban
+            if(isCorrect) {
+                if(step.options) {
+                    document.querySelector('.option-btn.selected').classList.add('correct');
+                    document.querySelector('.option-btn.selected').classList.remove('selected');
+                } 
+                if(step.input) document.getElementById('inputField').style.borderColor = "var(--primary)";
+                showExplanation(true);
+            } else {
+                if(step.options) {
+                    document.querySelector('.option-btn.selected').classList.add('wrong');
+                    document.querySelector('.option-btn.selected').classList.remove('selected');
+                    Array.from(document.getElementById('optGrid').children).forEach(b => {
+                        if(b.innerText === step.answer) b.classList.add('correct');
+                    });
+                }
+                if(step.input) {
+                    document.getElementById('inputField').style.borderColor = "var(--error)";
+                    document.getElementById('inputField').classList.add('shake');
+                }
+                showExplanation(false);
+            }
+
+            // Sembunyikan tombol Periksa setelah selesai memeriksa
+            document.getElementById('btnCheck').style.display = 'none';
+        }
+
+        function showExplanation(isCorrect) {
+            const collapse = document.getElementById('exCollapse');
+            if(!isCorrect) collapse.style.borderLeft = "4px solid var(--error)";
+            collapse.classList.add('open');
+        }
+
+        function autoShowExplanation() {
+            const step = courseData[appState.currentSectionIndex].steps[appState.currentStepIndex];
+            const globalIdx = getGlobalIndex(appState.currentSectionIndex, appState.currentStepIndex);
+            const state = appState.progress[globalIdx];
+            
+            if(step.options) {
+                Array.from(document.getElementById('optGrid').children).forEach(b => {
+                    if(b.innerText === step.answer) b.classList.add('correct');
+                });
+                // Show what user selected if it was wrong
+                if(state.studentAnswer && !state.correct) {
+                    Array.from(document.getElementById('optGrid').children).forEach(b => {
+                        if(b.innerText === state.studentAnswer) b.classList.add('wrong');
+                    });
+                }
+            }
+            if(step.input) {
+                document.getElementById('inputField').value = state.studentAnswer || step.answer;
+                document.getElementById('inputField').style.borderColor = state.correct ? "var(--primary)" : "var(--error)";
+            }
+            document.getElementById('exCollapse').classList.add('open');
+        }
+
+        // Navigation Logic
+        function nextStep() {
+            appState.currentStepIndex++;
+            if(appState.currentStepIndex >= courseData[appState.currentSectionIndex].steps.length) {
+                showPath();
+            } else {
+                renderStep();
+            }
+        }
+        function prevStep() {
+            if(appState.currentStepIndex > 0) {
+                appState.currentStepIndex--;
+                renderStep();
+            }
+        }
+
+        function resetCurrentExercise() {
+            const globalIdx = getGlobalIndex(appState.currentSectionIndex, appState.currentStepIndex);
+            appState.progress[globalIdx] = { completed: false, correct: false, studentAnswer: "" };
+            saveProgress();
+            renderStep();
+        }
+
+        // --- PRINT LOGIC IMPLEMENTATION (MUST BE AFTER CORE FUNCTIONS) ---
+        function generatePrint(assignIndex) {
+            const sec = courseData[assignIndex];
+            if(sec.type !== "assignment") return;
+
+            document.getElementById('printGroup').innerText = sec.title;
+            
+            let score = 0;
+            let tableBody = "";
+            
+            for(let i=0; i<sec.steps.length; i++) {
+                const step = sec.steps[i];
+                const globalIdx = getGlobalIndex(assignIndex, i);
+                const state = appState.progress[globalIdx];
+                
+                // Extract plain text question for print
+                let tempDiv = document.createElement("div");
+                tempDiv.innerHTML = step.question;
+                let plainQuestion = tempDiv.textContent || tempDiv.innerText || "";
+                // Clean up double spaces from bilingual split
+                plainQuestion = plainQuestion.replace(/\s\s+/g, ' ').trim();
+
+                let studentAns = state.studentAnswer || "Not answered";
+                let noteIcon = "❌";
+
+                if(state.correct) {
+                    score++;
+                    noteIcon = "✅";
+                }
+
+                tableBody += `<tr>
+                    <td>${i+1}</td>
+                    <td>${plainQuestion}</td>
+                    <td>${studentAns}</td>
+                    <td>${step.answer}</td>
+                    <td style="text-align:center">${noteIcon}</td>
+                </tr>`;
+            }
+
+            document.getElementById('printScore').innerText = score;
+            document.getElementById('printTableBody').innerHTML = tableBody;
+
+            // Trigger Print
+            window.print();
+        }
+
+        // Override showPath to inject Print Buttons for Assignments
+        const originalShowPath = showPath;
+        showPath = function() {
+            originalShowPath();
+            // After path is rendered, find assignment nodes and inject print buttons
+            let stepCounter = 0;
+            courseData.forEach((sec, secIndex) => {
+                if(sec.type === "assignment") {
+                    let isCompleted = true;
+                    for(let i=0; i<sec.steps.length; i++) {
+                        if(!appState.progress[stepCounter+i].completed) isCompleted = false;
+                    }
+                    
+                    if(isCompleted) {
+                        // Better query: find the title matching
+                        const allTitles = document.querySelectorAll('.node-title');
+                        allTitles.forEach(titleEl => {
+                            if(titleEl.innerText === sec.title) {
+                                const parentWrapper = titleEl.parentElement;
+                                // Check if button already exists
+                                if(!parentWrapper.querySelector('.print-btn')) {
+                                    const printBtn = document.createElement('button');
+                                    printBtn.className = 'nav-btn next print-btn';
+                                    printBtn.style.marginTop = '10px';
+                                    printBtn.style.fontSize = '0.8rem';
+                                    printBtn.innerHTML = `<i class="fas fa-print"></i> Print Result`;
+                                    printBtn.onclick = (e) => {
+                                        e.stopPropagation();
+                                        generatePrint(secIndex);
+                                    };
+                                    parentWrapper.appendChild(printBtn);
+                                }
+                            }
+                        });
+                    }
+                }
+                stepCounter += sec.steps.length;
+            });
+        };
+
+        // KaTeX Render Trigger on Load
+        document.addEventListener("DOMContentLoaded", function() {
+            initApp();
+            // Wait a bit for KaTeX scripts to load from defer
+            setTimeout(() => {
+                if(typeof renderMathInElement !== 'undefined') {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: "\\(", right: "\\)", display: false},
+                            {left: "\\[", right: "\\]", display: true}
+                        ]
+                    });
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
