@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tutoring - Keliling Segitiga</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        :root {
+            --primary: #58cc02;
+            --primary-dark: #46a302;
+            --secondary: #1cb0f6;
+            --danger: #ff4b4b;
+            --warning: #ffc800;
+            --bg-color: #f7f7f7;
+            --text-color: #3c3c3c;
+            --border-color: #e5e5e5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar (Left) */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 2px solid var(--border-color);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .nav-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .nav-header h2 {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1899d6;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #1899d6;
+        }
+
+        .nav-btn.reset-btn {
+            background: var(--danger);
+            box-shadow: 0 4px 0 #cc3333;
+        }
+        .nav-btn.reset-btn:active {
+            box-shadow: 0 0 0 #cc3333;
+        }
+
+        .path-list {
+            list-style: none;
+        }
+
+        .path-node {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            background: #fff;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            font-weight: bold;
+            color: #777;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .path-node:hover {
+            background: #e5f7ff;
+            border-color: #84d8ff;
+        }
+
+        .path-node.active {
+            background: #e5f7ff;
+            border-color: var(--secondary);
+            color: #1899d6;
+        }
+
+        .path-node.completed {
+            background: #e5ffe5;
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .node-icon {
+            width: 32px;
+            height: 32px;
+            background: #eee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .path-node.active .node-icon { background: var(--secondary); color: white; }
+        .path-node.completed .node-icon { background: var(--primary); color: white; }
+        .path-node.assignment .node-icon { background: var(--warning); color: white; }
+
+        /* Main Content (Right) */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .lesson-screen {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .translation {
+            font-size: 0.85em;
+            color: #777;
+            font-style: italic;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Theory & Exercise Styles */
+        .theory-box, .exercise-box {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .theory-box {
+            background: #e5f7ff;
+            border-color: var(--secondary);
+        }
+
+        .exercise-box {
+            background: #fff;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 12px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--secondary);
+        }
+
+        .option-btn.selected {
+            border-color: var(--secondary);
+            background: #e5f7ff;
+        }
+
+        .option-btn.correct {
+            border-color: var(--primary);
+            background: #e5ffe5;
+            color: var(--primary-dark);
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--danger);
+            background: #ffe5e5;
+            color: var(--danger);
+        }
+
+        .check-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            flex: 1;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--primary-dark);
+            margin-top: 10px;
+        }
+
+        .check-btn:disabled {
+            background: #e5e5e5;
+            color: #afafaf;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .reset-btn-ex {
+            background: #e5e5e5;
+            color: #777;
+            border: none;
+            padding: 15px;
+            width: 120px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #afafaf;
+            transition: transform 0.1s, box-shadow 0.1s;
+            flex-shrink: 0;
+        }
+
+        .reset-btn-ex:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #afafaf;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #e5ffe5;
+            color: var(--primary-dark);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #ffe5e5;
+            color: var(--danger);
+            display: block;
+        }
+
+        .collapse-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .collapse-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #f9f9f9;
+            padding: 0 15px;
+            border-radius: 8px;
+        }
+
+        .collapse-content.open {
+            max-height: 500px;
+            padding: 15px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area {
+                display: block !important;
+                position: absolute; 
+                left: 0; top: 0;
+                width: 210mm; 
+                min-height: 297mm; 
+                padding: 20mm; 
+                margin: 0;
+                font-size: 12pt;
+            }
+            .no-print { display: none !important; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+            .print-header { text-align: center; margin-bottom: 20px; }
+        }
+
+        #print-area { display: none; }
+        .svg-illustration { display: block; margin: 20px auto; max-width: 200px; }
+        
+        /* Home specific */
+        .home-content { text-align: center; }
+        .home-content ol { text-align: left; margin: 20px auto; width: fit-content; }
+    </style>
+</head>
+<body>
+
+<div class="layout-container">
+    <!-- Sidebar -->
+    <aside class="sidebar no-print">
+        <div class="nav-header">
+            <h2>MATH TUTORING</h2>
+            <p style="font-size:0.8rem; color:#777;">by Deni</p>
+        </div>
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="prevStep()">Previous</button>
+            <button class="nav-btn reset-btn" onclick="resetAll()">Reset</button>
+            <button class="nav-btn" onclick="nextStep()">Next</button>
+        </div>
+        <ul class="path-list" id="path-list"></ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div id="content-area"></div>
+    </main>
+</div>
+
+<div id="print-area"></div>
+
+<script>
+    let currentStepIndex = 0;
+    let userProgress = {};
+	let exerciseDB = {};
+
+    const lessonStructure = [
+        { id: 'home', type: 'home', label: 'Home' },
+        { id: 'section-1', type: 'section', label: '1. Spiral Review' },
+        { id: 'section-2', type: 'section', label: '2. Introduction' },
+        { id: 'section-3', type: 'section', label: '3. Prior Knowledge' },
+        { id: 'section-4', type: 'section', label: '4. Problem Intro' },
+        { id: 'section-5', type: 'section', label: '5. Guided Practice' },
+        { id: 'section-6', type: 'section', label: '6. Independent' },
+        { id: 'assignment-1', type: 'assignment', label: 'Assignment 1' },
+        { id: 'assignment-2', type: 'assignment', label: 'Assignment 2' },
+        { id: 'assignment-3', type: 'assignment', label: 'Assignment 3' },
+        { id: 'assignment-4', type: 'assignment', label: 'Assignment 4' },
+        { id: 'assignment-5', type: 'assignment', label: 'Assignment 5' },
+        { id: 'consolidation', type: 'consolidation', label: 'Consolidation' }
+    ];
+
+    const lessonData = {}; // Akan diisi di Part 2
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function renderMath(elementId) {
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(document.getElementById(elementId), {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });
+        }
+    }
+
+    function init() {
+        renderPath();
+        showScreen('home');
+    }
+
+    function renderPath() {
+        const list = document.getElementById('path-list');
+        list.innerHTML = '';
+        lessonStructure.forEach((step, index) => {
+            const li = document.createElement('li');
+            li.className = 'path-node';
+            if (step.type === 'assignment') li.classList.add('assignment');
+            if (userProgress[step.id]) li.classList.add('completed');
+            if (index === currentStepIndex) li.classList.add('active');
+            
+            let icon = index;
+            if (step.type === 'home') icon = '🏠';
+            if (step.type === 'assignment') icon = '📝';
+            if (step.type === 'consolidation') icon = '🏁';
+            
+            li.innerHTML = `<div class="node-icon">${icon}</div> ${step.label}`;
+            li.onclick = () => showScreen(step.id);
+            list.appendChild(li);
+        });
+    }
+
+    function showScreen(screenId) {
+        currentStepIndex = lessonStructure.findIndex(s => s.id === screenId);
+        renderPath();
+        const container = document.getElementById('content-area');
+        container.innerHTML = '';
+        
+        if (screenId === 'home') {
+            container.innerHTML = getHomeHTML();
+        } else {
+            renderContent(screenId, container);
+        }
+        window.scrollTo(0, 0);
+    }
+
+    function nextStep() {
+        if (currentStepIndex < lessonStructure.length - 1) showScreen(lessonStructure[currentStepIndex + 1].id);
+    }
+    function prevStep() {
+        if (currentStepIndex > 0) showScreen(lessonStructure[currentStepIndex - 1].id);
+    }
+    function resetAll() {
+        if(confirm("Reset semua progres?")) {
+            userProgress = {};
+            init();
+        }
+    }
+    function markComplete(stepId) {
+        userProgress[stepId] = true;
+        renderPath();
+    }
+
+    function getHomeHTML() {
+        return `
+            <div class="lesson-screen home-content">
+                <h1 style="color: var(--secondary); margin-bottom: 5px;">MATH TUTORING by Deni</h1>
+                <p class="translation">Math Tutoring by Deni</p>
+                <h2 style="margin-top: 20px;">Topic: Tali Pengukur Keliling Segitiga</h2>
+                <p class="translation">Topic: Triangle Perimeter String Measure</p>
+                <hr style="margin: 20px auto; width: 50%;">
+                <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 0 rgba(0,0,0,0.05); text-align: left; display: inline-block;">
+                    <h3>Aturan Kelas:</h3>
+                    <p class="translation">Class Rules:</p>
+                    <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li>Berbicara secara bergantian.<br><span class="translation">Take turns speaking.</span></li>
+                        <li>Meminta izin jika ingin meninggalkan kelas.<br><span class="translation">Ask permission if you want to leave the class.</span></li>
+                        <li>Menyalakan kamera dan microphone jika diperlukan.<br><span class="translation">Turn on camera and microphone if needed.</span></li>
+                    </ol>
+                </div>
+                <p style="margin-top: 20px; color: #777;">Gunakan menu di sebelah kiri untuk navigasi.</p>
+                <p class="translation">Use the menu on the left to navigate.</p>
+            </div>
+        `;
+    }
+
+    function renderContent(screenId, container) {
+        const data = lessonData[screenId];
+        if(!data) return;
+        
+        let html = `<div class="lesson-screen" id="${screenId}-screen">`;
+        
+        if (data.type === 'section') {
+            html += `<h2>${data.title}</h2><p class="translation">${data.title_en}</p><hr style="margin:15px 0;">`;
+            data.blocks.forEach((block, index) => {
+                if (block.type === 'theory') {
+                    html += `
+                        <div class="theory-box">
+                            ${block.svg ? block.svg : ''}
+                            <h3>${block.title}</h3><p class="translation">${block.title_en}</p>
+                            <p>${block.content}</p>
+                            <p class="translation">${block.content_en}</p>
+                        </div>
+                    `;
+                } else { // Exercise
+                    html += renderExercise(block, `${screenId}-q-${index}`);
+                }
+            });
+            html += `<button class="check-btn" onclick="markComplete('${screenId}'); alert('Bagian selesai! Silakan lanjut ke materi berikutnya.');">Selesai & Lanjut</button>`;
+        } else if (data.type === 'assignment') {
+            html += `<h2>${data.title}</h2><p class="translation">${data.title_en}</p><hr style="margin:15px 0;">`;
+            html += `<p>Kerjakan 10 soal berikut. Jika sudah selesai, cetak hasilnya.</p><p class="translation">Complete the 10 questions. Print results when done.</p>`;
+            data.questions.forEach((ex, index) => {
+                html += renderExercise(ex, `${screenId}-q-${index}`);
+            });
+            html += `<button class="check-btn" style="background: var(--secondary); box-shadow: 0 4px 0 #1899d6;" onclick="printResult('${screenId}', '${data.title}')">Print Result (A4)</button>`;
+        } else if (data.type === 'consolidation') {
+            html += `<h2>${data.title}</h2><p class="translation">${data.title_en}</p><hr style="margin:15px 0;">`;
+            html += `<div class="theory-box"><p>${data.content}</p><p class="translation">${data.content_en}</p></div>`;
+            html += `<a href="https://learn.algonova.id/login" target="_blank" class="check-btn" style="display: block; text-align: center; text-decoration: none; background: var(--warning); box-shadow: 0 4px 0 #e6b800;">Login ke learn.algonova.id</a>`;
+        }
+        
+        html += `</div>`;
+        container.innerHTML = html;
+        renderMath(`${screenId}-screen`);
+    }
+
+    function renderExercise(ex, qId) {
+        // Simpan data exercise ke database sementara
+        exerciseDB[qId] = ex;
+        
+        let optionsHtml = '';
+        if (ex.ex_type === 'mcq' || ex.ex_type === 'checkbox') {
+            const options = shuffleArray([...ex.options]);
+            optionsHtml = options.map(opt => `
+                <button class="option-btn" onclick="selectOption(this, '${qId}', '${ex.ex_type}', '${opt.replace(/'/g, "\\'")}')" data-value="${opt}">${opt}</button>
+            `).join('');
+        }
+
+        return `
+            <div class="exercise-box">
+                <p><strong>Soal:</strong> ${ex.question}</p>
+                <p class="translation">${ex.question_en}</p>
+                <div id="${qId}-options" style="margin-top: 15px;">
+                    ${optionsHtml}
+                    ${ex.ex_type === 'input' ? `<input type="text" class="option-btn" placeholder="Ketik jawaban..." onkeyup="document.getElementById('${qId}-answer').value = this.value"><input type="hidden" id="${qId}-answer">` : ''}
+                </div>
+                <div class="btn-group">
+                    <button class="check-btn" id="${qId}-check" onclick="checkAnswer('${qId}')">Periksa Jawaban</button>
+                    <button class="reset-btn-ex" onclick="resetExercise('${qId}')">Reset</button>
+                </div>
+                <div id="${qId}-feedback" class="feedback"></div>
+                <button class="collapse-btn" onclick="toggleCollapse('${qId}-collapse')">Lihat Penjelasan</button>
+                <div id="${qId}-collapse" class="collapse-content">
+                    <p>${ex.explanation}</p>
+                    <p class="translation">${ex.explanation_en}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function selectOption(btn, qId, type, value) {
+        if (type === 'mcq') {
+            btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            let hidden = document.getElementById(`${qId}-answer`);
+            if (!hidden) {
+                hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.id = `${qId}-answer`;
+                btn.parentElement.appendChild(hidden);
+            }
+            hidden.value = value;
+        } else if (type === 'checkbox') {
+            btn.classList.toggle('selected');
+            let hidden = document.getElementById(`${qId}-answer`);
+            if (!hidden) {
+                hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.id = `${qId}-answer`;
+                btn.parentElement.appendChild(hidden);
+                hidden.value = JSON.stringify([]);
+            }
+            let arr = JSON.parse(hidden.value);
+            if (arr.includes(value)) {
+                arr = arr.filter(v => v !== value);
+            } else {
+                arr.push(value);
+            }
+            hidden.value = JSON.stringify(arr);
+        }
+    }
+
+    function checkAnswer(qId) {
+        // Ambil data exercise dari database berdasarkan ID
+        const ex = exerciseDB[qId];
+        const userAnswer = document.getElementById(`${qId}-answer`)?.value || '';
+        const feedback = document.getElementById(`${qId}-feedback`);
+        const checkBtn = document.getElementById(`${qId}-check`);
+        let isCorrect = false;
+
+        if (ex.ex_type === 'mcq') {
+            isCorrect = userAnswer === ex.answer;
+        } else if (ex.ex_type === 'input') {
+            isCorrect = userAnswer.toLowerCase().trim() === ex.answer.toLowerCase().trim();
+        } else if (ex.ex_type === 'checkbox') {
+            const userArr = userAnswer ? JSON.parse(userAnswer) : [];
+            isCorrect = userArr.length === ex.answer.length && userArr.every(v => ex.answer.includes(v));
+        }
+
+        if (isCorrect) {
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>Benar!</strong> ${ex.explanation}`;
+            checkBtn.style.display = 'none';
+            document.querySelectorAll(`#${qId}-options .option-btn`).forEach(b => b.disabled = true);
+        } else {
+            feedback.className = 'feedback incorrect';
+            feedback.innerHTML = `<strong>Kurang tepat.</strong> Coba lagi atau lihat penjelasan.`;
+        }
+        
+        // Paksa KaTeX untuk merender ulang rumus matematika di dalam feedback
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(feedback, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });
+        }
+    }
+	
+    function resetExercise(qId) {
+        // Reset opsi yang dipilih
+        const optionsContainer = document.getElementById(`${qId}-options`);
+        if(optionsContainer) {
+            optionsContainer.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+                btn.disabled = false;
+                if(btn.tagName === 'INPUT') {
+                    btn.value = ''; // Kosongkan input teks
+                }
+            });
+        }
+        
+        // Reset hidden input value
+        const hiddenInput = document.getElementById(`${qId}-answer`);
+        if(hiddenInput) {
+            hiddenInput.value = '';
+        }
+        
+        // Sembunyikan feedback
+        const feedback = document.getElementById(`${qId}-feedback`);
+        if(feedback) {
+            feedback.className = 'feedback';
+            feedback.innerHTML = '';
+        }
+        
+        // Tampilkan kembali tombol "Periksa Jawaban"
+        const checkBtn = document.getElementById(`${qId}-check`);
+        if(checkBtn) {
+            checkBtn.style.display = 'block';
+        }
+        
+        // Tutup penjelasan (collapse)
+        const collapse = document.getElementById(`${qId}-collapse`);
+        if(collapse) {
+            collapse.classList.remove('open');
+        }
+    }
+
+    function toggleCollapse(id) {
+        document.getElementById(id).classList.toggle('open');
+    }
+
+    function printResult(screenId, title) {
+        const data = lessonData[screenId];
+        let correctCount = 0;
+        let rows = '';
+
+        data.questions.forEach((ex, i) => {
+            const qId = `${screenId}-q-${i}`;
+            const userAnsRaw = document.getElementById(`${qId}-answer`)?.value || '-';
+            let isCorrect = false;
+            let displayAns = userAnsRaw;
+
+            if (ex.ex_type === 'checkbox' && userAnsRaw !== '-') {
+                displayAns = JSON.parse(userAnsRaw).join(', ');
+                const arr = JSON.parse(userAnsRaw);
+                isCorrect = arr.length === ex.answer.length && arr.every(v => ex.answer.includes(v));
+            } else if (ex.ex_type === 'mcq') {
+                isCorrect = userAnsRaw === ex.answer;
+            } else if (ex.ex_type === 'input') {
+                isCorrect = userAnsRaw.toLowerCase().trim() === ex.answer.toLowerCase().trim();
+            }
+
+            if (isCorrect) correctCount++;
+            const correctDisplay = Array.isArray(ex.answer) ? ex.answer.join(', ') : ex.answer;
+
+            rows += `<tr><td>${i+1}</td><td>${ex.question}</td><td>${displayAns}</td><td>${correctDisplay}</td><td style="text-align:center;">${isCorrect ? '✔' : '✖'}</td></tr>`;
+        });
+
+        document.getElementById('print-area').innerHTML = `
+            <div class="print-header">
+                <h2>MATH TUTORING by Deni</h2>
+                <p><strong>Name:</strong> _______________</p>
+                <p><strong>Date:</strong> _______________</p>
+                <p><strong>Topic:</strong> Keliling Segitiga</p>
+                <p><strong>Assignment Group:</strong> ${title}</p>
+                <p><strong>Score:</strong> ${correctCount} / 10</p>
+            </div>
+            <table><thead><tr><th>No.</th><th>Question</th><th>Student Answer</th><th>Correct Answer</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table>
+            <div style="margin-top:50px; text-align:right;"><p>Checked by,</p><br><br><p><strong>Deni</strong></p></div>
+        `;
+        window.print();
+    }
+
+    window.onload = init;
+	
+        // --- Data untuk Section 1: Spiral Review Warm-up ---
+        lessonData['section-1'] = {
+            type: 'section',
+            title: 'Spiral Review Warm-up',
+            title_en: 'Spiral Review Warm-up',
+            blocks: [
+                // Teori 1
+                {
+                    type: 'theory',
+                    title: 'Merakit Bilangan',
+                    title_en: 'Assembling Numbers',
+                    content: 'Merakit bilangan berarti menyusun angka-angka menjadi satu bilangan utuh. Untuk membuat bilangan terkecil, susun angka dari yang terkecil ke terbesar.',
+                    content_en: 'Assembling numbers means arranging digits into one whole number. To make the smallest number, arrange the digits from smallest to largest.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 100"><rect x="10" y="40" width="30" height="40" fill="#1cb0f6" rx="5"/><text x="25" y="65" fill="white" font-size="14" text-anchor="middle">4</text><rect x="50" y="40" width="30" height="40" fill="#58cc02" rx="5"/><text x="65" y="65" fill="white" font-size="14" text-anchor="middle">0</text><rect x="90" y="40" width="30" height="40" fill="#ffc800" rx="5"/><text x="105" y="65" fill="white" font-size="14" text-anchor="middle">2</text><rect x="130" y="40" width="30" height="40" fill="#ff4b4b" rx="5"/><text x="145" y="65" fill="white" font-size="14" text-anchor="middle">7</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Rakitlah angka 4, 0, 7, dan 2 menjadi bilangan ribuan terkecil!',
+                    question_en: 'Assemble the numbers 4, 0, 7, and 2 into the smallest thousands number!',
+                    options: ['2047', '4027', '0247', '7420'],
+                    answer: '2047',
+                    explanation: 'Untuk mendapat bilangan terkecil, urutkan dari terkecil: 0, 2, 4, 7. Tapi karena ini ribuan, 0 tidak boleh di depan. Jadi 2047.',
+                    explanation_en: 'To get the smallest number, sort ascending: 0, 2, 4, 7. But for thousands, 0 cannot be at the front. So 2047.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Rakitlah angka 8, 5, 6, dan 3 menjadi bilangan ribuan terbesar!',
+                    question_en: 'Assemble the numbers 8, 5, 6, and 3 into the largest thousands number!',
+                    options: ['8653', '3568', '6853', '8563'],
+                    answer: '8653',
+                    explanation: 'Untuk mendapat bilangan terbesar, urutkan dari terbesar ke terkecil: 8, 6, 5, 3. Jadi 8653.',
+                    explanation_en: 'To get the largest number, sort descending: 8, 6, 5, 3. So 8653.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Manakah bilangan yang bisa dibuat dari 1, 2, 3, 4 yang paling mendekati 3000?',
+                    question_en: 'Which number made from 1, 2, 3, 4 is closest to 3000?',
+                    options: ['4321', '2341', '3124', '3412'],
+                    answer: '3124',
+                    explanation: 'Bilangan yang mendekati 3000 harus dimulai dengan angka 3. Selanjutnya gunakan angka terkecil yang tersisa (1, 2, 4) agar mendekati 3000, yaitu 3124.',
+                    explanation_en: 'A number close to 3000 must start with 3. Next, use the smallest remaining digits (1, 2, 4) to stay close to 3000, which is 3124.'
+                },
+                // Teori 2
+                {
+                    type: 'theory',
+                    title: 'Membongkar Bilangan',
+                    title_en: 'Breaking Down Numbers',
+                    content: 'Membongkar bilangan berarti memisahkan bilangan berdasarkan nilai tempatnya. Contoh: $8.563 = 8000 + 500 + 60 + 3$.',
+                    content_en: 'Breaking down numbers means separating them by place value. Example: $8.563 = 8000 + 500 + 60 + 3$.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 300 80"><text x="20" y="40" font-size="20" fill="#333">8.563 =</text><rect x="90" y="20" width="60" height="40" fill="#1cb0f6" rx="5"/><text x="120" y="45" fill="white" font-size="14" text-anchor="middle">8000</text><text x="160" y="45" font-size="16">+</text><rect x="180" y="20" width="50" height="40" fill="#58cc02" rx="5"/><text x="205" y="45" fill="white" font-size="14" text-anchor="middle">500</text><text x="240" y="45" font-size="16">+...</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Bongkarlah angka 9.042 berdasarkan nilai tempatnya! (Format: 9000 + 40 + 2)',
+                    question_en: 'Break down the number 9.042 by place value! (Format: 9000 + 40 + 2)',
+                    options: [],
+                    answer: '9000 + 40 + 2',
+                    explanation: '9 berada di ribuan (9000), 0 di ratusan (000), 4 di puluhan (40), 2 di satuan (2). Jadi 9000 + 0 + 40 + 2 atau 9000 + 40 + 2.',
+                    explanation_en: '9 is in thousands (9000), 0 in hundreds (000), 4 in tens (40), 2 in units (2). So 9000 + 0 + 40 + 2 or 9000 + 40 + 2.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Berapakah nilai angka 5 pada bilangan 4.502?',
+                    question_en: 'What is the value of the digit 5 in the number 4.502?',
+                    options: ['5', '50', '500', '5000'],
+                    answer: '500',
+                    explanation: 'Angka 5 berada di posisi ratusan, sehingga nilainya adalah 500.',
+                    explanation_en: 'The digit 5 is in the hundreds position, so its value is 500.'
+                },
+                {
+                    type: 'exercise', ex_type: 'checkbox',
+                    question: 'Bagian mana saja yang termasuk dalam pembongkaran bilangan 2.317? (Pilih semua yang benar)',
+                    question_en: 'Which parts are included in the breakdown of 2.317? (Select all that apply)',
+                    options: ['2000', '300', '17', '7'],
+                    answer: ['2000', '300', '7'],
+                    explanation: '2.317 terdiri dari 2000 (ribuan), 300 (ratusan), 10 (puluhan), dan 7 (satuan). Opsi 17 salah karena seharusnya dipisah menjadi 10 dan 7.',
+                    explanation_en: '2.317 consists of 2000 (thousands), 300 (hundreds), 10 (tens), and 7 (units). Option 17 is wrong because it should be split into 10 and 7.'
+                },
+                // Teori 3
+                {
+                    type: 'theory',
+                    title: 'Awan Bilangan & Diagnostik',
+                    title_en: 'Number Clouds & Diagnostics',
+                    content: 'Awan bilangan adalah permainan menjumlahkan dua bilangan untuk mendapatkan total tertentu. Diagnostik membantu kita membandingkan nilai bilangan.',
+                    content_en: 'Number clouds is a game of adding two numbers to get a specific total. Diagnostics help us compare number values.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 100"><ellipse cx="100" cy="50" rx="60" ry="30" fill="#e5f7ff" stroke="#1cb0f6" stroke-width="2"/><text x="100" y="55" font-size="20" fill="#1cb0f6" text-anchor="middle">350</text></svg>`
+                },
+                // 4 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Jika ada awan bilangan 350, manakah pasangan angka yang jika dijumlahkan hasilnya 350?',
+                    question_en: 'If there is a number cloud 350, which pair of numbers adds up to 350?',
+                    options: ['120 + 230', '150 + 200', '100 + 240', '175 + 165'],
+                    answer: '150 + 200',
+                    explanation: '150 + 200 = 350. Pasangan lain menghasilkan 350? 120+230=350 juga! Tapi pilih yang paling tepat. Jika MCQ, pilih yang benar.',
+                    explanation_en: '150 + 200 = 350. Do others make 350? 120+230=350 too! But choose the exact match.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Manakah yang lebih besar, 4.012 atau 4.102?',
+                    question_en: 'Which is larger, 4.012 or 4.102?',
+                    options: ['4.012', '4.102', 'Sama besar', 'Tidak bisa ditentukan'],
+                    answer: '4.102',
+                    explanation: 'Kedua bilangan ribuan. Pada ratusan, 4.102 memiliki angka 1, sedangkan 4.012 memiliki angka 0. Jadi 4.102 lebih besar.',
+                    explanation_en: 'Both are thousands. In the hundreds place, 4.102 has 1, while 4.012 has 0. So 4.102 is larger.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Awan bilangan totalnya 1.000. Jika satu bilangan adalah 650, berapakah bilangan yang lain?',
+                    question_en: 'A number cloud totals 1.000. If one number is 650, what is the other number?',
+                    options: [],
+                    answer: '350',
+                    explanation: '1000 - 650 = 350. Jadi bilangan lainnya adalah 350.',
+                    explanation_en: '1000 - 650 = 350. So the other number is 350.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Lengkapi pola awan bilangan: 125, 250, 375, ...',
+                    question_en: 'Complete the number cloud pattern: 125, 250, 375, ...',
+                    options: ['400', '450', '500', '525'],
+                    answer: '500',
+                    explanation: 'Pola bertambah 125 setiap langkah. 375 + 125 = 500.',
+                    explanation_en: 'The pattern increases by 125 each step. 375 + 125 = 500.'
+                }
+            ]
+        };
+
+        // --- Data untuk Section 2: Introduction & Real-World Connection ---
+        lessonData['section-2'] = {
+            type: 'section',
+            title: 'Introduction & Real-World Connection',
+            title_en: 'Introduction & Real-World Connection',
+            blocks: [
+                // Teori 1
+                {
+                    type: 'theory',
+                    title: 'Apa itu Keliling?',
+                    title_en: 'What is Perimeter?',
+                    content: 'Keliling adalah total jarak di sekeliling pinggiran suatu bangun datar atau luasan. Bayangkan kamu berjalan menyusuri pagar luar sebuah area sampai kembali ke titik awal.',
+                    content_en: 'Perimeter is the total distance around the outer edge of a flat shape or area. Imagine walking along the outer fence of an area until you return to the starting point.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 150"><polygon points="100,20 180,130 20,130" fill="none" stroke="#58cc02" stroke-width="5" stroke-linejoin="round"/><path d="M 100 20 L 180 130 L 20 130 Z" fill="rgba(88, 204, 2, 0.1)"/><circle cx="100" cy="20" r="4" fill="#ff4b4b"/></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Apa makna dari "keliling" sebuah benda?',
+                    question_en: 'What is the meaning of the "perimeter" of an object?',
+                    options: ['Luas permukaan benda', 'Panjang semua sisi benda', 'Jarak di sekeliling pinggiran benda', 'Isi dari benda tersebut'],
+                    answer: 'Jarak di sekeliling pinggiran benda',
+                    explanation: 'Keliling secara harfiah berarti ukuran sekeliling. Jadi, ini adalah jarak total jika kita mengelilingi pinggiran benda tersebut.',
+                    explanation_en: 'Perimeter literally means the measure around. So, it is the total distance if we go around the edge of the object.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Jika kamu berjalan mengelilingi taman dan kembali ke titik awal, kamu mengukur...?',
+                    question_en: 'If you walk around a park and return to the starting point, you are measuring...?',
+                    options: ['Luas taman', 'Keliling taman', 'Diameter taman', 'Volume taman'],
+                    answer: 'Keliling taman',
+                    explanation: 'Karena kamu berjalan di sekitar pinggir taman dan kembali ke awal, kamu mengukur kelilingnya.',
+                    explanation_en: 'Because you walked around the edge of the park and returned to the start, you are measuring its perimeter.'
+                },
+                {
+                    type: 'exercise', ex_type: 'checkbox',
+                    question: 'Manakah benda di sekitar rumah yang masuk akal untuk diukur kelilingnya? (Pilih semua yang benar)',
+                    question_en: 'Which objects around the house make sense to measure the perimeter of? (Select all that apply)',
+                    options: ['Pinggiran kebun', 'Atap rumah', 'Tinggi pohon', 'Panjang pagar'],
+                    answer: ['Pinggiran kebun', 'Atap rumah', 'Panjang pagar'],
+                    explanation: 'Keliling cocok untuk benda 2D atau luasan area. Tinggi pohon adalah ukuran linear 1D, bukan keliling.',
+                    explanation_en: 'Perimeter is suitable for 2D objects or areas. The height of a tree is a 1D linear measurement, not a perimeter.'
+                },
+                // Teori 2
+                {
+                    type: 'theory',
+                    title: 'Mengapa Kita Mengukur Keliling?',
+                    title_en: 'Why Do We Measure Perimeter?',
+                    content: 'Kita mengukur keliling untuk berbagai keperluan sehari-hari, seperti menentukan panjang kabel lampu hias untuk atap, atau panjang kawat untuk memagari kebun.',
+                    content_en: 'We measure perimeter for various daily purposes, such as determining the length of fairy lights for a roof, or the length of wire to fence a garden.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 120"><polygon points="100,10 190,100 10,100" fill="#e5f7ff" stroke="#1cb0f6" stroke-width="2"/><path d="M 100 10 L 190 100 L 10 100 Z" fill="none" stroke="#ffc800" stroke-width="3" stroke-dasharray="5,5"/><circle cx="100" cy="10" r="3" fill="#ff4b4b"/><text x="100" y="115" font-size="10" text-anchor="middle">Kebun Segitiga</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Kamu ingin memasang lampu hias di pinggiran atap rumah berbentuk segitiga. Apa yang harus kamu ukur?',
+                    question_en: 'You want to install fairy lights on the edge of a triangular roof. What should you measure?',
+                    options: ['Luas atap', 'Keliling atap', 'Tinggi atap', 'Kedalaman atap'],
+                    answer: 'Keliling atap',
+                    explanation: 'Karena lampu ditempatkan di sekeliling pinggiran atap, kamu harus mengukur kelilingnya.',
+                    explanation_en: 'Because the lights are placed around the edge of the roof, you must measure its perimeter.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Pak Budi ingin memagari kebunnya. Dia harus mengukur ... kebunnya. (Isi dengan satu kata)',
+                    question_en: 'Mr. Budi wants to fence his garden. He must measure the ... of his garden. (Fill in one word)',
+                    options: [],
+                    answer: 'keliling',
+                    explanation: 'Pagar ditempatkan di sekeliling luar kebun, sehingga Pak Budi harus mengukur keliling kebunnya.',
+                    explanation_en: 'The fence is placed around the outside of the garden, so Mr. Budi must measure the perimeter of his garden.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Untuk membuat bingkai foto segitiga, kayu yang dibutuhkan disesuaikan dengan...?',
+                    question_en: 'To make a triangular photo frame, the wood needed is adjusted to the...?',
+                    options: ['Luas foto', 'Keliling foto', 'Warna foto', 'Tebal foto'],
+                    answer: 'Keliling foto',
+                    explanation: 'Bingkai mengelilingi foto, jadi kayu yang dibutuhkan sama dengan keliling foto tersebut.',
+                    explanation_en: 'The frame surrounds the photo, so the wood needed equals the perimeter of the photo.'
+                },
+                // Teori 3
+                {
+                    type: 'theory',
+                    title: 'Benda Berbentuk Segitiga',
+                    title_en: 'Triangle-Shaped Objects',
+                    content: 'Segitiga adalah bangun datar dengan 3 sisi. Banyak benda di sekitar kita yang berbentuk segitiga, seperti atap rumah, potongan pizza, atau rambu lalu lintas.',
+                    content_en: 'A triangle is a flat shape with 3 sides. Many objects around us are triangular, such as house roofs, pizza slices, or traffic signs.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 100"><polygon points="50,80 10,80 30,40" fill="#ffc800"/><polygon points="110,80 70,80 90,40" fill="#ff4b4b"/><polygon points="170,80 130,80 150,40" fill="#1cb0f6"/></svg>`
+                },
+                // 4 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Manakah benda yang paling mirip dengan bentuk segitiga?',
+                    question_en: 'Which object most closely resembles a triangle shape?',
+                    options: ['Bola', 'Atap rumah', 'Lantai kamar', 'Layar TV'],
+                    answer: 'Atap rumah',
+                    explanation: 'Atap rumah seringkali dirancang berbentuk segitiga agar air hujan mudah turun.',
+                    explanation_en: 'House roofs are often designed in a triangle shape so rainwater can easily run down.'
+                },
+                {
+                    type: 'exercise', ex_type: 'checkbox',
+                    question: 'Sebutkan ciri benda yang berbentuk segitiga! (Pilih semua yang benar)',
+                    question_en: 'Mention the characteristics of a triangle-shaped object! (Select all that apply)',
+                    options: ['Memiliki 3 sisi', 'Memiliki 4 sudut', 'Sisinya berupa garis lurus', 'Bentuknya melingkar'],
+                    answer: ['Memiliki 3 sisi', 'Sisinya berupa garis lurus'],
+                    explanation: 'Segitiga pasti memiliki 3 sisi berupa garis lurus dan 3 sudut, bukan 4 sudut atau melingkar.',
+                    explanation_en: 'A triangle must have 3 straight sides and 3 angles, not 4 angles or circular.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sebuah kebun berbentuk segitiga. Jika dipagari, berapa sisi yang perlu dipagari?',
+                    question_en: 'A garden is triangular. If fenced, how many sides need to be fenced?',
+                    options: ['1 sisi', '2 sisi', '3 sisi', '4 sisi'],
+                    answer: '3 sisi',
+                    explanation: 'Karena segitiga memiliki 3 sisi, maka ketiga sisinya harus dipagari untuk menutup area tersebut.',
+                    explanation_en: 'Since a triangle has 3 sides, all three sides must be fenced to enclose the area.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Jumlah total sisi pada sebuah segitiga adalah ...',
+                    question_en: 'The total number of sides on a triangle is ...',
+                    options: [],
+                    answer: '3',
+                    explanation: 'Kata "segitiga" berarti memiliki tiga (tiga) sudut dan tiga sisi.',
+                    explanation_en: 'The word "triangle" means it has three angles and three sides.'
+                }
+            ]
+        };
+
+        // --- Data untuk Section 3: Review of Prior Knowledge ---
+        lessonData['section-3'] = {
+            type: 'section',
+            title: 'Review of Prior Knowledge',
+            title_en: 'Review of Prior Knowledge',
+            blocks: [
+                // Teori 1
+                {
+                    type: 'theory',
+                    title: 'Ciri Khas Segitiga',
+                    title_en: 'Characteristics of a Triangle',
+                    content: 'Segitiga memiliki 3 sisi, 3 sudut, dan jumlah ketiga sudutnya selalu $180^\\circ$. Sisi-sisi tersebut bisa dilabeli dengan huruf seperti $a$, $b$, dan $c$.',
+                    content_en: 'A triangle has 3 sides, 3 angles, and the sum of its three angles is always $180^\\circ$. The sides can be labeled with letters like $a$, $b$, and $c$.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 150 120"><polygon points="75,10 140,110 10,110" fill="none" stroke="#3c3c3c" stroke-width="2"/><text x="75" y="5" font-size="12" text-anchor="middle">a</text><text x="145" y="115" font-size="12" text-anchor="middle">b</text><text x="5" y="115" font-size="12" text-anchor="middle">c</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Segitiga memiliki ... sisi. (Isi dengan angka)',
+                    question_en: 'A triangle has ... sides. (Fill in the number)',
+                    options: [],
+                    answer: '3',
+                    explanation: 'Kata segitiga mengandung arti "tiga", yang berarti memiliki 3 sisi dan 3 sudut.',
+                    explanation_en: 'The word triangle implies "three", meaning it has 3 sides and 3 angles.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Berapakah jumlah sudut pada sebuah segitiga?',
+                    question_en: 'How many angles are there in a triangle?',
+                    options: ['2', '3', '4', '5'],
+                    answer: '3',
+                    explanation: 'Setiap segitiga selalu memiliki tepat 3 sudut.',
+                    explanation_en: 'Every triangle always has exactly 3 angles.'
+                },
+                {
+                    type: 'exercise', ex_type: 'checkbox',
+                    question: 'Manakah yang merupakan ciri-ciri segitiga? (Pilih semua yang benar)',
+                    question_en: 'Which are characteristics of a triangle? (Select all that apply)',
+                    options: ['Punya 3 sudut', 'Jumlah sudutnya $180^\\circ$', 'Punya 4 sisi', 'Sisi yang berhadapan sejajar'],
+                    answer: ['Punya 3 sudut', 'Jumlah sudutnya $180^\\circ$'],
+                    explanation: 'Segitiga punya 3 sudut yang totalnya $180^\\circ$. Segiempatlah yang punya 4 sisi dan sisi berhadapan sejajar.',
+                    explanation_en: 'A triangle has 3 angles totaling $180^\\circ$. A quadrilateral has 4 sides and parallel opposite sides.'
+                },
+                // Teori 2
+                {
+                    type: 'theory',
+                    title: 'Jenis-jenis Segitiga',
+                    title_en: 'Types of Triangles',
+                    content: 'Berdasarkan sisinya, segitiga dibagi 3: Segitiga Sama Sisi (ketiga sisi sama panjang), Segitiga Sama Kaki (dua sisi sama panjang), dan Segitiga Sembarang (ketiga sisi berbeda panjang).',
+                    content_en: 'Based on sides, triangles are divided into 3: Equilateral (all sides equal), Isosceles (two sides equal), and Scalene (all sides different).',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 250 100"><polygon points="40,90 10,90 25,40" fill="none" stroke="#1cb0f6" stroke-width="2"/><text x="25" y="105" font-size="10" text-anchor="middle">Sembarang</text><polygon points="125,90 75,90 100,30" fill="none" stroke="#58cc02" stroke-width="2"/><text x="100" y="105" font-size="10" text-anchor="middle">Sama Kaki</text><polygon points="210,90 170,90 190,50" fill="none" stroke="#ff4b4b" stroke-width="2"/><polygon points="210,90 190,50 230,50" fill="none" stroke="#ff4b4b" stroke-width="2"/><polygon points="190,50 230,50 210,90" fill="none" stroke="#ff4b4b" stroke-width="2"/><text x="210" y="105" font-size="10" text-anchor="middle">Sama Sisi</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Segitiga yang ketiga sisinya sama panjang disebut...',
+                    question_en: 'A triangle where all three sides are equal is called...',
+                    options: ['Segitiga Sembarang', 'Segitiga Sama Kaki', 'Segitiga Sama Sisi', 'Segitiga Siku-siku'],
+                    answer: 'Segitiga Sama Sisi',
+                    explanation: 'Sama sisi berarti semua sisi memiliki ukuran yang sama.',
+                    explanation_en: 'Equilateral means all sides have the same measurement.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Segitiga yang memiliki tepat dua sisi sama panjang disebut...',
+                    question_en: 'A triangle that has exactly two equal sides is called...',
+                    options: ['Segitiga Sembarang', 'Segitiga Sama Kaki', 'Segitiga Sama Sisi', 'Segitiga Tumpul'],
+                    answer: 'Segitiga Sama Kaki',
+                    explanation: 'Sama kaki berarti dua sisi (kaki) memiliki panjang yang sama, sementara satu sisi (alas) berbeda.',
+                    explanation_en: 'Isosceles means two sides (legs) have the same length, while one side (base) is different.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sebuah segitiga memiliki panjang sisi 5cm, 6cm, dan 7cm. Termasuk jenis segitiga apakah ini?',
+                    question_en: 'A triangle has side lengths of 5cm, 6cm, and 7cm. What type of triangle is this?',
+                    options: ['Segitiga Sama Sisi', 'Segitiga Sama Kaki', 'Segitiga Sembarang', 'Segitiga Siku-siku'],
+                    answer: 'Segitiga Sembarang',
+                    explanation: 'Karena ketiga sisi memiliki panjang yang berbeda-beda (5, 6, 7), maka ini adalah segitiga sembarang.',
+                    explanation_en: 'Because all three sides have different lengths (5, 6, 7), this is a scalene triangle.'
+                },
+                // Teori 3
+                {
+                    type: 'theory',
+                    title: 'Melabeli Segitiga',
+                    title_en: 'Labeling Triangles',
+                    content: 'Sisi segitiga sering dilabeli dengan huruf $a$, $b$, dan $c$ untuk memudahkan perhitungan. Nantinya, keliling akan dihitung dengan rumus $K = a + b + c$.',
+                    content_en: 'Triangle sides are often labeled with letters $a$, $b$, and $c$ to facilitate calculation. Later, perimeter will be calculated using the formula $K = a + b + c$.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 150 120"><polygon points="75,10 140,110 10,110" fill="#e5f7ff" stroke="#1cb0f6" stroke-width="2"/><text x="80" y="15" font-size="14" fill="#1cb0f6">a</text><text x="140" y="105" font-size="14" fill="#58cc02">b</text><text x="5" y="105" font-size="14" fill="#ff4b4b">c</text></svg>`
+                },
+                // 4 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sisi segitiga biasanya dilabeli dengan huruf...',
+                    question_en: 'Triangle sides are usually labeled with the letters...',
+                    options: ['$x, y, z$', '$a, b, c$', '$1, 2, 3$', 'Semua benar'],
+                    answer: 'Semua benar',
+                    explanation: 'Meskipun bisa huruf apa saja, pelabelan $a, b, c$ atau $x, y, z$ sangat umum digunakan.',
+                    explanation_en: 'Although it can be any letters, labeling with $a, b, c$ or $x, y, z$ is very common.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Jika sebuah segitiga memiliki sisi $a=4$ cm, $b=4$ cm, $c=4$ cm. Jenis segitiga ini adalah segitiga ...',
+                    question_en: 'If a triangle has sides $a=4$ cm, $b=4$ cm, $c=4$ cm. This type of triangle is a ... triangle',
+                    options: [],
+                    answer: 'sama sisi',
+                    explanation: 'Karena ketiga sisinya sama panjang (4 cm), maka disebut segitiga sama sisi.',
+                    explanation_en: 'Because all three sides are equal (4 cm), it is called an equilateral triangle.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Sebuah segitiga memiliki sisi $a=5$ cm, $b=5$ cm, $c=7$ cm. Jenis segitiga ini adalah segitiga ...',
+                    question_en: 'A triangle has sides $a=5$ cm, $b=5$ cm, $c=7$ cm. This type of triangle is a ... triangle',
+                    options: [],
+                    answer: 'sama kaki',
+                    explanation: 'Karena ada dua sisi yang sama panjang (5 cm dan 5 cm), maka disebut segitiga sama kaki.',
+                    explanation_en: 'Because there are two equal sides (5 cm and 5 cm), it is called an isosceles triangle.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Untuk menghitung keliling segitiga, kita menjumlahkan sisi $a$, $b$, dan ...',
+                    question_en: 'To calculate the perimeter of a triangle, we add sides $a$, $b$, and ...',
+                    options: ['$d$', '$c$', '$e$', '$p$'],
+                    answer: '$c$',
+                    explanation: 'Rumus dasar keliling segitiga adalah penjumlahan ketiga sisinya: $a + b + c$.',
+                    explanation_en: 'The basic formula for triangle perimeter is the sum of its three sides: $a + b + c$.'
+                }
+            ]
+        };
+	
+        // --- Data untuk Section 4: Problem Introduction ---
+        lessonData['section-4'] = {
+            type: 'section',
+            title: 'Problem Introduction',
+            title_en: 'Problem Introduction',
+            blocks: [
+                // Teori 1
+                {
+                    type: 'theory',
+                    title: 'Konsep Tali Pengukur',
+                    title_en: 'The Measuring String Concept',
+                    content: 'Keliling bisa diukur dengan cara membungkuskan tali mengelilingi bangun datar, lalu tali tersebut diukur menggunakan penggaris. Untuk segitiga, kita cukup menjumlahkan panjang ketiga sisinya.',
+                    content_en: 'Perimeter can be measured by wrapping a string around a flat shape, then measuring the string with a ruler. For a triangle, we simply add up the lengths of its three sides.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 120"><polygon points="100,20 180,100 20,100" fill="none" stroke="#58cc02" stroke-width="8" stroke-linejoin="round"/><line x1="20" y1="100" x2="180" y2="100" stroke="#ff4b4b" stroke-width="2" stroke-dasharray="5,5"/></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Jika sebuah tali dibungkus mengelilingi segitiga dan kemudian diluruskan, tali tersebut mewakili...?',
+                    question_en: 'If a string is wrapped around a triangle and then straightened, the string represents...?',
+                    options: ['Luas segitiga', 'Keliling segitiga', 'Tinggi segitiga', 'Sisi segitiga'],
+                    answer: 'Keliling segitiga',
+                    explanation: 'Panjang total tali yang membungkus pinggiran segitiga sama dengan kelilingnya.',
+                    explanation_en: 'The total length of the string wrapping the edge of the triangle equals its perimeter.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Tuliskan rumus keliling segitiga jika sisinya adalah $a$, $b$, dan $c$! (Gunakan format: a + b + c)',
+                    question_en: 'Write the perimeter formula of a triangle if the sides are $a$, $b$, and $c$! (Use format: a + b + c)',
+                    options: [],
+                    answer: 'a + b + c',
+                    explanation: 'Keliling adalah jumlah seluruh sisi, jadi rumusnya $K = a + b + c$.',
+                    explanation_en: 'Perimeter is the sum of all sides, so the formula is $K = a + b + c$.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sebuah segitiga memiliki sisi 5cm, 7cm, dan 10cm. Bagaimana cara menghitung kelilingnya?',
+                    question_en: 'A triangle has sides 5cm, 7cm, and 10cm. How to calculate its perimeter?',
+                    options: ['$5 \\times 7 \\times 10$', '$5 + 7 + 10$', '$5^2 + 7^2 + 10^2$', '$10 - 7 - 5$'],
+                    answer: '$5 + 7 + 10$',
+                    explanation: 'Keliling dihitung dengan menjumlahkan semua sisi: $5 + 7 + 10 = 22$ cm.',
+                    explanation_en: 'Perimeter is calculated by adding all sides: $5 + 7 + 10 = 22$ cm.'
+                },
+                // Teori 2
+                {
+                    type: 'theory',
+                    title: 'Menghitung Keliling Segitiga',
+                    title_en: 'Calculating Triangle Perimeter',
+                    content: 'Mari kita hitung keliling segitiga dengan sisi $5$ cm, $7$ cm, dan $10$ cm. $K = 5 + 7 + 10 = 22$ cm. Sangat mudah, bukan?',
+                    content_en: 'Let\'s calculate the perimeter of a triangle with sides $5$ cm, $7$ cm, and $10$ cm. $K = 5 + 7 + 10 = 22$ cm. Very easy, right?',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 120"><polygon points="100,20 180,100 20,100" fill="#e5f7ff" stroke="#1cb0f6" stroke-width="2"/><text x="100" y="15" font-size="12" text-anchor="middle">10 cm</text><text x="190" y="105" font-size="12" text-anchor="middle">5 cm</text><text x="5" y="105" font-size="12" text-anchor="middle">7 cm</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Hitunglah keliling segitiga dengan sisi 6 cm, 8 cm, dan 10 cm!',
+                    question_en: 'Calculate the perimeter of a triangle with sides 6 cm, 8 cm, and 10 cm!',
+                    options: [],
+                    answer: '24',
+                    explanation: '$6 + 8 + 10 = 24$. Jangan lupa menyertakan satuan (cm) jika diminta, namun dalam input angka cukup 24.',
+                    explanation_en: '$6 + 8 + 10 = 24$. Don\'t forget to include units (cm) if asked, but for input 24 is enough.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sebuah segitiga memiliki sisi 12m, 15m, dan 18m. Berapakah kelilingnya?',
+                    question_en: 'A triangle has sides 12m, 15m, and 18m. What is its perimeter?',
+                    options: ['30 m', '40 m', '45 m', '50 m'],
+                    answer: '45 m',
+                    explanation: '$12 + 15 + 18 = 45$. Keliling segitiga tersebut adalah 45 m.',
+                    explanation_en: '$12 + 15 + 18 = 45$. The perimeter of the triangle is 45 m.'
+                },
+                {
+                    type: 'exercise', ex_type: 'checkbox',
+                    question: 'Pilih pernyataan yang benar tentang keliling segitiga! (Pilih semua yang benar)',
+                    question_en: 'Select the correct statements about triangle perimeter! (Select all that apply)',
+                    options: ['Keliling adalah jarak di sekeliling segitiga', 'Keliling dihitung dengan menjumlahkan 3 sisi', 'Keliling segitiga selalu sama dengan luasnya', 'Satuan keliling bisa cm, m, atau km'],
+                    answer: ['Keliling adalah jarak di sekeliling segitiga', 'Keliling dihitung dengan menjumlahkan 3 sisi', 'Satuan keliling bisa cm, m, atau km'],
+                    explanation: 'Keliling dan luas adalah hal yang berbeda. Keliling adalah panjang garis keluar, luas adalah isi daerahnya.',
+                    explanation_en: 'Perimeter and area are different. Perimeter is the outer line length, area is the region content.'
+                },
+                // Teori 3
+                {
+                    type: 'theory',
+                    title: 'Satuan Pengukuran',
+                    title_en: 'Units of Measurement',
+                    content: 'Saat menghitung keliling, pastikan satuan semua sisi sama. Jika satu sisi dalam cm dan sisi lain dalam m, ubah semuanya ke satuan yang sama sebelum dijumlahkan.',
+                    content_en: 'When calculating perimeter, ensure all sides have the same unit. If one side is in cm and another in m, convert them all to the same unit before adding.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 80"><rect x="10" y="30" width="20" height="20" fill="#1cb0f6" rx="3"/><text x="20" y="65" font-size="10" text-anchor="middle">cm</text><rect x="60" y="30" width="40" height="20" fill="#58cc02" rx="3"/><text x="80" y="65" font-size="10" text-anchor="middle">m</text><rect x="140" y="30" width="50" height="20" fill="#ffc800" rx="3"/><text x="165" y="65" font-size="10" text-anchor="middle">km</text></svg>`
+                },
+                // 4 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Jika sisi segitiga adalah 1m, 100cm, dan 1000mm. Apa yang harus kamu lakukan sebelum menghitung keliling?',
+                    question_en: 'If the triangle sides are 1m, 100cm, and 1000mm. What must you do before calculating the perimeter?',
+                    options: ['Langsung jumlahkan angkanya', 'Samakan satuan semua sisi terlebih dahulu', 'Kalikan semua sisi', 'Bagi angka terbesar dengan terkecil'],
+                    answer: 'Samakan satuan semua sisi terlebih dahulu',
+                    explanation: '1m = 100cm = 1000mm. Kamu harus mengubah semuanya ke satuan yang sama (misal cm) sebelum menjumlahkan.',
+                    explanation_en: '1m = 100cm = 1000mm. You must convert everything to the same unit (e.g., cm) before adding.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Sebuah segitiga sisi-sisinya 10 cm, 10 cm, dan 10 cm. Berapakah kelilingnya? (hanya angka)',
+                    question_en: 'A triangle has sides 10 cm, 10 cm, and 10 cm. What is the perimeter? (number only)',
+                    options: [],
+                    answer: '30',
+                    explanation: '$10 + 10 + 10 = 30$. Kelilingnya adalah 30 cm.',
+                    explanation_en: '$10 + 10 + 10 = 30$. The perimeter is 30 cm.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sebuah segitiga memiliki sisi 4 cm, 5 cm, dan 6 cm. Jika diukur dengan tali, berapa panjang tali yang digunakan?',
+                    question_en: 'A triangle has sides 4 cm, 5 cm, and 6 cm. If measured with a string, what is the length of the string used?',
+                    options: ['15 cm', '20 cm', '120 cm', '10 cm'],
+                    answer: '15 cm',
+                    explanation: 'Tali yang melingkari segitiga sama dengan kelilingnya. $4 + 5 + 6 = 15$ cm.',
+                    explanation_en: 'The string wrapping the triangle equals its perimeter. $4 + 5 + 6 = 15$ cm.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Hitunglah keliling segitiga dengan sisi 9 mm, 11 mm, dan 12 mm! (hanya angka)',
+                    question_en: 'Calculate the perimeter of a triangle with sides 9 mm, 11 mm, and 12 mm! (number only)',
+                    options: [],
+                    answer: '32',
+                    explanation: '$9 + 11 + 12 = 32$. Kelilingnya adalah 32 mm.',
+                    explanation_en: '$9 + 11 + 12 = 32$. The perimeter is 32 mm.'
+                }
+            ]
+        };
+
+        // --- Data untuk Section 5: Guided Practice ---
+        lessonData['section-5'] = {
+            type: 'section',
+            title: 'Guided Practice',
+            title_en: 'Guided Practice',
+            blocks: [
+                // Teori 1
+                {
+                    type: 'theory',
+                    title: 'Misi Kebun Segitiga Sama Kaki',
+                    title_en: 'Isosceles Triangle Garden Mission',
+                    content: 'Seekor kelinci berlari mengelilingi kebun wortel berbentuk segitiga sama kaki. Sisi bawah 12 m, dua sisi lainnya 15 m. Keliling = $12 + 15 + 15 = 42$ m.',
+                    content_en: 'A rabbit runs around a carrot garden shaped like an isosceles triangle. Bottom side 12 m, other two sides 15 m. Perimeter = $12 + 15 + 15 = 42$ m.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 150"><polygon points="100,20 180,130 20,130" fill="#e5ffe5" stroke="#58cc02" stroke-width="2"/><text x="100" y="145" font-size="12" text-anchor="middle">12 m</text><text x="160" y="70" font-size="12" text-anchor="middle">15 m</text><text x="40" y="70" font-size="12" text-anchor="middle">15 m</text><circle cx="100" cy="20" r="5" fill="#ff4b4b"/></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Kebun kelinci berbentuk segitiga sama kaki (alas 12m, sisi 15m). Manakah perhitungan yang benar?',
+                    question_en: 'Rabbit garden is an isosceles triangle (base 12m, side 15m). Which calculation is correct?',
+                    options: ['$12 + 15 + 12$', '$12 + 15 + 15$', '$15 + 15 + 15$', '$12 + 12 + 15$'],
+                    answer: '$12 + 15 + 15$',
+                    explanation: 'Segitiga sama kaki punya 2 sisi yang sama panjang. Jadi alas (12) dijumlahkan dengan dua sisi lainnya (15 dan 15).',
+                    explanation_en: 'An isosceles triangle has 2 equal sides. So base (12) is added to the other two sides (15 and 15).'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Hitunglah keliling segitiga sama kaki dengan alas 10 cm dan sisi miring 13 cm! (hanya angka)',
+                    question_en: 'Calculate the perimeter of an isosceles triangle with base 10 cm and slant height 13 cm! (number only)',
+                    options: [],
+                    answer: '36',
+                    explanation: '$10 + 13 + 13 = 36$. Karena sama kaki, ada dua sisi berukuran 13 cm.',
+                    explanation_en: '$10 + 13 + 13 = 36$. Because it\'s isosceles, there are two sides measuring 13 cm.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Jika kelinci berlari 2 kali mengelilingi kebun (keliling 42m), berapa total jaraknya?',
+                    question_en: 'If the rabbit runs 2 laps around the garden (perimeter 42m), what is the total distance?',
+                    options: ['42 m', '84 m', '21 m', '100 m'],
+                    answer: '84 m',
+                    explanation: 'Jarak total = 2 $\\times$ keliling = $2 \\times 42 = 84$ m.',
+                    explanation_en: 'Total distance = 2 $\\times$ perimeter = $2 \\times 42 = 84$ m.'
+                },
+                // Teori 2
+                {
+                    type: 'theory',
+                    title: 'Segitiga Sama Sisi',
+                    title_en: 'Equilateral Triangle',
+                    content: 'Pada segitiga sama sisi, semua sisi memiliki panjang yang sama. Jika satu sisi adalah $s$, maka keliling $K = s + s + s = 3s$.',
+                    content_en: 'In an equilateral triangle, all sides have the same length. If one side is $s$, then perimeter $K = s + s + s = 3s$.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 150 120"><polygon points="75,10 140,110 10,110" fill="#e5f7ff" stroke="#1cb0f6" stroke-width="2"/><text x="85" y="15" font-size="12">8cm</text><text x="140" y="105" font-size="12">8cm</text><text x="5" y="105" font-size="12">8cm</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Sebuah segitiga sama sisi memiliki panjang sisi 8 cm. Berapakah kelilingnya? (hanya angka)',
+                    question_en: 'An equilateral triangle has a side length of 8 cm. What is its perimeter? (number only)',
+                    options: [],
+                    answer: '24',
+                    explanation: 'Karena semua sisi 8 cm, keliling = $8 + 8 + 8 = 24$ cm.',
+                    explanation_en: 'Since all sides are 8 cm, perimeter = $8 + 8 + 8 = 24$ cm.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Jika panjang satu sisi segitiga sama sisi adalah $s$, rumus kelilingnya adalah...',
+                    question_en: 'If the side length of an equilateral triangle is $s$, the perimeter formula is...',
+                    options: ['$s^3$', '$2s$', '$3s$', '$s + 2$'],
+                    answer: '$3s$',
+                    explanation: 'Karena ada 3 sisi yang sama panjang ($s$), maka kelilingnya = $s + s + s = 3s$.',
+                    explanation_en: 'Because there are 3 equal sides ($s$), the perimeter = $s + s + s = 3s$.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Hitunglah keliling segitiga sama sisi yang panjang salah satu sisinya adalah 18 cm! (hanya angka)',
+                    question_en: 'Calculate the perimeter of an equilateral triangle with a side length of 18 cm! (number only)',
+                    options: [],
+                    answer: '54',
+                    explanation: '$3 \\times 18 = 54$. Atau $18 + 18 + 18 = 54$ cm.',
+                    explanation_en: '$3 \\times 18 = 54$. Or $18 + 18 + 18 = 54$ cm.'
+                },
+                // Teori 3
+                {
+                    type: 'theory',
+                    title: 'Membandingkan Keliling',
+                    title_en: 'Comparing Perimeters',
+                    content: 'Kadang kita perlu membandingkan keliling dua bangun. Hitung keliling masing-masing secara terpisah, lalu bandingkan nilainya untuk mengetahui mana yang lebih besar atau lebih kecil.',
+                    content_en: 'Sometimes we need to compare the perimeters of two shapes. Calculate each perimeter separately, then compare the values to see which is larger or smaller.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 250 100"><polygon points="40,80 10,80 25,30" fill="none" stroke="#ff4b4b" stroke-width="2"/><text x="25" y="95" font-size="10" text-anchor="middle">A</text><polygon points="180,80 120,80 150,20" fill="none" stroke="#1cb0f6" stroke-width="2"/><text x="150" y="95" font-size="10" text-anchor="middle">B</text></svg>`
+                },
+                // 4 Exercise
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Segitiga A (sisi 6, 8, 10) dan Segitiga B (sama sisi sisi 8). Manakah yang lebih besar?',
+                    question_en: 'Triangle A (sides 6, 8, 10) and Triangle B (equilateral side 8). Which is larger?',
+                    options: ['Segitiga A', 'Segitiga B', 'Sama besar', 'Tidak bisa ditentukan'],
+                    answer: 'Sama besar',
+                    explanation: 'Keliling A = $6+8+10 = 24$. Keliling B = $8+8+8 = 24$. Jadi keduanya sama besar.',
+                    explanation_en: 'Perimeter A = $6+8+10 = 24$. Perimeter B = $8+8+8 = 24$. So they are equal.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Segitiga A memiliki sisi 5, 5, 5. Segitiga B memiliki sisi 4, 7, 8. Berapa selisih keliling keduanya? (hanya angka)',
+                    question_en: 'Triangle A has sides 5, 5, 5. Triangle B has sides 4, 7, 8. What is the difference in their perimeters? (number only)',
+                    options: [],
+                    answer: '4',
+                    explanation: 'Keliling A = 15. Keliling B = 19. Selisih = $19 - 15 = 4$.',
+                    explanation_en: 'Perimeter A = 15. Perimeter B = 19. Difference = $19 - 15 = 4$.'
+                },
+                {
+                    type: 'exercise', ex_type: 'checkbox',
+                    question: 'Pernyataan mana yang benar mengenai segitiga sama sisi dengan sisi $s$? (Pilih semua yang benar)',
+                    question_en: 'Which statements are true regarding an equilateral triangle with side $s$? (Select all that apply)',
+                    options: ['Keliling = $3s$', 'Ketiga sisinya panjangnya sama', 'Memiliki 2 sudut tumpul', 'Merupakan jenis segitiga dengan simetri tinggi'],
+                    answer: ['Keliling = $3s$', 'Ketiga sisinya panjangnya sama', 'Merupakan jenis segitiga dengan simetri tinggi'],
+                    explanation: 'Segitiga sama sisi ketiga sisinya sama, kelilingnya $3s$, dan simetris. Tidak punya sudut tumpul, sudutnya $60^\\circ$.',
+                    explanation_en: 'Equilateral triangle has 3 equal sides, perimeter $3s$, and is symmetrical. It has no obtuse angles, its angles are $60^\\circ$.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Seekor semut berjalan mengelilingi segitiga sama sisi (sisi 5cm). Berapa jarak tempuhnya?',
+                    question_en: 'An ant walks around an equilateral triangle (side 5cm). What is the distance traveled?',
+                    options: ['10 cm', '15 cm', '20 cm', '25 cm'],
+                    answer: '15 cm',
+                    explanation: 'Jarak tempuh semut sama dengan keliling segitiga. $5 + 5 + 5 = 15$ cm.',
+                    explanation_en: 'The distance traveled by the ant equals the perimeter of the triangle. $5 + 5 + 5 = 15$ cm.'
+                }
+            ]
+        };
+
+        // --- Data untuk Section 6: Independent Practice ---
+        lessonData['section-6'] = {
+            type: 'section',
+            title: 'Independent Practice',
+            title_en: 'Independent Practice',
+            blocks: [
+                // Teori 1
+                {
+                    type: 'theory',
+                    title: 'Segitiga Sembarang',
+                    title_en: 'Scalene Triangle',
+                    content: 'Segitiga sembarang adalah segitiga yang ketiga sisinya memiliki panjang yang berbeda. Untuk menghitung kelilingnya, jumlahkan ketiga sisi yang berbeda tersebut.',
+                    content_en: 'A scalene triangle is a triangle where all three sides have different lengths. To calculate its perimeter, add up all three different sides.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 120"><polygon points="100,20 180,100 20,100" fill="#fff3e5" stroke="#ffc800" stroke-width="2"/><text x="100" y="15" font-size="12" text-anchor="middle">15</text><text x="190" y="105" font-size="12" text-anchor="middle">9</text><text x="5" y="105" font-size="12" text-anchor="middle">12</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Hitunglah keliling segitiga sembarang dengan sisi 9 cm, 12 cm, dan 15 cm! (hanya angka)',
+                    question_en: 'Calculate the perimeter of a scalene triangle with sides 9 cm, 12 cm, and 15 cm! (number only)',
+                    options: [],
+                    answer: '36',
+                    explanation: '$9 + 12 + 15 = 36$. Karena ketiga sisinya berbeda, kita jumlahkan semuanya.',
+                    explanation_en: '$9 + 12 + 15 = 36$. Because all sides are different, we add them all.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sebuah segitiga memiliki sisi 7m, 8m, dan 9m. Berapakah kelilingnya?',
+                    question_en: 'A triangle has sides 7m, 8m, and 9m. What is its perimeter?',
+                    options: ['24 m', '504 m', '15 m', '17 m'],
+                    answer: '24 m',
+                    explanation: '$7 + 8 + 9 = 24$ m. Jangan dikalikan!',
+                    explanation_en: '$7 + 8 + 9 = 24$ m. Do not multiply!'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Zainal membuat prakarya dari kawat berbentuk segitiga (14, 16, 18). Berapa kawat yang dibutuhkan?',
+                    question_en: 'Zainal makes a wire craft in the shape of a triangle (14, 16, 18). How much wire is needed?',
+                    options: ['48 cm', '24 cm', '32 cm', '50 cm'],
+                    answer: '48 cm',
+                    explanation: 'Panjang kawat = keliling segitiga = $14 + 16 + 18 = 48$ cm.',
+                    explanation_en: 'Wire length = triangle perimeter = $14 + 16 + 18 = 48$ cm.'
+                },
+                // Teori 2
+                {
+                    type: 'theory',
+                    title: 'Soal Cerita Pagar Taman',
+                    title_en: 'Park Fence Story Problem',
+                    content: 'Kita ingin memagari taman berbentuk segitiga. Tidak semua sisi harus dipagari jika ada sisi yang menempel pada tembok. Namun, jika seluruhnya dipagari, kita menghitung keliling penuh.',
+                    content_en: 'We want to fence a triangular park. Not all sides need to be fenced if a side is attached to a wall. However, if entirely fenced, we calculate the full perimeter.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 120"><polygon points="100,20 180,100 20,100" fill="none" stroke="#58cc02" stroke-width="3"/><line x1="20" y1="100" x2="180" y2="100" stroke="#ff4b4b" stroke-width="5"/><text x="100" y="115" font-size="10" text-anchor="middle">Tembok</text></svg>`
+                },
+                // 3 Exercise
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Taman segitiga sisi 10m, 10m, 10m akan dipagari seluruhnya. Berapa meter pagar yang dibutuhkan? (hanya angka)',
+                    question_en: 'A triangular park with sides 10m, 10m, 10m will be entirely fenced. How many meters of fence are needed? (number only)',
+                    options: [],
+                    answer: '30',
+                    explanation: 'Karena dipagari seluruhnya, hitung keliling. $10 + 10 + 10 = 30$ m.',
+                    explanation_en: 'Since it is entirely fenced, calculate perimeter. $10 + 10 + 10 = 30$ m.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Pak Budi memagari kebun segitiga (5m, 12m, 13m) dengan 2 lapis kawat. Berapa total kawatnya?',
+                    question_en: 'Mr. Budi fences a triangular garden (5m, 12m, 13m) with 2 layers of wire. What is the total wire?',
+                    options: ['30 m', '60 m', '15 m', '120 m'],
+                    answer: '60 m',
+                    explanation: 'Keliling = $5 + 12 + 13 = 30$ m. Karena 2 lapis, total = $30 \\times 2 = 60$ m.',
+                    explanation_en: 'Perimeter = $5 + 12 + 13 = 30$ m. Because 2 layers, total = $30 \\times 2 = 60$ m.'
+                },
+                {
+                    type: 'exercise', ex_type: 'checkbox',
+                    question: 'Sebuah taman segitiga (10m, 10m, 10m) menempel pada tembok di salah satu sisinya. Jika sisi yang menempel tidak dipagari, berapa meter pagar needed? (Pilih langkah yang benar)',
+                    question_en: 'A triangular park (10m, 10m, 10m) is attached to a wall on one side. If the attached side is not fenced, how many meters of fence are needed? (Select the correct steps)',
+                    options: ['Keliling penuh = 30m', 'Sisi yang tidak dipagari = 10m', 'Panjang pagar = 30m - 10m', 'Panjang pagar = 10m'],
+                    answer: ['Keliling penuh = 30m', 'Sisi yang tidak dipagari = 10m', 'Panjang pagar = 30m - 10m'],
+                    explanation: 'Jika satu sisi menempel tembok, kita kurangi keliling dengan sisi tersebut. $30 - 10 = 20$ m. Opsi terakhir salah.',
+                    explanation_en: 'If one side is on the wall, we subtract that side from the perimeter. $30 - 10 = 20$ m. The last option is wrong.'
+                },
+                // Teori 3
+                {
+                    type: 'theory',
+                    title: 'Mencari Sisi yang Belum Diketahui',
+                    title_en: 'Finding the Unknown Side',
+                    content: 'Jika keliling dan dua sisi diketahui, kita bisa mencari sisi yang ketiga. Rumusnya: $sisi_3 = keliling - (sisi_1 + sisi_2)$.',
+                    content_en: 'If the perimeter and two sides are known, we can find the third side. Formula: $side_3 = perimeter - (side_1 + side_2)$.',
+                    svg: `<svg class="svg-illustration" viewBox="0 0 200 120"><polygon points="100,20 180,100 20,100" fill="none" stroke="#3c3c3c" stroke-width="2"/><text x="100" y="15" font-size="12" text-anchor="middle">?</text><text x="190" y="105" font-size="12" text-anchor="middle">10</text><text x="5" y="105" font-size="12" text-anchor="middle">10</text><text x="100" y="135" font-size="12" text-anchor="middle">K=30</text></svg>`
+                },
+                // 4 Exercise
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Keliling segitiga 30 cm. Dua sisi masing-masing 10 cm. Berapa panjang sisi ketiga? (hanya angka)',
+                    question_en: 'Triangle perimeter is 30 cm. Two sides are 10 cm each. What is the length of the third side? (number only)',
+                    options: [],
+                    answer: '10',
+                    explanation: 'Sisi ke-3 = $30 - (10 + 10) = 30 - 20 = 10$ cm.',
+                    explanation_en: 'Side 3 = $30 - (10 + 10) = 30 - 20 = 10$ cm.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Taman berbentuk segitiga kelilingnya 45m. Dua sisi 12m dan 18m. Berapa sisi ketiga?',
+                    question_en: 'A triangular park has a perimeter of 45m. Two sides are 12m and 18m. What is the third side?',
+                    options: ['15 m', '30 m', '75 m', '10 m'],
+                    answer: '15 m',
+                    explanation: 'Sisi ke-3 = $45 - (12 + 18) = 45 - 30 = 15$ m.',
+                    explanation_en: 'Side 3 = $45 - (12 + 18) = 45 - 30 = 15$ m.'
+                },
+                {
+                    type: 'exercise', ex_type: 'input',
+                    question: 'Keliling segitiga sama kaki 50 cm, alasnya 20 cm. Berapa panjang salah satu sisi kakinya? (hanya angka)',
+                    question_en: 'Isosceles triangle perimeter is 50 cm, base is 20 cm. What is the length of one of its legs? (number only)',
+                    options: [],
+                    answer: '15',
+                    explanation: 'Dua sisi kaki = $50 - 20 = 30$ cm. Karena dua sisi sama panjang, satu sisi = $30 / 2 = 15$ cm.',
+                    explanation_en: 'Two legs = $50 - 20 = 30$ cm. Since two sides are equal, one side = $30 / 2 = 15$ cm.'
+                },
+                {
+                    type: 'exercise', ex_type: 'mcq',
+                    question: 'Sebuah segitiga memiliki sisi $x, x+1, x+2$. Jika sisi terpendek 10 cm, berapakah kelilingnya?',
+                    question_en: 'A triangle has sides $x, x+1, x+2$. If the shortest side is 10 cm, what is the perimeter?',
+                    options: ['30 cm', '31 cm', '33 cm', '32 cm'],
+                    answer: '33 cm',
+                    explanation: 'Jika $x=10$, maka sisi adalah 10, 11, 12. Keliling = $10 + 11 + 12 = 33$ cm.',
+                    explanation_en: 'If $x=10$, then sides are 10, 11, 12. Perimeter = $10 + 11 + 12 = 33$ cm.'
+                }
+            ]
+        };
+
+        // --- Assignment Generator Helper ---
+        function generateAssignment(title, title_en, questions) {
+            return {
+                type: 'assignment',
+                title: title,
+                title_en: title_en,
+                questions: questions
+            };
+        }
+
+        // --- Data untuk Assignment 1: Basic Perimeter ---
+        lessonData['assignment-1'] = generateAssignment(
+            'Assignment 1: Basic Perimeter',
+            'Assignment 1: Basic Perimeter',
+            [
+                { type: 'exercise', ex_type: 'mcq', question: 'Segitiga dengan sisi 3cm, 4cm, 5cm. Kelilingnya?', question_en: 'Triangle with sides 3cm, 4cm, 5cm. Perimeter?', options: ['12 cm', '15 cm', '10 cm', '60 cm'], answer: '12 cm', explanation: '$3+4+5=12$', explanation_en: '$3+4+5=12$' },
+                { type: 'exercise', ex_type: 'input', question: 'Keliling segitiga sisi 7m, 8m, 9m. (angka saja)', question_en: 'Perimeter of triangle sides 7m, 8m, 9m. (number only)', options: [], answer: '24', explanation: '$7+8+9=24$', explanation_en: '$7+8+9=24$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Segitiga sisi 11, 12, 13. Kelilingnya?', question_en: 'Triangle sides 11, 12, 13. Perimeter?', options: ['36', '132', '35', '40'], answer: '36', explanation: '$11+12+13=36$', explanation_en: '$11+12+13=36$' },
+                { type: 'exercise', ex_type: 'input', question: 'Keliling segitiga sisi 20, 20, 20. (angka saja)', question_en: 'Perimeter of triangle sides 20, 20, 20. (number only)', options: [], answer: '60', explanation: '$20+20+20=60$', explanation_en: '$20+20+20=60$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Segitiga sisi 6.5cm, 3.5cm, 5cm. Kelilingnya?', question_en: 'Triangle sides 6.5cm, 3.5cm, 5cm. Perimeter?', options: ['15 cm', '16 cm', '14.5 cm', '15.5 cm'], answer: '15 cm', explanation: '$6.5+3.5+5=15$', explanation_en: '$6.5+3.5+5=15$' },
+                { type: 'exercise', ex_type: 'input', question: 'Keliling segitiga sisi 100, 100, 100. (angka saja)', question_en: 'Perimeter of triangle sides 100, 100, 100. (number only)', options: [], answer: '300', explanation: '$100 \\times 3 = 300$', explanation_en: '$100 \\times 3 = 300$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Tali melingkari segitiga 4cm, 5cm, 6cm. Panjang tali?', question_en: 'String wraps triangle 4cm, 5cm, 6cm. String length?', options: ['15 cm', '120 cm', '14 cm', '16 cm'], answer: '15 cm', explanation: '$4+5+6=15$', explanation_en: '$4+5+6=15$' },
+                { type: 'exercise', ex_type: 'checkbox', question: 'Hitung keliling jika sisi 1m, 2m, 3m. (Pilih perhitungan benar)', question_en: 'Calculate perimeter if sides 1m, 2m, 3m. (Select correct calculation)', options: ['$1+2+3$', 'Hasilnya 6m', '$1 \\times 2 \\times 3$', 'Hasilnya 6m$^2$'], answer: ['$1+2+3$', 'Hasilnya 6m'], explanation: 'Keliling dijumlahkan, bukan dikalikan, dan satuan tetap linear (m).', explanation_en: 'Perimeter is added, not multiplied, and unit remains linear (m).' },
+                { type: 'exercise', ex_type: 'input', question: 'Segitiga sisi 15, 25, 40. Kelilingnya? (angka saja)', question_en: 'Triangle sides 15, 25, 40. Perimeter? (number only)', options: [], answer: '80', explanation: '$15+25+40=80$', explanation_en: '$15+25+40=80$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Manakah rumus yang salah untuk keliling segitiga a,b,c?', question_en: 'Which formula is wrong for triangle perimeter a,b,c?', options: ['$a+b+c$', '$c+b+a$', '$2a+b+c$', '$a+a+b+c-c$'], answer: '$2a+b+c$', explanation: 'Rumus yang benar hanya menjumlahkan masing-masing sisi sekali.', explanation_en: 'The correct formula only adds each side once.' }
+            ]
+        );
+
+        // --- Data untuk Assignment 2: Special Triangles ---
+        lessonData['assignment-2'] = generateAssignment(
+            'Assignment 2: Special Triangles',
+            'Assignment 2: Special Triangles',
+            [
+                { type: 'exercise', ex_type: 'input', question: 'Sama sisi sisi 12cm. Keliling? (angka)', question_en: 'Equilateral side 12cm. Perimeter? (number)', options: [], answer: '36', explanation: '$12 \\times 3 = 36$', explanation_en: '$12 \\times 3 = 36$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Sama kaki alas 10, sisi 15. Keliling?', question_en: 'Isosceles base 10, side 15. Perimeter?', options: ['40', '35', '45', '25'], answer: '40', explanation: '$10+15+15=40$', explanation_en: '$10+15+15=40$' },
+                { type: 'exercise', ex_type: 'input', question: 'Sama sisi keliling 90m. Sisi? (angka)', question_en: 'Equilateral perimeter 90m. Side? (number)', options: [], answer: '30', explanation: '$90 / 3 = 30$', explanation_en: '$90 / 3 = 30$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Sama kaki keliling 50, alas 20. Sisi miring?', question_en: 'Isosceles perimeter 50, base 20. Slant side?', options: ['15', '30', '10', '20'], answer: '15', explanation: '$50-20=30$. $30/2=15$.', explanation_en: '$50-20=30$. $30/2=15$.' },
+                { type: 'exercise', ex_type: 'input', question: 'Sama sisi sisi 8.5cm. Keliling? (angka desimal)', question_en: 'Equilateral side 8.5cm. Perimeter? (decimal number)', options: [], answer: '25.5', explanation: '$8.5 \\times 3 = 25.5$', explanation_en: '$8.5 \\times 3 = 25.5$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Segitiga A sama sisi (5cm). Segitiga B sama kaki (5,5,6). Selisih keliling?', question_en: 'Triangle A equilateral (5cm). Triangle B isosceles (5,5,6). Perimeter difference?', options: ['0 cm', '1 cm', '6 cm', '5 cm'], answer: '1 cm', explanation: 'A=15, B=16. Selisih 1.', explanation_en: 'A=15, B=16. Diff 1.' },
+                { type: 'exercise', ex_type: 'checkbox', question: 'Sama sisi sisi $s$. Pilih pernyataan benar.', question_en: 'Equilateral side $s$. Select true statements.', options: ['Keliling = $3s$', 'Semua sudut $60^\\circ$', 'Memiliki 2 sisi sama', 'Keliling = $s+s+s$'], answer: ['Keliling = $3s$', 'Semua sudut $60^\\circ$', 'Keliling = $s+s+s$'], explanation: 'Sama sisi memiliki 3 sisi yang sama, bukan 2.', explanation_en: 'Equilateral has 3 equal sides, not 2.' },
+                { type: 'exercise', ex_type: 'input', question: 'Sama kaki sisi 14, 14, alas 18. Keliling? (angka)', question_en: 'Isosceles sides 14, 14, base 18. Perimeter? (number)', options: [], answer: '46', explanation: '$14+14+18=46$', explanation_en: '$14+14+18=46$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Sama sisi keliling 120cm. Sisi?', question_en: 'Equilateral perimeter 120cm. Side?', options: ['40 cm', '30 cm', '60 cm', '360 cm'], answer: '40 cm', explanation: '$120 / 3 = 40$', explanation_en: '$120 / 3 = 40$' },
+                { type: 'exercise', ex_type: 'input', question: 'Sama kaki keliling 80, sisi miring 30. Alas? (angka)', question_en: 'Isosceles perimeter 80, slant side 30. Base? (number)', options: [], answer: '20', explanation: '$80 - (30+30) = 20$', explanation_en: '$80 - (30+30) = 20$' }
+            ]
+        );
+
+        // --- Data untuk Assignment 3: Story Problems ---
+        lessonData['assignment-3'] = generateAssignment(
+            'Assignment 3: Story Problems',
+            'Assignment 3: Story Problems',
+            [
+                { type: 'exercise', ex_type: 'input', question: 'Atap segitiga (10m, 10m, 10m) dipasang lampu. Total kabel? (angka)', question_en: 'Triangular roof (10m, 10m, 10m) fitted with lights. Total cable? (number)', options: [], answer: '30', explanation: 'Keliling = 30m.', explanation_en: 'Perimeter = 30m.' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Pagar kebun (12, 15, 18) dengan 2 lapis. Total kawat?', question_en: 'Garden fence (12, 15, 18) with 2 layers. Total wire?', options: ['90', '45', '60', '100'], answer: '90', explanation: 'K=45. $45 \\times 2 = 90$.', explanation_en: 'P=45. $45 \\times 2 = 90$.' },
+                { type: 'exercise', ex_type: 'input', question: 'Bingkai foto (20, 25, 25). Kayu yang dibutuhkan? (angka)', question_en: 'Photo frame (20, 25, 25). Wood needed? (number)', options: [], answer: '70', explanation: '$20+25+25=70$', explanation_en: '$20+25+25=70$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Semut berlari 3x keliling segitiga (5,6,7). Jarak total?', question_en: 'Ant runs 3x around triangle (5,6,7). Total distance?', options: ['54', '18', '36', '72'], answer: '54', explanation: 'K=18. $18 \\times 3 = 54$.', explanation_en: 'P=18. $18 \\times 3 = 54$.' },
+                { type: 'exercise', ex_type: 'checkbox', question: 'Taman (10,10,10) menempel tembok (sisi 10). Pagar needed? (Pilih langkah benar)', question_en: 'Park (10,10,10) attached to wall (side 10). Fence needed? (Select correct steps)', options: ['K=30', 'Dikurangi sisi tembok (10)', 'Pagar = 30 - 10', 'Pagar = 30'], answer: ['K=30', 'Dikurangi sisi tembok (10)', 'Pagar = 30 - 10'], explanation: 'Karena ada tembok, sisi itu tidak dipagari. $30-10=20$.', explanation_en: 'Because of the wall, that side is not fenced. $30-10=20$.' },
+                { type: 'exercise', ex_type: 'input', question: 'Kebun (50, 60, 70) dipagari 1 lapis. Biaya Rp10.000/m. Total biaya? (angka tanpa titik)', question_en: 'Garden (50, 60, 70) fenced 1 layer. Cost Rp10,000/m. Total cost? (number without dots)', options: [], answer: '1800000', explanation: 'K=180. $180 \\times 10000 = 1.800.000$.', explanation_en: 'P=180. $180 \\times 10000 = 1,800,000$.' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Pizza segitiga (15, 15, 15). Crust pizza (keliling) adalah?', question_en: 'Triangular pizza (15, 15, 15). Pizza crust (perimeter) is?', options: ['45', '30', '60', '225'], answer: '45', explanation: '$15+15+15=45$', explanation_en: '$15+15+15=45$' },
+                { type: 'exercise', ex_type: 'input', question: 'Rambu segitiga (40, 40, 40) diberi pantul cahaya. Berapa cm pantul? (angka)', question_en: 'Triangular sign (40, 40, 40) given reflectors. How many cm of reflector? (number)', options: [], answer: '120', explanation: '$40 \\times 3 = 120$', explanation_en: '$40 \\times 3 = 120$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Tali sepanjang 100m melingkari kebun (30, 40, 30). Sisa tali?', question_en: '100m string wraps garden (30, 40, 30). Remaining string?', options: ['0 m', '30 m', '70 m', '10 m'], answer: '0 m', explanation: 'K=100. Sisa = 0.', explanation_en: 'P=100. Remain = 0.' },
+                { type: 'exercise', ex_type: 'input', question: 'Membuat perahu layar segitiga (12, 16, 20). Keliling layar? (angka)', question_en: 'Making a triangular sail (12, 16, 20). Sail perimeter? (number)', options: [], answer: '48', explanation: '$12+16+20=48$', explanation_en: '$12+16+20=48$' }
+            ]
+        );
+
+        // --- Data untuk Assignment 4: Finding Missing Sides ---
+        lessonData['assignment-4'] = generateAssignment(
+            'Assignment 4: Finding Missing Sides',
+            'Assignment 4: Finding Missing Sides',
+            [
+                { type: 'exercise', ex_type: 'input', question: 'K=40. Sisi 15, 15. Sisi ke-3? (angka)', question_en: 'P=40. Sides 15, 15. 3rd side? (number)', options: [], answer: '10', explanation: '$40-30=10$', explanation_en: '$40-30=10$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'K=60. Sama sisi. Sisi?', question_en: 'P=60. Equilateral. Side?', options: ['20', '30', '15', '10'], answer: '20', explanation: '$60/3=20$', explanation_en: '$60/3=20$' },
+                { type: 'exercise', ex_type: 'input', question: 'K=50. Sisi 10, 20. Sisi ke-3? (angka)', question_en: 'P=50. Sides 10, 20. 3rd side? (number)', options: [], answer: '20', explanation: '$50-30=20$', explanation_en: '$50-30=20$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'K=100. Sisi 35, 35. Sisi ke-3?', question_en: 'P=100. Sides 35, 35. 3rd side?', options: ['30', '65', '35', '70'], answer: '30', explanation: '$100-70=30$', explanation_en: '$100-70=30$' },
+                { type: 'exercise', ex_type: 'input', question: 'Sama kaki K=80, alas=30. Sisi miring? (angka)', question_en: 'Isosceles P=80, base=30. Slant side? (number)', options: [], answer: '25', explanation: '$80-30=50$. $50/2=25$.', explanation_en: '$80-30=50$. $50/2=25$.' },
+                { type: 'exercise', ex_type: 'checkbox', question: 'K=90. Sisi 30, 30. Cari sisi ke-3. (Pilih langkah benar)', question_en: 'P=90. Sides 30, 30. Find 3rd side. (Select correct steps)', options: ['$90 - (30+30)$', 'Sisi ke-3 = 30', 'Sisi ke-3 = 90', '$90 / 3$'], answer: ['$90 - (30+30)$', 'Sisi ke-3 = 30'], explanation: 'Sisi ke-3 = $90-60=30$.', explanation_en: '3rd side = $90-60=30$.' },
+                { type: 'exercise', ex_type: 'input', question: 'K=144. Sama sisi. Sisi? (angka)', question_en: 'P=144. Equilateral. Side? (number)', options: [], answer: '48', explanation: '$144/3=48$', explanation_en: '$144/3=48$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'K=25. Sisi 5, 12. Sisi ke-3?', question_en: 'P=25. Sides 5, 12. 3rd side?', options: ['8', '18', '13', '7'], answer: '8', explanation: '$25-17=8$', explanation_en: '$25-17=8$' },
+                { type: 'exercise', ex_type: 'input', question: 'K=200. Sisi 50, 70. Sisi ke-3? (angka)', question_en: 'P=200. Sides 50, 70. 3rd side? (number)', options: [], answer: '80', explanation: '$200-120=80$', explanation_en: '$200-120=80$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Segitiga sisi $x, x, 2x$. K=40. Nilai $x$?', question_en: 'Triangle sides $x, x, 2x$. P=40. Value of $x$?', options: ['10', '20', '8', '5'], answer: '10', explanation: '$x+x+2x=4x=40$. $x=10$.', explanation_en: '$x+x+2x=4x=40$. $x=10$.' }
+            ]
+        );
+
+        // --- Data untuk Assignment 5: Mixed Challenge ---
+        lessonData['assignment-5'] = generateAssignment(
+            'Assignment 5: Mixed Challenge',
+            'Assignment 5: Mixed Challenge',
+            [
+                { type: 'exercise', ex_type: 'input', question: 'Sisi 7, 8, 9. K? (angka)', question_en: 'Sides 7, 8, 9. P? (number)', options: [], answer: '24', explanation: '$7+8+9=24$', explanation_en: '$7+8+9=24$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Sama sisi K=33. Sisi?', question_en: 'Equilateral P=33. Side?', options: ['11', '9', '15', '10'], answer: '11', explanation: '$33/3=11$', explanation_en: '$33/3=11$' },
+                { type: 'exercise', ex_type: 'checkbox', question: 'Pilih yang termasuk ciri keliling segitiga.', question_en: 'Select which are characteristics of triangle perimeter.', options: ['Satuan linear (cm, m)', 'Dihitung dengan penjumlahan', 'Hasilnya bisa luas ($cm^2$)', 'Membutuhkan 3 sisi'], answer: ['Satuan linear (cm, m)', 'Dihitung dengan penjumlahan', 'Membutuhkan 3 sisi'], explanation: 'Keliling bukan luas, jadi satuan tidak kuadrat.', explanation_en: 'Perimeter is not area, so units are not squared.' },
+                { type: 'exercise', ex_type: 'input', question: 'K=55, sisi 15, 15. Sisi ke-3? (angka)', question_en: 'P=55, sides 15, 15. 3rd side? (number)', options: [], answer: '25', explanation: '$55-30=25$', explanation_en: '$55-30=25$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Taman (10,10,10) 2 lapis pagar. Total pagar?', question_en: 'Park (10,10,10) 2 layer fence. Total fence?', options: ['60', '30', '40', '20'], answer: '60', explanation: 'K=30. $30 \\times 2 = 60$.', explanation_en: 'P=30. $30 \\times 2 = 60$.' },
+                { type: 'exercise', ex_type: 'input', question: 'Sama kaki K=100, sisi 40. Alas? (angka)', question_en: 'Isosceles P=100, side 40. Base? (number)', options: [], answer: '20', explanation: '$100-80=20$', explanation_en: '$100-80=20$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Segitiga A (5,5,5). B (4,6,5). Pernyataan benar?', question_en: 'Triangle A (5,5,5). B (4,6,5). True statement?', options: ['A lebih besar', 'B lebih besar', 'Sama besar', 'Tidak bisa diukur'], answer: 'Sama besar', explanation: 'A=15, B=15.', explanation_en: 'A=15, B=15.' },
+                { type: 'exercise', ex_type: 'input', question: 'Sisi berurutan $x, x+1, x+2$. Jika $x=11$, K? (angka)', question_en: 'Consecutive sides $x, x+1, x+2$. If $x=11$, P? (number)', options: [], answer: '36', explanation: '$11+12+13=36$', explanation_en: '$11+12+13=36$' },
+                { type: 'exercise', ex_type: 'mcq', question: 'Kabel melingkari (12, 15, 18) 3 kali. Panjang kabel?', question_en: 'Cable wraps (12, 15, 18) 3 times. Cable length?', options: ['135', '45', '90', '180'], answer: '135', explanation: 'K=45. $45 \\times 3 = 135$.', explanation_en: 'P=45. $45 \\times 3 = 135$.' },
+                { type: 'exercise', ex_type: 'input', question: 'K=90, Sama sisi. Sisi? (angka)', question_en: 'P=90, Equilateral. Side? (number)', options: [], answer: '30', explanation: '$90/3=30$', explanation_en: '$90/3=30$' }
+            ]
+        );
+
+        // --- Data untuk Consolidation ---
+        lessonData['consolidation'] = {
+            type: 'consolidation',
+            title: 'Consolidation & Reflection',
+            title_en: 'Consolidation & Reflection',
+            content: 'Luar biasa! Kamu sudah berhasil menguasai konsep Keliling Segitiga. Ingat, keliling adalah menjumlahkan "jalan di pinggiran". Rumusnya: <span style="font-weight:bold; color:var(--primary-dark)">K = s + s + s</span> atau <span style="font-weight:bold; color:var(--primary-dark)">K = a + b + c</span>. Jangan lupa login ke learn.algonova.id untuk melihat catatan belajarmu hari ini!',
+            content_en: 'Great job! You have successfully mastered the concept of Triangle Perimeter. Remember, perimeter is adding up the "walk around the edge". The formula is: <span style="font-weight:bold; color:var(--primary-dark)">K = s + s + s</span> or <span style="font-weight:bold; color:var(--primary-dark)">K = a + b + c</span>. Don\'t forget to login to learn.algonova.id to see your study notes for today!'
+        };
+	
+</script>
+</body>
+</html>
