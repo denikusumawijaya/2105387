@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tutoring by Deni - Perkalian Pecahan</title>
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <!-- KaTeX JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        :root {
+            --primary: #58cc02;
+            --primary-dark: #46a302;
+            --secondary: #1cb0f6;
+            --danger: #ff4b4b;
+            --bg-color: #fff;
+            --text-main: #3c3c3c;
+            --text-muted: #afafaf;
+            --border-color: #e5e5e5;
+            --card-bg: #ffffff;
+            --nav-bg: #f7f7f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* NAVBAR KIRI */
+        .navbar {
+            width: 280px;
+            background-color: var(--nav-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar h2 {
+            color: var(--secondary);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .reset-all-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .reset-all-btn:hover { background-color: #e03b3b; }
+        .reset-all-btn:active { transform: translateY(2px); }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: #e5e5e5;
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: #ddf4ff;
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .nav-item.completed {
+            color: var(--primary);
+        }
+        
+        .nav-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .section-container {
+            max-width: 800px;
+            width: 100%;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TYPOGRAPHY & TRANSLATIONS */
+        h1 {
+            font-size: 2rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .id-text { font-size: 1.1rem; margin-bottom: 2px; }
+        .en-text { font-size: 0.9rem; color: var(--text-muted); font-style: italic; margin-bottom: 15px; }
+
+        /* CARDS & THEORY */
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 0px rgba(0,0,0,0.05);
+        }
+
+        .theory-box {
+            background-color: #fff;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f0ffe0;
+            border-radius: 8px;
+        }
+
+        /* EXERCISES */
+        .exercise-box {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .options-group {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            background-color: #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:hover {
+            border-color: var(--secondary);
+            background-color: #ddf4ff;
+        }
+
+        .option-btn.selected {
+            border-color: var(--secondary);
+            background-color: #ddf4ff;
+            color: var(--secondary);
+        }
+
+        .option-btn.correct {
+            border-color: var(--primary);
+            background-color: #d7ffb8;
+            color: var(--primary-dark);
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--danger);
+            background-color: #ffdada;
+            color: var(--danger);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        /* EXERCISE CONTROLS */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:active { transform: translateY(2px); }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-secondary { background-color: var(--secondary); color: white; }
+        .btn-secondary:hover { filter: brightness(1.1); }
+        .btn-muted { background-color: #e5e5e5; color: var(--text-muted); }
+        .btn-danger { background-color: var(--danger); color: white; }
+        
+        /* COLLAPSIBLE EXPLANATION */
+        .explanation {
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            display: none;
+        }
+        .explanation.show { display: block; animation: fadeIn 0.3s; }
+        
+        /* SVG ILLUSTRATIONS */
+        .illustration {
+            display: block;
+            margin: 20px auto;
+            max-width: 200px;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 210mm; /* A4 width */
+                min-height: 297mm; /* A4 height */
+                padding: 20mm;
+                margin: 0;
+                display: block !important; /* Tambahan !important */
+            }
+            .navbar, .main-content { display: none; }
+        }
+
+        #printArea { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR KIRI -->
+    <aside class="navbar">
+        <h2>Math Tutoring</h2>
+        <button class="reset-all-btn" onclick="resetAllProgress()">Reset All Progress</button>
+
+        <div class="nav-item active" onclick="showSection('home', this)">
+            <span class="nav-icon">🏠</span> Home
+        </div>
+        <div class="nav-item" onclick="showSection('sec1', this)">
+            <span class="nav-icon">🔄</span> Spiral Review
+        </div>
+        <div class="nav-item" onclick="showSection('sec2', this)">
+            <span class="nav-icon">🌍</span> Intro & Real-World
+        </div>
+        <div class="nav-item" onclick="showSection('sec3', this)">
+            <span class="nav-icon">📚</span> Prior Knowledge
+        </div>
+        <div class="nav-item" onclick="showSection('sec4', this)">
+            <span class="nav-icon">🧩</span> Problem Intro
+        </div>
+        <div class="nav-item" onclick="showSection('sec5', this)">
+            <span class="nav-icon">🧑‍🏫</span> Guided Practice
+        </div>
+        <div class="nav-item" onclick="showSection('sec6', this)">
+            <span class="nav-icon">✍️</span> Independent Practice
+        </div>
+        <div class="nav-item" onclick="showSection('assign1', this)">
+            <span class="nav-icon">📝</span> Assignment 1
+        </div>
+        <div class="nav-item" onclick="showSection('assign2', this)">
+            <span class="nav-icon">📝</span> Assignment 2
+        </div>
+        <div class="nav-item" onclick="showSection('assign3', this)">
+            <span class="nav-icon">📝</span> Assignment 3
+        </div>
+        <div class="nav-item" onclick="showSection('assign4', this)">
+            <span class="nav-icon">📝</span> Assignment 4
+        </div>
+        <div class="nav-item" onclick="showSection('assign5', this)">
+            <span class="nav-icon">📝</span> Assignment 5
+        </div>
+        <div class="nav-item" onclick="showSection('consolidation', this)">
+            <span class="nav-icon">🎓</span> Consolidation
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT KANAN -->
+    <main class="main-content">
+        
+        <!-- HOME SECTION -->
+        <div id="home" class="section-container active">
+            <h1>MATH TUTORING by Deni</h1>
+            <p class="en-text">Math Tutoring by Deni</p>
+            
+            <div class="card">
+                <h2>Topik: Perkalian Pecahan</h2>
+                <p class="en-text">Topic: Fraction Multiplication</p>
+                
+                <svg class="illustration" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="75" r="40" fill="none" stroke="#1cb0f6" stroke-width="5"/>
+                    <path d="M 50 35 L 50 115 M 10 75 L 90 75" stroke="#1cb0f6" stroke-width="5"/>
+                    <text x="50" y="85" font-size="30" fill="#1cb0f6" text-anchor="middle">1/2</text>
+                    <text x="100" y="85" font-size="30" fill="#58cc02" text-anchor="middle">×</text>
+                    <circle cx="150" cy="75" r="40" fill="none" stroke="#58cc02" stroke-width="5"/>
+                    <path d="M 150 35 L 150 115 M 110 75 L 190 75 M 130 55 L 170 55 M 130 95 L 170 95" stroke="#58cc02" stroke-width="5"/>
+                    <text x="150" y="85" font-size="20" fill="#58cc02" text-anchor="middle">1/4</text>
+                </svg>
+
+                <h3>Aturan Kelas:</h3>
+                <p class="en-text">Class Rules:</p>
+                <ul>
+                    <li class="id-text">1. Berbicara secara bergantian.</li>
+                    <li class="en-text">Take turns speaking.</li><br>
+                    <li class="id-text">2. Meminta izin jika ingin meninggalkan kelas.</li>
+                    <li class="en-text">Ask for permission if you want to leave the class.</li><br>
+                    <li class="id-text">3. Menyalakan kamera dan microphone jika diperlukan.</li>
+                    <li class="en-text">Turn on camera and microphone if needed.</li>
+                </ul>
+                <br>
+                <button class="btn btn-primary" onclick="showSection('sec1', document.querySelectorAll('.nav-item')[1])">Mulai Kelas / Start Class</button>
+            </div>
+        </div>
+
+        <!-- SECTION 1: SPIRAL REVIEW -->
+        <div id="sec1" class="section-container">
+            <h2>Spiral Review Warm-up (00:00-00:10)</h2>
+            <p class="en-text">Spiral Review Warm-up</p>
+            
+            <div class="theory-box">
+                <p class="id-text">Sebelum belajar pecahan, mari kita panaskan otak kita dengan perkalian dan pembagian dasar 1-10!</p>
+                <p class="en-text">Before learning fractions, let's warm up our brains with basic multiplication and division 1-10!</p>
+            </div>
+
+            <!-- Exercise 1.1 -->
+            <div class="exercise-box" id="ex1_1">
+                <p class="question-text">Berapakah hasil dari \( 6 \times 7 \) ?</p>
+                <p class="en-text">What is the result of \( 6 \times 7 \) ?</p>
+                <div class="options-group" id="opt1_1">
+                    <button class="option-btn" data-value="42" onclick="selectAnswer(this)">42</button>
+                    <button class="option-btn" data-value="35" onclick="selectAnswer(this)">35</button>
+                    <button class="option-btn" data-value="48" onclick="selectAnswer(this)">48</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_1')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex1_1', 42)">Check</button>
+                </div>
+                <div class="explanation" id="exp1_1">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 6 \times 7 = 42 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> 6 times 7 equals 42.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 1.2 -->
+            <div class="exercise-box" id="ex1_2">
+                <p class="question-text">Berapakah hasil dari \( 56 \div 8 \) ?</p>
+                <p class="en-text">What is the result of \( 56 \div 8 \) ?</p>
+                <div class="options-group" id="opt1_2">
+                    <button class="option-btn" data-value="7" onclick="selectAnswer(this)">7</button>
+                    <button class="option-btn" data-value="8" onclick="selectAnswer(this)">8</button>
+                    <button class="option-btn" data-value="6" onclick="selectAnswer(this)">6</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_2')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex1_2', 7)">Check</button>
+                </div>
+                <div class="explanation" id="exp1_2">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 56 \div 8 = 7 \) karena \( 7 \times 8 = 56 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> 56 divided by 8 is 7 because 7 times 8 is 56.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 1.3 -->
+            <div class="exercise-box" id="ex1_3">
+                <p class="question-text">Berapakah hasil dari \( 9 \times 4 \) ?</p>
+                <p class="en-text">What is the result of \( 9 \times 4 \) ?</p>
+                <input type="text" id="input1_3" placeholder="Ketik jawaban di sini...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_3')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex1_3', 'input1_3', '36')">Check</button>
+                </div>
+                <div class="explanation" id="exp1_3">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 9 \times 4 = 36 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> 9 times 4 equals 36.</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Hebat! Sekarang kita mengingat bentuk dasar pecahan. Pecahan memiliki <strong>pembilang</strong> (atas) dan <strong>penyebut</strong> (bawah).</p>
+                <p class="en-text">Great! Now we remember the basic form of fractions. A fraction has a numerator (top) and denominator (bottom).</p>
+            </div>
+
+            <!-- Exercise 1.4 -->
+            <div class="exercise-box" id="ex1_4">
+                <p class="question-text">Pada pecahan \( \frac{3}{5} \), angka berapakah yang merupakan penyebut?</p>
+                <p class="en-text">In the fraction \( \frac{3}{5} \), which number is the denominator?</p>
+                <div class="options-group" id="opt1_4">
+                    <button class="option-btn" data-value="3" onclick="selectAnswer(this)">3</button>
+                    <button class="option-btn" data-value="5" onclick="selectAnswer(this)">5</button>
+                    <button class="option-btn" data-value="8" onclick="selectAnswer(this)">8</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_4')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex1_4', 5)">Check</button>
+                </div>
+                <div class="explanation" id="exp1_4">
+                    <p class="id-text"><strong>Penjelasan:</strong> Penyebut adalah angka di bawah, yaitu 5.</p>
+                    <p class="en-text"><strong>Explanation:</strong> The denominator is the bottom number, which is 5.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 1.5 -->
+            <div class="exercise-box" id="ex1_5">
+                <p class="question-text">Pada pecahan \( \frac{7}{8} \), angka berapakah yang merupakan pembilang?</p>
+                <p class="en-text">In the fraction \( \frac{7}{8} \), which number is the numerator?</p>
+                <div class="options-group" id="opt1_5">
+                    <button class="option-btn" data-value="7" onclick="selectAnswer(this)">7</button>
+                    <button class="option-btn" data-value="8" onclick="selectAnswer(this)">8</button>
+                    <button class="option-btn" data-value="6" onclick="selectAnswer(this)">6</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_5')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex1_5', 7)">Check</button>
+                </div>
+                <div class="explanation" id="exp1_5">
+                    <p class="id-text"><strong>Penjelasan:</strong> Pembilang adalah angka di atas, yaitu 7.</p>
+                    <p class="en-text"><strong>Explanation:</strong> The numerator is the top number, which is 7.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 1.6 -->
+            <div class="exercise-box" id="ex1_6">
+                <p class="question-text">Manakah pecahan yang bernilai sama dengan \( \frac{1}{2} \) ?</p>
+                <p class="en-text">Which fraction is equal to \( \frac{1}{2} \) ?</p>
+                <div class="options-group" id="opt1_6">
+                    <button class="option-btn" data-value="frac{2}{4}" onclick="selectAnswer(this)">\( \frac{2}{4} \)</button>
+                    <button class="option-btn" data-value="frac{2}{3}" onclick="selectAnswer(this)">\( \frac{2}{3} \)</button>
+                    <button class="option-btn" data-value="frac{3}{2}" onclick="selectAnswer(this)">\( \frac{3}{2} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_6')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex1_6', 'frac{2}{4}')">Check</button>
+                </div>
+                <div class="explanation" id="exp1_6">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{2}{4} \) sama dengan \( \frac{1}{2} \) karena jika dibagi 2 atas dan bawah, hasilnya sama.</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{2}{4} \) equals \( \frac{1}{2} \) because dividing top and bottom by 2 gives the same result.</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Pecahan juga bisa mewakili bagian dari suatu benda. Misalnya, jika sebuah pizza dipotong menjadi 8 bagian sama besar, dan kamu memakan 3 potong, berarti kamu memakan \( \frac{3}{8} \) bagian dari pizza tersebut.</p>
+                <p class="en-text">Fractions can also represent parts of an object. For example, if a pizza is cut into 8 equal slices, and you eat 3 slices, it means you ate \( \frac{3}{8} \) of the pizza.</p>
+            </div>
+
+            <!-- Exercise 1.7 -->
+            <div class="exercise-box" id="ex1_7">
+                <p class="question-text">Sebuah kue dipotong menjadi 6 bagian sama besar. Jika Adi memakan 1 potong, pecahan apa yang mewakili kue yang dimakan Adi?</p>
+                <p class="en-text">A cake is cut into 6 equal parts. If Adi eats 1 piece, what fraction represents the cake Adi ate?</p>
+                <input type="text" id="input1_7" placeholder="Format a/b (contoh: 1/2)">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_7')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex1_7', 'input1_7', '1/6')">Check</button>
+                </div>
+                <div class="explanation" id="exp1_7">
+                    <p class="id-text"><strong>Penjelasan:</strong> 1 potong dari total 6 potong berarti \( \frac{1}{6} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> 1 piece out of 6 total pieces means \( \frac{1}{6} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 1.8 -->
+            <div class="exercise-box" id="ex1_8">
+                <p class="question-text">Berapakah hasil dari \( 6 \times 8 \) ?</p>
+                <p class="en-text">What is the result of \( 6 \times 8 \) ?</p>
+                <input type="text" id="input1_8" placeholder="Ketik jawaban di sini...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_8')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex1_8', 'input1_8', '48')">Check</button>
+                </div>
+                <div class="explanation" id="exp1_8">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 6 \times 8 = 48 \). Terus berlatih perkalian dasar!</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 6 \times 8 = 48 \). Keep practicing basic multiplication!</p>
+                </div>
+            </div>
+
+            <!-- Exercise 1.9 -->
+            <div class="exercise-box" id="ex1_9">
+                <p class="question-text">Berapakah hasil dari \( 81 \div 9 \) ?</p>
+                <p class="en-text">What is the result of \( 81 \div 9 \) ?</p>
+                <input type="text" id="input1_9" placeholder="Ketik jawaban di sini...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_9')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex1_9', 'input1_9', '9')">Check</button>
+                </div>
+                <div class="explanation" id="exp1_9">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 81 \div 9 = 9 \) karena \( 9 \times 9 = 81 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 81 \div 9 = 9 \) because \( 9 \times 9 = 81 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 1.10 -->
+            <div class="exercise-box" id="ex1_10">
+                <p class="question-text">Pada pecahan \( \frac{4}{9} \), angka berapakah yang merupakan penyebut?</p>
+                <p class="en-text">In the fraction \( \frac{4}{9} \), which number is the denominator?</p>
+                <div class="options-group" id="opt1_10">
+                    <button class="option-btn" data-value="4" onclick="selectAnswer(this)">4</button>
+                    <button class="option-btn" data-value="9" onclick="selectAnswer(this)">9</button>
+                    <button class="option-btn" data-value="13" onclick="selectAnswer(this)">13</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex1_10')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex1_10', 9)">Check</button>
+                </div>
+                <div class="explanation" id="exp1_10">
+                    <p class="id-text"><strong>Penjelasan:</strong> Penyebut selalu berada di bawah garis pecahan. Jadi, penyebutnya adalah 9.</p>
+                    <p class="en-text"><strong>Explanation:</strong> The denominator is always below the fraction bar. So, the denominator is 9.</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-muted" onclick="showSection('home', document.querySelectorAll('.nav-item')[0])">Previous</button>
+                <button class="btn btn-primary" onclick="showSection('sec2', document.querySelectorAll('.nav-item')[2])">Next</button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: INTRO & REAL-WORLD -->
+        <div id="sec2" class="section-container">
+            <h2>Introduction & Real-World Connection (00:10-00:15)</h2>
+            <p class="en-text">Introduction & Real-World Connection</p>
+
+            <div class="theory-box">
+                <p class="id-text">Pernahkah kamu membagi makanan dengan teman? Misalnya, kamu punya setengah (\( \frac{1}{2} \)) pizza, lalu kamu ingin memberikan \( \frac{1}{2} \) bagian dari pizza itu kepada adikmu. Berapa bagian pizza yang didapat adikmu?</p>
+                <p class="en-text">Have you ever shared food with a friend? For example, you have half (\( \frac{1}{2} \)) a pizza, and you want to give \( \frac{1}{2} \) of that pizza to your younger sibling. How much pizza does your sibling get?</p>
+                <svg class="illustration" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 100 100 L 100 50 A 50 50 0 0 1 150 100 Z" fill="#ffcc00" stroke="#000" stroke-width="2"/>
+                    <path d="M 100 100 L 100 50 A 50 50 0 0 1 150 100 Z" fill="none" stroke="#ff4b4b" stroke-width="4" stroke-dasharray="5,5"/>
+                    <circle cx="100" cy="100" r="50" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="2,2"/>
+                    <text x="110" y="80" font-size="14">1/2 dari 1/2</text>
+                </svg>
+                <p class="id-text">Di sinilah kita menggunakan <strong>Perkalian Pecahan</strong>!</p>
+                <p class="en-text">This is where we use Fraction Multiplication!</p>
+            </div>
+
+            <!-- Exercise 2.1 -->
+            <div class="exercise-box" id="ex2_1">
+                <p class="question-text">Jika kamu punya \( \frac{1}{2} \) kue dan memberikan \( \frac{1}{2} \) bagian dari kue itu, operasi matematika apa yang tepat?</p>
+                <p class="en-text">If you have \( \frac{1}{2} \) a cake and give \( \frac{1}{2} \) of that cake, what is the correct math operation?</p>
+                <div class="options-group" id="opt2_1">
+                    <button class="option-btn" data-value="frac{1}{2} + frac{1}{2}" onclick="selectAnswer(this)">\( \frac{1}{2} + \frac{1}{2} \)</button>
+                    <button class="option-btn" data-value="frac{1}{2} \\times frac{1}{2}" onclick="selectAnswer(this)">\( \frac{1}{2} \times \frac{1}{2} \)</button>
+                    <button class="option-btn" data-value="frac{1}{2} \\div frac{1}{2}" onclick="selectAnswer(this)">\( \frac{1}{2} \div \frac{1}{2} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_1')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex2_1', 'frac{1}{2} \\times frac{1}{2}')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_1">
+                    <p class="id-text"><strong>Penjelasan:</strong> Kata "dari" dalam matematika berarti perkalian (\( \times \)).</p>
+                    <p class="en-text"><strong>Explanation:</strong> The word "of" in math means multiplication (\( \times \)).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 2.2 -->
+            <div class="exercise-box" id="ex2_2">
+                <p class="question-text">Kata "dari" pada soal cerita pecahan biasanya menunjukkan operasi...</p>
+                <p class="en-text">The word "of" in fraction word problems usually indicates the operation of...</p>
+                <div class="options-group" id="opt2_2">
+                    <button class="option-btn" data-value="Penjumlahan" onclick="selectAnswer(this)">Penjumlahan</button>
+                    <button class="option-btn" data-value="Perkalian" onclick="selectAnswer(this)">Perkalian</button>
+                    <button class="option-btn" data-value="Pembagian" onclick="selectAnswer(this)">Pembagian</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_2')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex2_2', 'Perkalian')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_2">
+                    <p class="id-text"><strong>Penjelasan:</strong> "Sepertiga dari setengah" ditulis sebagai \( \frac{1}{3} \times \frac{1}{2} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> "A third of a half" is written as \( \frac{1}{3} \times \frac{1}{2} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 2.3 -->
+            <div class="exercise-box" id="ex2_3">
+                <p class="question-text">Hitung perkalian dasar ini: \( 4 \times 5 \)</p>
+                <p class="en-text">Calculate this basic multiplication: \( 4 \times 5 \)</p>
+                <input type="text" id="input2_3" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_3')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex2_3', 'input2_3', '20')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_3">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 4 \times 5 = 20 \). Ini penting untuk mengalikan pembilang nanti!</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 4 \times 5 = 20 \). This is important for multiplying numerators later!</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Konsep visual: \( \frac{1}{2} \times \frac{1}{2} \) berarti kita memotong setengah bagian menjadi dua lagi. Hasilnya adalah \( \frac{1}{4} \).</p>
+                <p class="en-text">Visual concept: \( \frac{1}{2} \times \frac{1}{2} \) means we cut the half part into two again. The result is \( \frac{1}{4} \).</p>
+            </div>
+
+            <!-- Exercise 2.4 -->
+            <div class="exercise-box" id="ex2_4">
+                <p class="question-text">Jika sebuah kotak dibagi 4 bagian sama besar, lalu 1 bagian diambil. Itu mewakili pecahan...</p>
+                <p class="en-text">If a box is divided into 4 equal parts, and 1 part is taken. That represents the fraction...</p>
+                <div class="options-group" id="opt2_4">
+                    <button class="option-btn" data-value="frac{1}{4}" onclick="selectAnswer(this)">\( \frac{1}{4} \)</button>
+                    <button class="option-btn" data-value="frac{4}{1}" onclick="selectAnswer(this)">\( \frac{4}{1} \)</button>
+                    <button class="option-btn" data-value="frac{1}{3}" onclick="selectAnswer(this)">\( \frac{1}{3} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_4')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex2_4', 'frac{1}{4}')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_4">
+                    <p class="id-text"><strong>Penjelasan:</strong> 1 bagian dari 4 bagian sama besar adalah \( \frac{1}{4} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> 1 part out of 4 equal parts is \( \frac{1}{4} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 2.5 -->
+            <div class="exercise-box" id="ex2_5">
+                <p class="question-text">Manakah yang merupakan contoh "seperempat dari sepertiga" (\( \frac{1}{4} \times \frac{1}{3} \)) dalam kehidupan nyata?</p>
+                <p class="en-text">Which is an example of "a quarter of a third" (\( \frac{1}{4} \times \frac{1}{3} \)) in real life?</p>
+                <div class="options-group" id="opt2_5">
+                    <button class="option-btn" data-value="Memotong 1/3 pizza menjadi 4 bagian sama besar" onclick="selectAnswer(this)">Memotong 1/3 pizza menjadi 4 bagian sama besar</button>
+                    <button class="option-btn" data-value="Membagi 4 pizza menjadi 3 bagian" onclick="selectAnswer(this)">Membagi 4 pizza menjadi 3 bagian</button>
+                    <button class="option-btn" data-value="Memakan 4 pizza utuh" onclick="selectAnswer(this)">Memakan 4 pizza utuh</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_5')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex2_5', 'Memotong 1/3 pizza menjadi 4 bagian sama besar')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_5">
+                    <p class="id-text"><strong>Penjelasan:</strong> Mengambil 1/3 pizza, lalu membaginya lagi menjadi 4 bagian dan mengambil 1 bagian.</p>
+                    <p class="en-text"><strong>Explanation:</strong> Taking 1/3 of a pizza, then dividing it into 4 parts and taking 1 part.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 2.6 -->
+            <div class="exercise-box" id="ex2_6">
+                <p class="question-text">Hitung perkalian dasar: \( 7 \times 6 \)</p>
+                <p class="en-text">Calculate basic multiplication: \( 7 \times 6 \)</p>
+                <div class="options-group" id="opt2_6">
+                    <button class="option-btn" data-value="42" onclick="selectAnswer(this)">42</button>
+                    <button class="option-btn" data-value="13" onclick="selectAnswer(this)">13</button>
+                    <button class="option-btn" data-value="36" onclick="selectAnswer(this)">36</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_6')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex2_6', 42)">Check</button>
+                </div>
+                <div class="explanation" id="exp2_6">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 7 \times 6 = 42 \). Latihan ini membantu menguatkan perkalian dasar!</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 7 \times 6 = 42 \). This practice helps strengthen basic multiplication!</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Dalam kehidupan sehari-hari, kita sering menemukan soal cerita yang menggunakan kata "dari". Contohnya: "Separuh dari 10". Ini berarti kita mengalikan pecahan dengan bilangan bulat.</p>
+                <p class="en-text">In everyday life, we often find word problems using the word "of". Example: "Half of 10". This means we multiply a fraction by a whole number.</p>
+            </div>
+
+            <!-- Exercise 2.7 -->
+            <div class="exercise-box" id="ex2_7">
+                <p class="question-text">Separuh dari 10 adalah...</p>
+                <p class="en-text">Half of 10 is...</p>
+                <input type="text" id="input2_7" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_7')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex2_7', 'input2_7', '5')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_7">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{1}{2} \times 10 = 5 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{1}{2} \times 10 = 5 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 2.8 -->
+            <div class="exercise-box" id="ex2_8">
+                <p class="question-text">Berapakah hasil dari \( 7 \times 5 \) ?</p>
+                <p class="en-text">What is the result of \( 7 \times 5 \) ?</p>
+                <div class="options-group" id="opt2_8">
+                    <button class="option-btn" data-value="35" onclick="selectAnswer(this)">35</button>
+                    <button class="option-btn" data-value="30" onclick="selectAnswer(this)">30</button>
+                    <button class="option-btn" data-value="40" onclick="selectAnswer(this)">40</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_8')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex2_8', '35')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_8">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 7 \times 5 = 35 \). Perkalian dasar sangat membantu!</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 7 \times 5 = 35 \). Basic multiplication is very helpful!</p>
+                </div>
+            </div>
+
+            <!-- Exercise 2.9 -->
+            <div class="exercise-box" id="ex2_9">
+                <p class="question-text">Manakah kalimat matematika yang benar untuk "Seperempat dari 16"?</p>
+                <p class="en-text">Which math sentence is correct for "A quarter of 16"?</p>
+                <div class="options-group" id="opt2_9">
+                    <button class="option-btn" data-value="16 - 1/4" onclick="selectAnswer(this)">\( 16 - \frac{1}{4} \)</button>
+                    <button class="option-btn" data-value="1/4 x 16" onclick="selectAnswer(this)">\( \frac{1}{4} \times 16 \)</button>
+                    <button class="option-btn" data-value="16 + 1/4" onclick="selectAnswer(this)">\( 16 + \frac{1}{4} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_9')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex2_9', '1/4 x 16')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_9">
+                    <p class="id-text"><strong>Penjelasan:</strong> "Seperempat dari 16" diterjemahkan menjadi \( \frac{1}{4} \times 16 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> "A quarter of 16" translates to \( \frac{1}{4} \times 16 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 2.10 -->
+            <div class="exercise-box" id="ex2_10">
+                <p class="question-text">Berapakah hasil dari \( 63 \div 7 \) ?</p>
+                <p class="en-text">What is the result of \( 63 \div 7 \) ?</p>
+                <input type="text" id="input2_10" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex2_10')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex2_10', 'input2_10', '9')">Check</button>
+                </div>
+                <div class="explanation" id="exp2_10">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 63 \div 7 = 9 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 63 \div 7 = 9 \).</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-muted" onclick="showSection('sec1', document.querySelectorAll('.nav-item')[1])">Previous</button>
+                <button class="btn btn-primary" onclick="showSection('sec3', document.querySelectorAll('.nav-item')[3])">Next</button>
+            </div>
+        </div>
+
+        <!-- SECTION 3: REVIEW OF PRIOR KNOWLEDGE -->
+        <div id="sec3" class="section-container">
+            <h2>Review of Prior Knowledge (00:15-00:20)</h2>
+            <p class="en-text">Review of Prior Knowledge</p>
+
+            <div class="theory-box">
+                <p class="id-text">Mari kita ingat kembali perkalian dasar dan konsep pecahan. Pecahan ditulis sebagai \( \frac{a}{b} \), di mana \( a \) adalah pembilang dan \( b \) adalah penyebut.</p>
+                <p class="en-text">Let's recall basic multiplication and fraction concepts. A fraction is written as \( \frac{a}{b} \), where \( a \) is the numerator and \( b \) is the denominator.</p>
+            </div>
+
+            <!-- Exercise 3.1 -->
+            <div class="exercise-box" id="ex3_1">
+                <p class="question-text">Hitunglah perkalian dasar ini: \( 8 \times 6 \)</p>
+                <p class="en-text">Calculate this basic multiplication: \( 8 \times 6 \)</p>
+                <input type="text" id="input3_1" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_1')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex3_1', 'input3_1', '48')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_1">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 8 \times 6 = 48 \). Latihan ini sangat penting untuk perkalian penyebut dan pembilang.</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 8 \times 6 = 48 \). This practice is very important for multiplying denominators and numerators.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 3.2 -->
+            <div class="exercise-box" id="ex3_2">
+                <p class="question-text">Pada pecahan \( \frac{5}{9} \), angka berapakah yang merupakan penyebut?</p>
+                <p class="en-text">In the fraction \( \frac{5}{9} \), which number is the denominator?</p>
+                <div class="options-group" id="opt3_2">
+                    <button class="option-btn" data-value="5" onclick="selectAnswer(this)">5</button>
+                    <button class="option-btn" data-value="9" onclick="selectAnswer(this)">9</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_2')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex3_2', '9')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_2">
+                    <p class="id-text"><strong>Penjelasan:</strong> Penyebut adalah angka di bawah garis pecahan, yaitu 9.</p>
+                    <p class="en-text"><strong>Explanation:</strong> The denominator is the number below the fraction bar, which is 9.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 3.3 -->
+            <div class="exercise-box" id="ex3_3">
+                <p class="question-text">Berapakah hasil dari \( 72 \div 9 \) ?</p>
+                <p class="en-text">What is the result of \( 72 \div 9 \) ?</p>
+                <div class="options-group" id="opt3_3">
+                    <button class="option-btn" data-value="8" onclick="selectAnswer(this)">8</button>
+                    <button class="option-btn" data-value="9" onclick="selectAnswer(this)">9</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_3')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex3_3', '8')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_3">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 72 \div 9 = 8 \) karena \( 8 \times 9 = 72 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 72 \div 9 = 8 \) because \( 8 \times 9 = 72 \).</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Sekarang kita ingat cara mengalikan pecahan dengan bilangan bulat. Caranya: kalikan pembilang dengan bilangan bulat tersebut, penyebut tetap.</p>
+                <p class="en-text">Now we recall how to multiply a fraction by a whole number. How: multiply the numerator by the whole number, the denominator stays the same.</p>
+            </div>
+
+            <!-- Exercise 3.4 -->
+            <div class="exercise-box" id="ex3_4">
+                <p class="question-text">Berapakah hasil dari \( \frac{1}{3} \times 5 \) ?</p>
+                <p class="en-text">What is the result of \( \frac{1}{3} \times 5 \) ?</p>
+                <div class="options-group" id="opt3_4">
+                    <button class="option-btn" data-value="frac{5}{3}" onclick="selectAnswer(this)">\( \frac{5}{3} \)</button>
+                    <button class="option-btn" data-value="frac{1}{15}" onclick="selectAnswer(this)">\( \frac{1}{15} \)</button>
+                    <button class="option-btn" data-value="frac{6}{3}" onclick="selectAnswer(this)">\( \frac{6}{3} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_4')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex3_4', 'frac{5}{3}')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_4">
+                    <p class="id-text"><strong>Penjelasan:</strong> Kalikan pembilang: \( 1 \times 5 = 5 \). Penyebut tetap 3. Jadi \( \frac{5}{3} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Multiply numerator: \( 1 \times 5 = 5 \). Denominator stays 3. So \( \frac{5}{3} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 3.5 -->
+            <div class="exercise-box" id="ex3_5">
+                <p class="question-text">Hitunglah: \( \frac{2}{5} \times 3 = \frac{...}{5} \)</p>
+                <p class="en-text">Calculate: \( \frac{2}{5} \times 3 = \frac{...}{5} \)</p>
+                <input type="text" id="input3_5" placeholder="Isi pembilang...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_5')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex3_5', 'input3_5', '6')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_5">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 2 \times 3 = 6 \). Hasilnya \( \frac{6}{5} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 2 \times 3 = 6 \). The result is \( \frac{6}{5} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 3.6 -->
+            <div class="exercise-box" id="ex3_6">
+                <p class="question-text">Berapakah \( 4 \times 8 \) ?</p>
+                <p class="en-text">What is \( 4 \times 8 \) ?</p>
+                <div class="options-group" id="opt3_6">
+                    <button class="option-btn" data-value="32" onclick="selectAnswer(this)">32</button>
+                    <button class="option-btn" data-value="36" onclick="selectAnswer(this)">36</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_6')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex3_6', '32')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_6">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 4 \times 8 = 32 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 4 \times 8 = 32 \).</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Pecahan senilai adalah pecahan yang nilainya sama. Contoh: \( \frac{1}{2} \) sama dengan \( \frac{2}{4} \). Kita bisa menyederhanakan pecahan dengan membagi pembilang dan penyebut dengan angka yang sama.</p>
+                <p class="en-text">Equivalent fractions are fractions with the same value. Example: \( \frac{1}{2} \) is equal to \( \frac{2}{4} \). We can simplify fractions by dividing the numerator and denominator by the same number.</p>
+            </div>
+
+            <!-- Exercise 3.7 -->
+            <div class="exercise-box" id="ex3_7">
+                <p class="question-text">Bentuk paling sederhana dari \( \frac{4}{8} \) adalah...</p>
+                <p class="en-text">The simplest form of \( \frac{4}{8} \) is...</p>
+                <div class="options-group" id="opt3_7">
+                    <button class="option-btn" data-value="frac{1}{2}" onclick="selectAnswer(this)">\( \frac{1}{2} \)</button>
+                    <button class="option-btn" data-value="frac{2}{4}" onclick="selectAnswer(this)">\( \frac{2}{4} \)</button>
+                    <button class="option-btn" data-value="frac{4}{8}" onclick="selectAnswer(this)">\( \frac{4}{8} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_7')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex3_7', 'frac{1}{2}')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_7">
+                    <p class="id-text"><strong>Penjelasan:</strong> Bagi 4 dan 8 dengan angka 4. Hasilnya \( \frac{1}{2} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Divide 4 and 8 by 4. The result is \( \frac{1}{2} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 3.8 -->
+            <div class="exercise-box" id="ex3_8">
+                <p class="question-text">Sederhanakan pecahan \( \frac{6}{9} \).</p>
+                <p class="en-text">Simplify the fraction \( \frac{6}{9} \).</p>
+                <input type="text" id="input3_8" placeholder="Ketik dalam format a/b (contoh: 1/2)">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_8')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex3_8', 'input3_8', '2/3')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_8">
+                    <p class="id-text"><strong>Penjelasan:</strong> Bagi 6 dan 9 dengan 3. Hasilnya \( \frac{2}{3} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Divide 6 and 9 by 3. The result is \( \frac{2}{3} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 3.9 -->
+            <div class="exercise-box" id="ex3_9">
+                <p class="question-text">Berapakah hasil dari \( 7 \times 7 \) ?</p>
+                <p class="en-text">What is the result of \( 7 \times 7 \) ?</p>
+                <input type="text" id="input3_9" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_9')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex3_9', 'input3_9', '49')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_9">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 7 \times 7 = 49 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 7 \times 7 = 49 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 3.10 -->
+            <div class="exercise-box" id="ex3_10">
+                <p class="question-text">Bentuk paling sederhana dari \( \frac{10}{15} \) adalah...</p>
+                <p class="en-text">The simplest form of \( \frac{10}{15} \) is...</p>
+                <div class="options-group" id="opt3_10">
+                    <button class="option-btn" data-value="frac{2}{3}" onclick="selectAnswer(this)">\( \frac{2}{3} \)</button>
+                    <button class="option-btn" data-value="frac{3}{2}" onclick="selectAnswer(this)">\( \frac{3}{2} \)</button>
+                    <button class="option-btn" data-value="frac{1}{5}" onclick="selectAnswer(this)">\( \frac{1}{5} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex3_10')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex3_10', 'frac{2}{3}')">Check</button>
+                </div>
+                <div class="explanation" id="exp3_10">
+                    <p class="id-text"><strong>Penjelasan:</strong> Bagi 10 dan 15 dengan 5. Hasilnya \( \frac{2}{3} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Divide 10 and 15 by 5. The result is \( \frac{2}{3} \).</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-muted" onclick="showSection('sec2', document.querySelectorAll('.nav-item')[2])">Previous</button>
+                <button class="btn btn-primary" onclick="showSection('sec4', document.querySelectorAll('.nav-item')[4])">Next</button>
+            </div>
+        </div>
+
+        <!-- SECTION 4: PROBLEM INTRODUCTION -->
+        <div id="sec4" class="section-container">
+            <h2>Problem Introduction (00:20-00:30)</h2>
+            <p class="en-text">Problem Introduction</p>
+
+            <div class="theory-box">
+                <p class="id-text">Saatnya mempelajari rumus inti! Rumus umum perkalian pecahan adalah:</p>
+                <p class="en-text">Time to learn the core formula! The general formula for fraction multiplication is:</p>
+                <div style="text-align: center; margin: 20px 0; font-size: 1.5rem; color: var(--primary-dark);">
+                    \( \frac{a}{b} \times \frac{c}{d} = \frac{a \times c}{b \times d} \)
+                </div>
+                <p class="id-text">Kalikan pembilang dengan pembilang, dan penyebut dengan penyebut.</p>
+                <p class="en-text">Multiply the numerator by the numerator, and the denominator by the denominator.</p>
+            </div>
+
+            <!-- Exercise 4.1 -->
+            <div class="exercise-box" id="ex4_1">
+                <p class="question-text">Berapakah hasil dari \( \frac{1}{2} \times \frac{1}{4} \) ?</p>
+                <p class="en-text">What is the result of \( \frac{1}{2} \times \frac{1}{4} \) ?</p>
+                <div class="options-group" id="opt4_1">
+                    <button class="option-btn" data-value="frac{1}{8}" onclick="selectAnswer(this)">\( \frac{1}{8} \)</button>
+                    <button class="option-btn" data-value="frac{2}{6}" onclick="selectAnswer(this)">\( \frac{2}{6} \)</button>
+                    <button class="option-btn" data-value="frac{1}{6}" onclick="selectAnswer(this)">\( \frac{1}{6} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_1')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex4_1', 'frac{1}{8}')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_1">
+                    <p class="id-text"><strong>Penjelasan:</strong> Pembilang: \( 1 \times 1 = 1 \). Penyebut: \( 2 \times 4 = 8 \). Hasilnya \( \frac{1}{8} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Numerator: \( 1 \times 1 = 1 \). Denominator: \( 2 \times 4 = 8 \). Result is \( \frac{1}{8} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 4.2 -->
+            <div class="exercise-box" id="ex4_2">
+                <p class="question-text">Hitunglah \( \frac{2}{3} \times \frac{4}{5} \) !</p>
+                <p class="en-text">Calculate \( \frac{2}{3} \times \frac{4}{5} \) !</p>
+                <input type="text" id="input4_2" placeholder="Format a/b (contoh: 8/15)">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_2')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex4_2', 'input4_2', '8/15')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_2">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 2 \times 4 = 8 \) dan \( 3 \times 5 = 15 \). Hasilnya \( \frac{8}{15} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 2 \times 4 = 8 \) and \( 3 \times 5 = 15 \). Result is \( \frac{8}{15} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 4.3 -->
+            <div class="exercise-box" id="ex4_3">
+                <p class="question-text">Latihan perkalian dasar: \( 6 \times 5 \)</p>
+                <p class="en-text">Basic multiplication practice: \( 6 \times 5 \)</p>
+                <div class="options-group" id="opt4_3">
+                    <button class="option-btn" data-value="30" onclick="selectAnswer(this)">30</button>
+                    <button class="option-btn" data-value="11" onclick="selectAnswer(this)">11</button>
+                    <button class="option-btn" data-value="35" onclick="selectAnswer(this)">35</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_3')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex4_3', '30')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_3">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 6 \times 5 = 30 \). Ini membantumu mengalikan angka dengan cepat!</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 6 \times 5 = 30 \). This helps you multiply numbers quickly!</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Mari kita visualisasikan! Jika kita punya kotak lebar \( \frac{1}{2} \) dan tinggi \( \frac{1}{3} \), maka luasnya adalah \( \frac{1}{2} \times \frac{1}{3} \).</p>
+                <p class="en-text">Let's visualize! If we have a box with width \( \frac{1}{2} \) and height \( \frac{1}{3} \), then its area is \( \frac{1}{2} \times \frac{1}{3} \).</p>
+                <svg class="illustration" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="10" width="180" height="130" fill="none" stroke="#ccc" stroke-width="2"/>
+                    <rect x="10" y="10" width="90" height="43.3" fill="#58cc02" opacity="0.5" stroke="#58cc02" stroke-width="2"/>
+                    <line x1="100" y1="10" x2="100" y2="140" stroke="#000" stroke-width="2" stroke-dasharray="5,5"/>
+                    <line x1="10" y1="53.3" x2="190" y2="53.3" stroke="#000" stroke-width="2" stroke-dasharray="5,5"/>
+                    <line x1="10" y1="96.6" x2="190" y2="96.6" stroke="#ccc" stroke-width="1"/>
+                    <text x="50" y="35" font-size="14" text-anchor="middle">1/2</text>
+                    <text x="190" y="35" font-size="10" text-anchor="end">1/3</text>
+                </svg>
+                <p class="id-text">Kotak hijau menunjukkan 1 bagian dari total 6 bagian (\( 2 \times 3 \)). Jadi \( \frac{1}{2} \times \frac{1}{3} = \frac{1}{6} \).</p>
+                <p class="en-text">The green box shows 1 part out of total 6 parts (\( 2 \times 3 \)). So \( \frac{1}{2} \times \frac{1}{3} = \frac{1}{6} \).</p>
+            </div>
+
+            <!-- Exercise 4.4 -->
+            <div class="exercise-box" id="ex4_4">
+                <p class="question-text">Berdasarkan konsep visual di atas, jika kotak dibagi menjadi 2 kolom dan 3 baris, total ada berapa bagian keseluruhan?</p>
+                <p class="en-text">Based on the visual concept above, if a box is divided into 2 columns and 3 rows, how many total parts are there?</p>
+                <div class="options-group" id="opt4_4">
+                    <button class="option-btn" data-value="6" onclick="selectAnswer(this)">6</button>
+                    <button class="option-btn" data-value="5" onclick="selectAnswer(this)">5</button>
+                    <button class="option-btn" data-value="2/3" onclick="selectAnswer(this)">\( \frac{2}{3} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_4')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex4_4', '6')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_4">
+                    <p class="id-text"><strong>Penjelasan:</strong> 2 kolom $\times$ 3 baris = 6 bagian. Ini berasal dari penyebut \( 2 \times 3 = 6 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> 2 columns $\times$ 3 rows = 6 parts. This comes from the denominator \( 2 \times 3 = 6 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 4.5 -->
+            <div class="exercise-box" id="ex4_5">
+                <p class="question-text">Berapakah \( 54 \div 6 \) ?</p>
+                <p class="en-text">What is \( 54 \div 6 \) ?</p>
+                <div class="options-group" id="opt4_5">
+                    <button class="option-btn" data-value="9" onclick="selectAnswer(this)">9</button>
+                    <button class="option-btn" data-value="8" onclick="selectAnswer(this)">8</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_5')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex4_5', '9')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_5">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 54 \div 6 = 9 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 54 \div 6 = 9 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 4.6 -->
+            <div class="exercise-box" id="ex4_6">
+                <p class="question-text">Hasil dari \( \frac{1}{2} \times \frac{1}{3} \) adalah...</p>
+                <p class="en-text">The result of \( \frac{1}{2} \times \frac{1}{3} \) is...</p>
+                <div class="options-group" id="opt4_6">
+                    <button class="option-btn" data-value="frac{1}{6}" onclick="selectAnswer(this)">\( \frac{1}{6} \)</button>
+                    <button class="option-btn" data-value="frac{1}{5}" onclick="selectAnswer(this)">\( \frac{1}{5} \)</button>
+                    <button class="option-btn" data-value="frac{2}{6}" onclick="selectAnswer(this)">\( \frac{2}{6} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_6')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex4_6', 'frac{1}{6}')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_6">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 1 \times 1 = 1 \) (pembilang), \( 2 \times 3 = 6 \) (penyebut).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 1 \times 1 = 1 \) (numerator), \( 2 \times 3 = 6 \) (denominator).</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Terkadang, hasil perkalian pecahan bisa disederhanakan. Contoh: \( \frac{2}{4} \times \frac{1}{2} = \frac{2}{8} \). Karena 2 dan 8 sama-sama genap, kita bagi 2. Hasil akhirnya \( \frac{1}{4} \).</p>
+                <p class="en-text">Sometimes, the result of fraction multiplication can be simplified. Example: \( \frac{2}{4} \times \frac{1}{2} = \frac{2}{8} \). Since 2 and 8 are both even, we divide by 2. The final result is \( \frac{1}{4} \).</p>
+            </div>
+
+            <!-- Exercise 4.7 -->
+            <div class="exercise-box" id="ex4_7">
+                <p class="question-text">Hasil dari \( \frac{2}{4} \times \frac{1}{2} \) adalah \( \frac{2}{8} \). Sederhanakan pecahan tersebut!</p>
+                <p class="en-text">The result of \( \frac{2}{4} \times \frac{1}{2} \) is \( \frac{2}{8} \). Simplify this fraction!</p>
+                <input type="text" id="input4_7" placeholder="Format a/b">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_7')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex4_7', 'input4_7', '1/4')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_7">
+                    <p class="id-text"><strong>Penjelasan:</strong> Bagi 2 dan 8 dengan 2. Hasilnya \( \frac{1}{4} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Divide 2 and 8 by 2. Result is \( \frac{1}{4} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 4.8 -->
+            <div class="exercise-box" id="ex4_8">
+                <p class="question-text">Latihan perkalian: \( 9 \times 3 \)</p>
+                <p class="en-text">Multiplication practice: \( 9 \times 3 \)</p>
+                <input type="text" id="input4_8" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_8')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex4_8', 'input4_8', '27')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_8">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 9 \times 3 = 27 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 9 \times 3 = 27 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 4.9 -->
+            <div class="exercise-box" id="ex4_9">
+                <p class="question-text">Hitung dan sederhanakan: \( \frac{3}{4} \times \frac{2}{3} \)</p>
+                <p class="en-text">Calculate and simplify: \( \frac{3}{4} \times \frac{2}{3} \)</p>
+                <div class="options-group" id="opt4_9">
+                    <button class="option-btn" data-value="frac{1}{2}" onclick="selectAnswer(this)">\( \frac{1}{2} \)</button>
+                    <button class="option-btn" data-value="frac{2}{4}" onclick="selectAnswer(this)">\( \frac{2}{4} \)</button>
+                    <button class="option-btn" data-value="frac{6}{12}" onclick="selectAnswer(this)">\( \frac{6}{12} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_9')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex4_9', 'frac{1}{2}')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_9">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 3 \times 2 = 6 \), \( 4 \times 3 = 12 \). Hasilnya \( \frac{6}{12} \). Disederhanakan menjadi \( \frac{1}{2} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 3 \times 2 = 6 \), \( 4 \times 3 = 12 \). Result is \( \frac{6}{12} \). Simplified to \( \frac{1}{2} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 4.10 -->
+            <div class="exercise-box" id="ex4_10">
+                <p class="question-text">Pecahan mana yang ekuivalen (sama nilainya) dengan \( \frac{3}{5} \) ?</p>
+                <p class="en-text">Which fraction is equivalent to (has the same value as) \( \frac{3}{5} \) ?</p>
+                <div class="options-group" id="opt4_10">
+                    <button class="option-btn" data-value="frac{6}{10}" onclick="selectAnswer(this)">\( \frac{6}{10} \)</button>
+                    <button class="option-btn" data-value="frac{4}{6}" onclick="selectAnswer(this)">\( \frac{4}{6} \)</button>
+                    <button class="option-btn" data-value="frac{5}{3}" onclick="selectAnswer(this)">\( \frac{5}{3} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex4_10')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex4_10', 'frac{6}{10}')">Check</button>
+                </div>
+                <div class="explanation" id="exp4_10">
+                    <p class="id-text"><strong>Penjelasan:</strong> Kalikan 3 dan 5 dengan 2, hasilnya \( \frac{6}{10} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Multiply 3 and 5 by 2, resulting in \( \frac{6}{10} \).</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-muted" onclick="showSection('sec3', document.querySelectorAll('.nav-item')[3])">Previous</button>
+                <button class="btn btn-primary" onclick="showSection('sec5', document.querySelectorAll('.nav-item')[5])">Next</button>
+            </div>
+        </div>
+
+        <!-- SECTION 5: GUIDED PRACTICE -->
+        <div id="sec5" class="section-container">
+            <h2>Guided Practice (00:30-00:45)</h2>
+            <p class="en-text">Guided Practice</p>
+
+            <div class="theory-box">
+                <p class="id-text">Mari kita kerjakan contoh soal langkah demi langkah. Perhatikan catatan di buku:</p>
+                <p class="en-text">Let's work through an example step by step. Notice the note in the book:</p>
+                <div style="text-align: center; margin: 15px 0; font-size: 1.2rem;">
+                    \( \frac{2}{3} \times \frac{9}{5} = \frac{2 \times 9}{3 \times 5} = \frac{18}{15} \)
+                </div>
+                <p class="id-text">Karena \( 18 \) dan \( 15 \) bisa dibagi \( 3 \), kita sederhanakan: \( \frac{18 \div 3}{15 \div 3} = \frac{6}{5} \). Atau dalam bentuk campuran: \( 1 \frac{1}{5} \). <br><span style="color: var(--danger); font-weight: bold;">*(Catatan: Di buku tertulis 8/15, itu salah ketik. 2x9 adalah 18, bukan 8)*</span></p>
+                <p class="en-text">Since \( 18 \) and \( 15 \) can be divided by \( 3 \), we simplify: \( \frac{18 \div 3}{15 \div 3} = \frac{6}{5} \). Or in mixed form: \( 1 \frac{1}{5} \). <br><span style="color: var(--danger); font-weight: bold;">*(Note: The book says 8/15, which is a typo. 2x9 is 18, not 8)*</span></p>
+            </div>
+
+            <!-- Exercise 5.1 -->
+            <div class="exercise-box" id="ex5_1">
+                <p class="question-text">Pada perkalian \( \frac{3}{4} \times \frac{5}{7} \), berapakah hasil pembilang jika belum disederhanakan?</p>
+                <p class="en-text">In the multiplication \( \frac{3}{4} \times \frac{5}{7} \), what is the result of the numerator if not simplified?</p>
+                <div class="options-group" id="opt5_1">
+                    <button class="option-btn" data-value="15" onclick="selectAnswer(this)">15</button>
+                    <button class="option-btn" data-value="28" onclick="selectAnswer(this)">28</button>
+                    <button class="option-btn" data-value="12" onclick="selectAnswer(this)">12</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_1')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex5_1', '15')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_1">
+                    <p class="id-text"><strong>Penjelasan:</strong> Pembilang: \( 3 \times 5 = 15 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Numerator: \( 3 \times 5 = 15 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 5.2 -->
+            <div class="exercise-box" id="ex5_2">
+                <p class="question-text">Pada perkalian yang sama \( \frac{3}{4} \times \frac{5}{7} \), berapakah hasil penyebutnya?</p>
+                <p class="en-text">In the same multiplication \( \frac{3}{4} \times \frac{5}{7} \), what is the result of the denominator?</p>
+                <input type="text" id="input5_2" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_2')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex5_2', 'input5_2', '28')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_2">
+                    <p class="id-text"><strong>Penjelasan:</strong> Penyebut: \( 4 \times 7 = 28 \). Hasil akhir sebelum disederhanakan \( \frac{15}{28} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> Denominator: \( 4 \times 7 = 28 \). Final result before simplifying \( \frac{15}{28} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 5.3 -->
+            <div class="exercise-box" id="ex5_3">
+                <p class="question-text">Latihan perkalian dasar: \( 8 \times 4 \)</p>
+                <p class="en-text">Basic multiplication practice: \( 8 \times 4 \)</p>
+                <div class="options-group" id="opt5_3">
+                    <button class="option-btn" data-value="32" onclick="selectAnswer(this)">32</button>
+                    <button class="option-btn" data-value="36" onclick="selectAnswer(this)">36</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_3')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex5_3', '32')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_3">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 8 \times 4 = 32 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 8 \times 4 = 32 \).</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Mengubah pecahan tidak biasa (improper fraction) menjadi pecahan campuran. Contoh: \( \frac{7}{2} \) berarti 7 dibagi 2. \( 7 \div 2 = 3 \) sisa \( 1 \). Jadi bentuk campurannya \( 3 \frac{1}{2} \).</p>
+                <p class="en-text">Converting an improper fraction to a mixed number. Example: \( \frac{7}{2} \) means 7 divided by 2. \( 7 \div 2 = 3 \) remainder \( 1 \). So the mixed form is \( 3 \frac{1}{2} \).</p>
+            </div>
+
+            <!-- Exercise 5.4 -->
+            <div class="exercise-box" id="ex5_4">
+                <p class="question-text">Ubahlah pecahan \( \frac{7}{2} \) menjadi pecahan campuran!</p>
+                <p class="en-text">Convert the fraction \( \frac{7}{2} \) into a mixed number!</p>
+                <div class="options-group" id="opt5_4">
+                    <button class="option-btn" data-value="3 1/2" onclick="selectAnswer(this)">\( 3 \frac{1}{2} \)</button>
+                    <button class="option-btn" data-value="2 1/3" onclick="selectAnswer(this)">\( 2 \frac{1}{3} \)</button>
+                    <button class="option-btn" data-value="3 1/3" onclick="selectAnswer(this)">\( 3 \frac{1}{3} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_4')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex5_4', '3 1/2')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_4">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 7 \div 2 = 3 \) sisa 1. Penyebut tetap 2. Hasilnya \( 3 \frac{1}{2} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 7 \div 2 = 3 \) remainder 1. Denominator remains 2. Result is \( 3 \frac{1}{2} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 5.5 -->
+            <div class="exercise-box" id="ex5_5">
+                <p class="question-text">Berapakah \( 63 \div 7 \) ?</p>
+                <p class="en-text">What is \( 63 \div 7 \) ?</p>
+                <div class="options-group" id="opt5_5">
+                    <button class="option-btn" data-value="9" onclick="selectAnswer(this)">9</button>
+                    <button class="option-btn" data-value="8" onclick="selectAnswer(this)">8</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_5')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex5_5', '9')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_5">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 63 \div 7 = 9 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 63 \div 7 = 9 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 5.6 -->
+            <div class="exercise-box" id="ex5_6">
+                <p class="question-text">Ubahlah pecahan \( \frac{11}{3} \) menjadi pecahan campuran!</p>
+                <p class="en-text">Convert the fraction \( \frac{11}{3} \) into a mixed number!</p>
+                <input type="text" id="input5_6" placeholder="Format a b/c (contoh: 3 1/2)">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_6')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex5_6', 'input5_6', '3 2/3')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_6">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 11 \div 3 = 3 \) sisa 2. Hasilnya \( 3 \frac{2}{3} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 11 \div 3 = 3 \) remainder 2. Result is \( 3 \frac{2}{3} \).</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Mari kita terapkan di soal cerita! Seseorang memiliki 75 kue. \( \frac{2}{15} \) dari kuenya dimakan. Berapa banyak kue yang dimakan?</p>
+                <p class="en-text">Let's apply it to a word problem! Someone has 75 cakes. \( \frac{2}{15} \) of the cakes were eaten. How many cakes were eaten?</p>
+                <p class="id-text">Langkah 1: Tulis matematikanya. \( \frac{2}{15} \times 75 \).</p>
+                <p class="en-text">Step 1: Write the math. \( \frac{2}{15} \times 75 \).</p>
+                <p class="id-text">Langkah 2: Buat 75 menjadi pecahan \( \frac{75}{1} \). Lalu kalikan biasa.</p>
+                <p class="en-text">Step 2: Make 75 a fraction \( \frac{75}{1} \). Then multiply normally.</p>
+            </div>
+
+            <!-- Exercise 5.7 -->
+            <div class="exercise-box" id="ex5_7">
+                <p class="question-text">Soal cerita: "Ada 75 kue, 2/15 bagian dimakan." Operasi matematika yang benar untuk mencari jumlah kue yang dimakan adalah...</p>
+                <p class="en-text">Word problem: "There are 75 cakes, 2/15 part eaten." The correct math operation to find the number of eaten cakes is...</p>
+                <div class="options-group" id="opt5_7">
+                    <button class="option-btn" data-value="2/15 x 75" onclick="selectAnswer(this)">\( \frac{2}{15} \times 75 \)</button>
+                    <button class="option-btn" data-value="75 - 2/15" onclick="selectAnswer(this)">\( 75 - \frac{2}{15} \)</button>
+                    <button class="option-btn" data-value="75 / 2/15" onclick="selectAnswer(this)">\( 75 \div \frac{2}{15} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_7')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex5_7', '2/15 x 75')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_7">
+                    <p class="id-text"><strong>Penjelasan:</strong> Kata "bagian dari" menandakan perkalian. Jadi \( \frac{2}{15} \times 75 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> The phrase "part of" indicates multiplication. So \( \frac{2}{15} \times 75 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 5.8 -->
+            <div class="exercise-box" id="ex5_8">
+                <p class="question-text">Dalam perhitungan \( \frac{2}{15} \times \frac{75}{1} \), berapakah hasil perkalian pembilangnya (\( 2 \times 75 \)) ?</p>
+                <p class="en-text">In the calculation \( \frac{2}{15} \times \frac{75}{1} \), what is the result of multiplying the numerators (\( 2 \times 75 \)) ?</p>
+                <input type="text" id="input5_8" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_8')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex5_8', 'input5_8', '150')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_8">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 2 \times 75 = 150 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 2 \times 75 = 150 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 5.9 -->
+            <div class="exercise-box" id="ex5_9">
+                <p class="question-text">Berapakah hasil dari \( 150 \div 15 \) ?</p>
+                <p class="en-text">What is the result of \( 150 \div 15 \) ?</p>
+                <div class="options-group" id="opt5_9">
+                    <button class="option-btn" data-value="10" onclick="selectAnswer(this)">10</button>
+                    <button class="option-btn" data-value="15" onclick="selectAnswer(this)">15</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_9')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex5_9', '10')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_9">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 150 \div 15 = 10 \). (Karena \( 10 \times 15 = 150 \)).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 150 \div 15 = 10 \). (Because \( 10 \times 15 = 150 \)).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 5.10 -->
+            <div class="exercise-box" id="ex5_10">
+                <p class="question-text">Jadi, berapa banyak kue yang dimakan dari 75 kue tersebut?</p>
+                <p class="en-text">So, how many cakes were eaten out of the 75 cakes?</p>
+                <div class="options-group" id="opt5_10">
+                    <button class="option-btn" data-value="10" onclick="selectAnswer(this)">10 kue</button>
+                    <button class="option-btn" data-value="65" onclick="selectAnswer(this)">65 kue</button>
+                    <button class="option-btn" data-value="15" onclick="selectAnswer(this)">15 kue</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex5_10')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex5_10', '10')">Check</button>
+                </div>
+                <div class="explanation" id="exp5_10">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{150}{15} = 10 \). Jadi ada 10 kue yang dimakan.</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{150}{15} = 10 \). So 10 cakes were eaten.</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-muted" onclick="showSection('sec4', document.querySelectorAll('.nav-item')[4])">Previous</button>
+                <button class="btn btn-primary" onclick="showSection('sec6', document.querySelectorAll('.nav-item')[6])">Next</button>
+            </div>
+        </div>
+
+        <script>
+            // Shuffle options untuk Bagian 2
+            document.addEventListener('DOMContentLoaded', () => {
+                const optIds = ['opt3_2', 'opt3_3', 'opt3_4', 'opt3_6', 'opt3_7', 'opt3_10', 'opt4_1', 'opt4_3', 'opt4_4', 'opt4_5', 'opt4_6', 'opt4_9', 'opt4_10', 'opt5_1', 'opt5_3', 'opt5_4', 'opt5_5', 'opt5_7', 'opt5_9', 'opt5_10'];
+                optIds.forEach(id => shuffleOptions(id));
+            });
+        </script>
+
+        <!-- SECTION 6: INDEPENDENT PRACTICE -->
+        <div id="sec6" class="section-container">
+            <h2>Independent Practice (00:50-01:00)</h2>
+            <p class="en-text">Independent Practice</p>
+
+            <div class="theory-box">
+                <p class="id-text">Sekarang saatnya berlatih sendiri! Ingat rumus dasar perkalian pecahan: kalikan pembilang dengan pembilang, dan penyebut dengan penyebut. Jangan lupa untuk menyederhanakan jawabanmu jika memungkinkan.</p>
+                <p class="en-text">Now it's time to practice on your own! Remember the basic formula for multiplying fractions: multiply numerators together, and denominators together. Don't forget to simplify your answer if possible.</p>
+            </div>
+
+            <!-- Exercise 6.1 -->
+            <div class="exercise-box" id="ex6_1">
+                <p class="question-text">Hitunglah dan sederhanakan: \( \frac{3}{5} \times \frac{5}{6} \)</p>
+                <p class="en-text">Calculate and simplify: \( \frac{3}{5} \times \frac{5}{6} \)</p>
+                <input type="text" id="input6_1" placeholder="Format a/b (contoh: 1/2)">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_1')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex6_1', 'input6_1', '1/2')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_1">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{15}{30} \). Bagi 15 dan 30 dengan 15, hasilnya \( \frac{1}{2} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{15}{30} \). Divide 15 and 30 by 15, result is \( \frac{1}{2} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 6.2 -->
+            <div class="exercise-box" id="ex6_2">
+                <p class="question-text">Latihan perkalian dasar: \( 6 \times 7 \)</p>
+                <p class="en-text">Basic multiplication practice: \( 6 \times 7 \)</p>
+                <div class="options-group" id="opt6_2">
+                    <button class="option-btn" data-value="42" onclick="selectAnswer(this)">42</button>
+                    <button class="option-btn" data-value="36" onclick="selectAnswer(this)">36</button>
+                    <button class="option-btn" data-value="48" onclick="selectAnswer(this)">48</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_2')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex6_2', '42')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_2">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 6 \times 7 = 42 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 6 \times 7 = 42 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 6.3 -->
+            <div class="exercise-box" id="ex6_3">
+                <p class="question-text">Hitunglah: \( \frac{4}{7} \times \frac{2}{4} \)</p>
+                <p class="en-text">Calculate: \( \frac{4}{7} \times \frac{2}{4} \)</p>
+                <div class="options-group" id="opt6_3">
+                    <button class="option-btn" data-value="frac{2}{7}" onclick="selectAnswer(this)">\( \frac{2}{7} \)</button>
+                    <button class="option-btn" data-value="frac{8}{28}" onclick="selectAnswer(this)">\( \frac{8}{28} \)</button>
+                    <button class="option-btn" data-value="frac{6}{11}" onclick="selectAnswer(this)">\( \frac{6}{11} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_3')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex6_3', 'frac{2}{7}')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_3">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{8}{28} \) disederhanakan dengan membagi 4 menjadi \( \frac{2}{7} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{8}{28} \) simplified by dividing by 4 becomes \( \frac{2}{7} \).</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Kita juga bisa mengalikan pecahan campuran. Caranya, ubah dulu pecahan campuran menjadi pecahan biasa (improper fraction). Contoh: \( 1 \frac{1}{2} = \frac{3}{2} \).</p>
+                <p class="en-text">We can also multiply mixed numbers. The way, first convert the mixed number to an improper fraction. Example: \( 1 \frac{1}{2} = \frac{3}{2} \).</p>
+            </div>
+
+            <!-- Exercise 6.4 -->
+            <div class="exercise-box" id="ex6_4">
+                <p class="question-text">Ubahlah \( 1 \frac{1}{2} \) menjadi pecahan biasa!</p>
+                <p class="en-text">Convert \( 1 \frac{1}{2} \) to an improper fraction!</p>
+                <input type="text" id="input6_4" placeholder="Format a/b">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_4')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex6_4', 'input6_4', '3/2')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_4">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( (1 \times 2) + 1 = 3 \). Penyebut tetap 2. Hasilnya \( \frac{3}{2} \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( (1 \times 2) + 1 = 3 \). Denominator remains 2. Result is \( \frac{3}{2} \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 6.5 -->
+            <div class="exercise-box" id="ex6_5">
+                <p class="question-text">Berapakah \( 81 \div 9 \) ?</p>
+                <p class="en-text">What is \( 81 \div 9 \) ?</p>
+                <div class="options-group" id="opt6_5">
+                    <button class="option-btn" data-value="9" onclick="selectAnswer(this)">9</button>
+                    <button class="option-btn" data-value="8" onclick="selectAnswer(this)">8</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_5')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex6_5', '9')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_5">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 81 \div 9 = 9 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 81 \div 9 = 9 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 6.6 -->
+            <div class="exercise-box" id="ex6_6">
+                <p class="question-text">Hitunglah \( 1 \frac{1}{2} \times \frac{2}{3} \) !</p>
+                <p class="en-text">Calculate \( 1 \frac{1}{2} \times \frac{2}{3} \) !</p>
+                <div class="options-group" id="opt6_6">
+                    <button class="option-btn" data-value="1" onclick="selectAnswer(this)">1</button>
+                    <button class="option-btn" data-value="frac{2}{3}" onclick="selectAnswer(this)">\( \frac{2}{3} \)</button>
+                    <button class="option-btn" data-value="frac{3}{2}" onclick="selectAnswer(this)">\( \frac{3}{2} \)</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_6')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex6_6', '1')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_6">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{3}{2} \times \frac{2}{3} = \frac{6}{6} = 1 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{3}{2} \times \frac{2}{3} = \frac{6}{6} = 1 \).</p>
+                </div>
+            </div>
+
+            <div class="theory-box">
+                <p class="id-text">Penerapan dalam soal cerita sangat penting. Kuncinya: pahami kalimatnya, ubah menjadi kalimat matematika, lalu hitung. Jika ada kata "dari", itu biasanya berarti perkalian!</p>
+                <p class="en-text">Application in word problems is very important. The key: understand the sentence, convert it to a math sentence, then calculate. If there is the word "of", it usually means multiplication!</p>
+            </div>
+
+            <!-- Exercise 6.7 -->
+            <div class="exercise-box" id="ex6_7">
+                <p class="question-text">Soal cerita: "Pak Budi punya 12 meter kayu. 2/3 darinya dipakai untuk membuat meja." Berapa meter kayu yang dipakai?</p>
+                <p class="en-text">Word problem: "Mr. Budi has 12 meters of wood. 2/3 of it is used to make a table." How many meters of wood were used?</p>
+                <input type="text" id="input6_7" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_7')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex6_7', 'input6_7', '8')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_7">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{2}{3} \times 12 = \frac{2}{3} \times \frac{12}{1} = \frac{24}{3} = 8 \) meter.</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{2}{3} \times 12 = \frac{2}{3} \times \frac{12}{1} = \frac{24}{3} = 8 \) meters.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 6.8 -->
+            <div class="exercise-box" id="ex6_8">
+                <p class="question-text">Latihan perkalian dasar: \( 8 \times 8 \)</p>
+                <p class="en-text">Basic multiplication practice: \( 8 \times 8 \)</p>
+                <input type="text" id="input6_8" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_8')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex6_8', 'input6_8', '64')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_8">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 8 \times 8 = 64 \).</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 8 \times 8 = 64 \).</p>
+                </div>
+            </div>
+
+            <!-- Exercise 6.9 -->
+            <div class="exercise-box" id="ex6_9">
+                <p class="question-text">Di kelas ada 40 siswa. 3/8 dari mereka memakai kacamata. Berapa banyak siswa yang memakai kacamata?</p>
+                <p class="en-text">In class there are 40 students. 3/8 of them wear glasses. How many students wear glasses?</p>
+                <div class="options-group" id="opt6_9">
+                    <button class="option-btn" data-value="15" onclick="selectAnswer(this)">15</button>
+                    <button class="option-btn" data-value="12" onclick="selectAnswer(this)">12</button>
+                    <button class="option-btn" data-value="18" onclick="selectAnswer(this)">18</button>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_9')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswer('ex6_9', '15')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_9">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( \frac{3}{8} \times 40 = \frac{120}{8} = 15 \) siswa.</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( \frac{3}{8} \times 40 = \frac{120}{8} = 15 \) students.</p>
+                </div>
+            </div>
+
+            <!-- Exercise 6.10 -->
+            <div class="exercise-box" id="ex6_10">
+                <p class="question-text">Jika Pak Budi memakai 8 meter dari 12 meter kayunya, berapa meter kayu yang tersisa?</p>
+                <p class="en-text">If Mr. Budi uses 8 meters out of 12 meters of his wood, how many meters of wood are left?</p>
+                <input type="text" id="input6_10" placeholder="Ketik jawaban...">
+                <div class="controls">
+                    <button class="btn btn-muted" onclick="resetExercise('ex6_10')">Reset</button>
+                    <button class="btn btn-secondary" onclick="checkAnswerInput('ex6_10', 'input6_10', '4')">Check</button>
+                </div>
+                <div class="explanation" id="exp6_10">
+                    <p class="id-text"><strong>Penjelasan:</strong> \( 12 - 8 = 4 \) meter.</p>
+                    <p class="en-text"><strong>Explanation:</strong> \( 12 - 8 = 4 \) meters.</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-muted" onclick="showSection('sec5', document.querySelectorAll('.nav-item')[5])">Previous</button>
+                <button class="btn btn-primary" onclick="showSection('assign1', document.querySelectorAll('.nav-item')[7])">Next</button>
+            </div>
+        </div>
+
+        <!-- ASSIGNMENT 1 -->
+        <div id="assign1" class="section-container">
+            <h2>Assignment 1</h2>
+            <p class="en-text">Assignment 1</p>
+            <div class="card">
+                <label style="display:block; margin-bottom:10px;">Nama: <input type="text" id="name1" placeholder="Nama siswa"></label>
+                <label style="display:block; margin-bottom:10px;">Tanggal: <input type="text" id="date1" placeholder="DD/MM/YYYY"></label>
+            </div>
+
+            <!-- A1 Q1 -->
+            <div class="exercise-box" id="a1_ex1">
+                <p class="question-text">Berapakah \( 7 \times 8 \) ?</p>
+                <input type="text" id="a1_input1" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex1')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex1', 'a1_input1', '56')">Check</button></div>
+                <div class="explanation" id="a1_exp1"><p class="id-text"><strong>Penjelasan:</strong> 7 x 8 = 56.</p></div>
+            </div>
+            <!-- A1 Q2 -->
+            <div class="exercise-box" id="a1_ex2">
+                <p class="question-text">Berapakah \( 45 \div 9 \) ?</p>
+                <input type="text" id="a1_input2" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex2')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex2', 'a1_input2', '5')">Check</button></div>
+                <div class="explanation" id="a1_exp2"><p class="id-text"><strong>Penjelasan:</strong> 45 / 9 = 5.</p></div>
+            </div>
+            <!-- A1 Q3 -->
+            <div class="exercise-box" id="a1_ex3">
+                <p class="question-text">Berapakah \( \frac{1}{2} \times \frac{1}{3} \) ?</p>
+                <input type="text" id="a1_input3" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex3')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex3', 'a1_input3', '1/6')">Check</button></div>
+                <div class="explanation" id="a1_exp3"><p class="id-text"><strong>Penjelasan:</strong> 1x1=1, 2x3=6.</p></div>
+            </div>
+            <!-- A1 Q4 -->
+            <div class="exercise-box" id="a1_ex4">
+                <p class="question-text">Hitung dan sederhanakan: \( \frac{2}{5} \times \frac{3}{4} \)</p>
+                <input type="text" id="a1_input4" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex4')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex4', 'a1_input4', '3/10')">Check</button></div>
+                <div class="explanation" id="a1_exp4"><p class="id-text"><strong>Penjelasan:</strong> 6/20 disederhanakan jadi 3/10.</p></div>
+            </div>
+            <!-- A1 Q5 -->
+            <div class="exercise-box" id="a1_ex5">
+                <p class="question-text">Berapakah \( 6 \times 6 \) ?</p>
+                <input type="text" id="a1_input5" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex5')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex5', 'a1_input5', '36')">Check</button></div>
+                <div class="explanation" id="a1_exp5"><p class="id-text"><strong>Penjelasan:</strong> 6 x 6 = 36.</p></div>
+            </div>
+            <!-- A1 Q6 -->
+            <div class="exercise-box" id="a1_ex6">
+                <p class="question-text">Hitunglah \( \frac{1}{4} \times 8 \) !</p>
+                <input type="text" id="a1_input6" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex6')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex6', 'a1_input6', '2')">Check</button></div>
+                <div class="explanation" id="a1_exp6"><p class="id-text"><strong>Penjelasan:</strong> 8/4 = 2.</p></div>
+            </div>
+            <!-- A1 Q7 -->
+            <div class="exercise-box" id="a1_ex7">
+                <p class="question-text">Sederhanakan hasil dari \( \frac{3}{7} \times \frac{2}{3} \) !</p>
+                <input type="text" id="a1_input7" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex7')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex7', 'a1_input7', '2/7')">Check</button></div>
+                <div class="explanation" id="a1_exp7"><p class="id-text"><strong>Penjelasan:</strong> 6/21 dibagi 3 jadi 2/7.</p></div>
+            </div>
+            <!-- A1 Q8 -->
+            <div class="exercise-box" id="a1_ex8">
+                <p class="question-text">Berapakah \( 64 \div 8 \) ?</p>
+                <input type="text" id="a1_input8" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex8')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex8', 'a1_input8', '8')">Check</button></div>
+                <div class="explanation" id="a1_exp8"><p class="id-text"><strong>Penjelasan:</strong> 64 / 8 = 8.</p></div>
+            </div>
+            <!-- A1 Q9 -->
+            <div class="exercise-box" id="a1_ex9">
+                <p class="question-text">Sepertiga dari 15 adalah...</p>
+                <input type="text" id="a1_input9" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex9')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex9', 'a1_input9', '5')">Check</button></div>
+                <div class="explanation" id="a1_exp9"><p class="id-text"><strong>Penjelasan:</strong> 1/3 x 15 = 5.</p></div>
+            </div>
+            <!-- A1 Q10 -->
+            <div class="exercise-box" id="a1_ex10">
+                <p class="question-text">Berapakah \( 9 \times 5 \) ?</p>
+                <input type="text" id="a1_input10" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a1_ex10')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a1_ex10', 'a1_input10', '45')">Check</button></div>
+                <div class="explanation" id="a1_exp10"><p class="id-text"><strong>Penjelasan:</strong> 9 x 5 = 45.</p></div>
+            </div>
+
+            <div class="controls" style="margin-top: 20px; justify-content: space-between;">
+                <button class="btn btn-muted" onclick="showSection('sec6', document.querySelectorAll('.nav-item')[6])">Previous</button>
+                <button class="btn btn-primary" onclick="printAssignment(1)">Print Result</button>
+                <button class="btn btn-primary" onclick="showSection('assign2', document.querySelectorAll('.nav-item')[8])">Next</button>
+            </div>
+        </div>
+
+        <!-- ASSIGNMENT 2 -->
+        <div id="assign2" class="section-container">
+            <h2>Assignment 2</h2>
+            <p class="en-text">Assignment 2</p>
+            <div class="card">
+                <label style="display:block; margin-bottom:10px;">Nama: <input type="text" id="name2" placeholder="Nama siswa"></label>
+                <label style="display:block; margin-bottom:10px;">Tanggal: <input type="text" id="date2" placeholder="DD/MM/YYYY"></label>
+            </div>
+
+            <!-- A2 Q1 -->
+            <div class="exercise-box" id="a2_ex1">
+                <p class="question-text">Berapakah \( 9 \times 4 \) ?</p>
+                <input type="text" id="a2_input1" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex1')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex1', 'a2_input1', '36')">Check</button></div>
+                <div class="explanation" id="a2_exp1"><p class="id-text"><strong>Penjelasan:</strong> 9 x 4 = 36.</p></div>
+            </div>
+            <!-- A2 Q2 -->
+            <div class="exercise-box" id="a2_ex2">
+                <p class="question-text">Sederhanakan: \( \frac{2}{3} \times \frac{3}{5} \)</p>
+                <input type="text" id="a2_input2" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex2')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex2', 'a2_input2', '2/5')">Check</button></div>
+                <div class="explanation" id="a2_exp2"><p class="id-text"><strong>Penjelasan:</strong> 6/15 dibagi 3 jadi 2/5.</p></div>
+            </div>
+            <!-- A2 Q3 -->
+            <div class="exercise-box" id="a2_ex3">
+                <p class="question-text">Berapakah \( 72 \div 9 \) ?</p>
+                <input type="text" id="a2_input3" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex3')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex3', 'a2_input3', '8')">Check</button></div>
+                <div class="explanation" id="a2_exp3"><p class="id-text"><strong>Penjelasan:</strong> 72 / 9 = 8.</p></div>
+            </div>
+            <!-- A2 Q4 -->
+            <div class="exercise-box" id="a2_ex4">
+                <p class="question-text">Hitunglah \( \frac{1}{2} \times \frac{2}{3} \) !</p>
+                <input type="text" id="a2_input4" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex4')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex4', 'a2_input4', '1/3')">Check</button></div>
+                <div class="explanation" id="a2_exp4"><p class="id-text"><strong>Penjelasan:</strong> 2/6 disederhanakan jadi 1/3.</p></div>
+            </div>
+            <!-- A2 Q5 -->
+            <div class="exercise-box" id="a2_ex5">
+                <p class="question-text">Berapakah \( 8 \times 7 \) ?</p>
+                <input type="text" id="a2_input5" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex5')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex5', 'a2_input5', '56')">Check</button></div>
+                <div class="explanation" id="a2_exp5"><p class="id-text"><strong>Penjelasan:</strong> 8 x 7 = 56.</p></div>
+            </div>
+            <!-- A2 Q6 -->
+            <div class="exercise-box" id="a2_ex6">
+                <p class="question-text">Soal cerita: 2/5 dari 20 adalah...</p>
+                <input type="text" id="a2_input6" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex6')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex6', 'a2_input6', '8')">Check</button></div>
+                <div class="explanation" id="a2_exp6"><p class="id-text"><strong>Penjelasan:</strong> 2/5 x 20 = 40/5 = 8.</p></div>
+            </div>
+            <!-- A2 Q7 -->
+            <div class="exercise-box" id="a2_ex7">
+                <p class="question-text">Sederhanakan: \( \frac{5}{6} \times \frac{3}{10} \)</p>
+                <input type="text" id="a2_input7" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex7')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex7', 'a2_input7', '1/4')">Check</button></div>
+                <div class="explanation" id="a2_exp7"><p class="id-text"><strong>Penjelasan:</strong> 15/60 dibagi 15 jadi 1/4.</p></div>
+            </div>
+            <!-- A2 Q8 -->
+            <div class="exercise-box" id="a2_ex8">
+                <p class="question-text">Berapakah \( 54 \div 6 \) ?</p>
+                <input type="text" id="a2_input8" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex8')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex8', 'a2_input8', '9')">Check</button></div>
+                <div class="explanation" id="a2_exp8"><p class="id-text"><strong>Penjelasan:</strong> 54 / 6 = 9.</p></div>
+            </div>
+            <!-- A2 Q9 -->
+            <div class="exercise-box" id="a2_ex9">
+                <p class="question-text">Hitunglah \( \frac{3}{4} \times \frac{4}{5} \) !</p>
+                <input type="text" id="a2_input9" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex9')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex9', 'a2_input9', '3/5')">Check</button></div>
+                <div class="explanation" id="a2_exp9"><p class="id-text"><strong>Penjelasan:</strong> 12/20 dibagi 4 jadi 3/5.</p></div>
+            </div>
+            <!-- A2 Q10 -->
+            <div class="exercise-box" id="a2_ex10">
+                <p class="question-text">Berapakah \( 7 \times 7 \) ?</p>
+                <input type="text" id="a2_input10" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a2_ex10')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a2_ex10', 'a2_input10', '49')">Check</button></div>
+                <div class="explanation" id="a2_exp10"><p class="id-text"><strong>Penjelasan:</strong> 7 x 7 = 49.</p></div>
+            </div>
+
+            <div class="controls" style="margin-top: 20px; justify-content: space-between;">
+                <button class="btn btn-muted" onclick="showSection('assign1', document.querySelectorAll('.nav-item')[7])">Previous</button>
+                <button class="btn btn-primary" onclick="printAssignment(2)">Print Result</button>
+                <button class="btn btn-primary" onclick="showSection('assign3', document.querySelectorAll('.nav-item')[9])">Next</button>
+            </div>
+        </div>
+
+        <!-- ASSIGNMENT 3 -->
+        <div id="assign3" class="section-container">
+            <h2>Assignment 3</h2>
+            <p class="en-text">Assignment 3</p>
+            <div class="card">
+                <label style="display:block; margin-bottom:10px;">Nama: <input type="text" id="name3" placeholder="Nama siswa"></label>
+                <label style="display:block; margin-bottom:10px;">Tanggal: <input type="text" id="date3" placeholder="DD/MM/YYYY"></label>
+            </div>
+
+            <!-- A3 Q1 -->
+            <div class="exercise-box" id="a3_ex1">
+                <p class="question-text">Berapakah \( 81 \div 9 \) ?</p>
+                <input type="text" id="a3_input1" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex1')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex1', 'a3_input1', '9')">Check</button></div>
+                <div class="explanation" id="a3_exp1"><p class="id-text"><strong>Penjelasan:</strong> 81 / 9 = 9.</p></div>
+            </div>
+            <!-- A3 Q2 -->
+            <div class="exercise-box" id="a3_ex2">
+                <p class="question-text">Sederhanakan: \( \frac{4}{5} \times \frac{5}{8} \)</p>
+                <input type="text" id="a3_input2" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex2')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex2', 'a3_input2', '1/2')">Check</button></div>
+                <div class="explanation" id="a3_exp2"><p class="id-text"><strong>Penjelasan:</strong> 20/40 dibagi 20 jadi 1/2.</p></div>
+            </div>
+            <!-- A3 Q3 -->
+            <div class="exercise-box" id="a3_ex3">
+                <p class="question-text">Berapakah \( 6 \times 8 \) ?</p>
+                <input type="text" id="a3_input3" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex3')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex3', 'a3_input3', '48')">Check</button></div>
+                <div class="explanation" id="a3_exp3"><p class="id-text"><strong>Penjelasan:</strong> 6 x 8 = 48.</p></div>
+            </div>
+            <!-- A3 Q4 -->
+            <div class="exercise-box" id="a3_ex4">
+                <p class="question-text">Soal cerita: 3/4 dari 16 adalah...</p>
+                <input type="text" id="a3_input4" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex4')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex4', 'a3_input4', '12')">Check</button></div>
+                <div class="explanation" id="a3_exp4"><p class="id-text"><strong>Penjelasan:</strong> 3/4 x 16 = 48/4 = 12.</p></div>
+            </div>
+            <!-- A3 Q5 -->
+            <div class="exercise-box" id="a3_ex5">
+                <p class="question-text">Hitunglah \( \frac{1}{3} \times \frac{1}{4} \) !</p>
+                <input type="text" id="a3_input5" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex5')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex5', 'a3_input5', '1/12')">Check</button></div>
+                <div class="explanation" id="a3_exp5"><p class="id-text"><strong>Penjelasan:</strong> 1x1=1, 3x4=12.</p></div>
+            </div>
+            <!-- A3 Q6 -->
+            <div class="exercise-box" id="a3_ex6">
+                <p class="question-text">Berapakah \( 9 \times 6 \) ?</p>
+                <input type="text" id="a3_input6" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex6')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex6', 'a3_input6', '54')">Check</button></div>
+                <div class="explanation" id="a3_exp6"><p class="id-text"><strong>Penjelasan:</strong> 9 x 6 = 54.</p></div>
+            </div>
+            <!-- A3 Q7 -->
+            <div class="exercise-box" id="a3_ex7">
+                <p class="question-text">Hitunglah \( \frac{2}{3} \times 9 \) !</p>
+                <input type="text" id="a3_input7" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex7')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex7', 'a3_input7', '6')">Check</button></div>
+                <div class="explanation" id="a3_exp7"><p class="id-text"><strong>Penjelasan:</strong> 18/3 = 6.</p></div>
+            </div>
+            <!-- A3 Q8 -->
+            <div class="exercise-box" id="a3_ex8">
+                <p class="question-text">Berapakah \( 48 \div 8 \) ?</p>
+                <input type="text" id="a3_input8" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex8')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex8', 'a3_input8', '6')">Check</button></div>
+                <div class="explanation" id="a3_exp8"><p class="id-text"><strong>Penjelasan:</strong> 48 / 8 = 6.</p></div>
+            </div>
+            <!-- A3 Q9 -->
+            <div class="exercise-box" id="a3_ex9">
+                <p class="question-text">Sederhanakan hasil dari \( \frac{2}{7} \times \frac{7}{8} \) !</p>
+                <input type="text" id="a3_input9" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex9')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex9', 'a3_input9', '1/4')">Check</button></div>
+                <div class="explanation" id="a3_exp9"><p class="id-text"><strong>Penjelasan:</strong> 14/56 dibagi 14 jadi 1/4.</p></div>
+            </div>
+            <!-- A3 Q10 -->
+            <div class="exercise-box" id="a3_ex10">
+                <p class="question-text">Berapakah \( 8 \times 5 \) ?</p>
+                <input type="text" id="a3_input10" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a3_ex10')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a3_ex10', 'a3_input10', '40')">Check</button></div>
+                <div class="explanation" id="a3_exp10"><p class="id-text"><strong>Penjelasan:</strong> 8 x 5 = 40.</p></div>
+            </div>
+
+            <div class="controls" style="margin-top: 20px; justify-content: space-between;">
+                <button class="btn btn-muted" onclick="showSection('assign2', document.querySelectorAll('.nav-item')[8])">Previous</button>
+                <button class="btn btn-primary" onclick="printAssignment(3)">Print Result</button>
+                <button class="btn btn-primary" onclick="showSection('assign4', document.querySelectorAll('.nav-item')[10])">Next</button>
+            </div>
+        </div>
+
+        <script>
+            // Shuffle options untuk Bagian 3
+            document.addEventListener('DOMContentLoaded', () => {
+                const optIds = ['opt6_2', 'opt6_3', 'opt6_5', 'opt6_6', 'opt6_9'];
+                optIds.forEach(id => shuffleOptions(id));
+            });
+        </script>
+
+        <!-- ASSIGNMENT 4 -->
+        <div id="assign4" class="section-container">
+            <h2>Assignment 4</h2>
+            <p class="en-text">Assignment 4</p>
+            <div class="card">
+                <label style="display:block; margin-bottom:10px;">Nama: <input type="text" id="name4" placeholder="Nama siswa"></label>
+                <label style="display:block; margin-bottom:10px;">Tanggal: <input type="text" id="date4" placeholder="DD/MM/YYYY"></label>
+            </div>
+
+            <!-- A4 Q1 -->
+            <div class="exercise-box" id="a4_ex1">
+                <p class="question-text">Berapakah \( 8 \times 8 \) ?</p>
+                <input type="text" id="a4_input1" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex1')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex1', 'a4_input1', '64')">Check</button></div>
+                <div class="explanation" id="a4_exp1"><p class="id-text"><strong>Penjelasan:</strong> 8 x 8 = 64.</p></div>
+            </div>
+            <!-- A4 Q2 -->
+            <div class="exercise-box" id="a4_ex2">
+                <p class="question-text">Sederhanakan: \( \frac{3}{4} \times \frac{4}{9} \)</p>
+                <input type="text" id="a4_input2" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex2')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex2', 'a4_input2', '1/3')">Check</button></div>
+                <div class="explanation" id="a4_exp2"><p class="id-text"><strong>Penjelasan:</strong> 12/36 dibagi 12 jadi 1/3.</p></div>
+            </div>
+            <!-- A4 Q3 -->
+            <div class="exercise-box" id="a4_ex3">
+                <p class="question-text">Berapakah \( 72 \div 8 \) ?</p>
+                <input type="text" id="a4_input3" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex3')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex3', 'a4_input3', '9')">Check</button></div>
+                <div class="explanation" id="a4_exp3"><p class="id-text"><strong>Penjelasan:</strong> 72 / 8 = 9.</p></div>
+            </div>
+            <!-- A4 Q4 -->
+            <div class="exercise-box" id="a4_ex4">
+                <p class="question-text">Hitunglah \( \frac{1}{2} \times \frac{1}{5} \) !</p>
+                <input type="text" id="a4_input4" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex4')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex4', 'a4_input4', '1/10')">Check</button></div>
+                <div class="explanation" id="a4_exp4"><p class="id-text"><strong>Penjelasan:</strong> 1x1=1, 2x5=10.</p></div>
+            </div>
+            <!-- A4 Q5 -->
+            <div class="exercise-box" id="a4_ex5">
+                <p class="question-text">Berapakah \( 7 \times 9 \) ?</p>
+                <input type="text" id="a4_input5" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex5')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex5', 'a4_input5', '63')">Check</button></div>
+                <div class="explanation" id="a4_exp5"><p class="id-text"><strong>Penjelasan:</strong> 7 x 9 = 63.</p></div>
+            </div>
+            <!-- A4 Q6 -->
+            <div class="exercise-box" id="a4_ex6">
+                <p class="question-text">Soal cerita: 2/3 dari 18 adalah...</p>
+                <input type="text" id="a4_input6" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex6')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex6', 'a4_input6', '12')">Check</button></div>
+                <div class="explanation" id="a4_exp6"><p class="id-text"><strong>Penjelasan:</strong> 2/3 x 18 = 36/3 = 12.</p></div>
+            </div>
+            <!-- A4 Q7 -->
+            <div class="exercise-box" id="a4_ex7">
+                <p class="question-text">Sederhanakan hasil dari \( \frac{2}{5} \times \frac{5}{6} \) !</p>
+                <input type="text" id="a4_input7" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex7')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex7', 'a4_input7', '1/3')">Check</button></div>
+                <div class="explanation" id="a4_exp7"><p class="id-text"><strong>Penjelasan:</strong> 10/30 dibagi 10 jadi 1/3.</p></div>
+            </div>
+            <!-- A4 Q8 -->
+            <div class="exercise-box" id="a4_ex8">
+                <p class="question-text">Berapakah \( 63 \div 7 \) ?</p>
+                <input type="text" id="a4_input8" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex8')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex8', 'a4_input8', '9')">Check</button></div>
+                <div class="explanation" id="a4_exp8"><p class="id-text"><strong>Penjelasan:</strong> 63 / 7 = 9.</p></div>
+            </div>
+            <!-- A4 Q9 -->
+            <div class="exercise-box" id="a4_ex9">
+                <p class="question-text">Hitunglah \( \frac{1}{4} \times \frac{2}{3} \) !</p>
+                <input type="text" id="a4_input9" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex9')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex9', 'a4_input9', '1/6')">Check</button></div>
+                <div class="explanation" id="a4_exp9"><p class="id-text"><strong>Penjelasan:</strong> 2/12 dibagi 2 jadi 1/6.</p></div>
+            </div>
+            <!-- A4 Q10 -->
+            <div class="exercise-box" id="a4_ex10">
+                <p class="question-text">Berapakah \( 9 \times 9 \) ?</p>
+                <input type="text" id="a4_input10" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a4_ex10')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a4_ex10', 'a4_input10', '81')">Check</button></div>
+                <div class="explanation" id="a4_exp10"><p class="id-text"><strong>Penjelasan:</strong> 9 x 9 = 81.</p></div>
+            </div>
+
+            <div class="controls" style="margin-top: 20px; justify-content: space-between;">
+                <button class="btn btn-muted" onclick="showSection('assign3', document.querySelectorAll('.nav-item')[9])">Previous</button>
+                <button class="btn btn-primary" onclick="printAssignment(4)">Print Result</button>
+                <button class="btn btn-primary" onclick="showSection('assign5', document.querySelectorAll('.nav-item')[11])">Next</button>
+            </div>
+        </div>
+
+        <!-- ASSIGNMENT 5 -->
+        <div id="assign5" class="section-container">
+            <h2>Assignment 5</h2>
+            <p class="en-text">Assignment 5</p>
+            <div class="card">
+                <label style="display:block; margin-bottom:10px;">Nama: <input type="text" id="name5" placeholder="Nama siswa"></label>
+                <label style="display:block; margin-bottom:10px;">Tanggal: <input type="text" id="date5" placeholder="DD/MM/YYYY"></label>
+            </div>
+
+            <!-- A5 Q1 -->
+            <div class="exercise-box" id="a5_ex1">
+                <p class="question-text">Berapakah \( 49 \div 7 \) ?</p>
+                <input type="text" id="a5_input1" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex1')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex1', 'a5_input1', '7')">Check</button></div>
+                <div class="explanation" id="a5_exp1"><p class="id-text"><strong>Penjelasan:</strong> 49 / 7 = 7.</p></div>
+            </div>
+            <!-- A5 Q2 -->
+            <div class="exercise-box" id="a5_ex2">
+                <p class="question-text">Hitung dan sederhanakan: \( \frac{2}{5} \times \frac{5}{8} \)</p>
+                <input type="text" id="a5_input2" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex2')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex2', 'a5_input2', '1/4')">Check</button></div>
+                <div class="explanation" id="a5_exp2"><p class="id-text"><strong>Penjelasan:</strong> 10/40 dibagi 10 jadi 1/4.</p></div>
+            </div>
+            <!-- A5 Q3 -->
+            <div class="exercise-box" id="a5_ex3">
+                <p class="question-text">Berapakah \( 7 \times 8 \) ?</p>
+                <input type="text" id="a5_input3" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex3')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex3', 'a5_input3', '56')">Check</button></div>
+                <div class="explanation" id="a5_exp3"><p class="id-text"><strong>Penjelasan:</strong> 7 x 8 = 56.</p></div>
+            </div>
+            <!-- A5 Q4 -->
+            <div class="exercise-box" id="a5_ex4">
+                <p class="question-text">Soal cerita: 3/5 dari 15 adalah...</p>
+                <input type="text" id="a5_input4" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex4')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex4', 'a5_input4', '9')">Check</button></div>
+                <div class="explanation" id="a5_exp4"><p class="id-text"><strong>Penjelasan:</strong> 3/5 x 15 = 45/5 = 9.</p></div>
+            </div>
+            <!-- A5 Q5 -->
+            <div class="exercise-box" id="a5_ex5">
+                <p class="question-text">Berapakah hasil dari \( \frac{1}{3} \times \frac{3}{5} \) ?</p>
+                <input type="text" id="a5_input5" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex5')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex5', 'a5_input5', '1/5')">Check</button></div>
+                <div class="explanation" id="a5_exp5"><p class="id-text"><strong>Penjelasan:</strong> 3/15 dibagi 3 jadi 1/5.</p></div>
+            </div>
+            <!-- A5 Q6 -->
+            <div class="exercise-box" id="a5_ex6">
+                <p class="question-text">Berapakah \( 6 \times 9 \) ?</p>
+                <input type="text" id="a5_input6" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex6')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex6', 'a5_input6', '54')">Check</button></div>
+                <div class="explanation" id="a5_exp6"><p class="id-text"><strong>Penjelasan:</strong> 6 x 9 = 54.</p></div>
+            </div>
+            <!-- A5 Q7 -->
+            <div class="exercise-box" id="a5_ex7">
+                <p class="question-text">Hitunglah \( \frac{1}{2} \times \frac{1}{8} \) !</p>
+                <input type="text" id="a5_input7" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex7')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex7', 'a5_input7', '1/16')">Check</button></div>
+                <div class="explanation" id="a5_exp7"><p class="id-text"><strong>Penjelasan:</strong> 1x1=1, 2x8=16.</p></div>
+            </div>
+            <!-- A5 Q8 -->
+            <div class="exercise-box" id="a5_ex8">
+                <p class="question-text">Berapakah \( 56 \div 8 \) ?</p>
+                <input type="text" id="a5_input8" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex8')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex8', 'a5_input8', '7')">Check</button></div>
+                <div class="explanation" id="a5_exp8"><p class="id-text"><strong>Penjelasan:</strong> 56 / 8 = 7.</p></div>
+            </div>
+            <!-- A5 Q9 -->
+            <div class="exercise-box" id="a5_ex9">
+                <p class="question-text">Sederhanakan: \( \frac{2}{3} \times \frac{9}{4} \)</p>
+                <input type="text" id="a5_input9" placeholder="Format a/b">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex9')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex9', 'a5_input9', '3/2')">Check</button></div>
+                <div class="explanation" id="a5_exp9"><p class="id-text"><strong>Penjelasan:</strong> 18/12 dibagi 6 jadi 3/2.</p></div>
+            </div>
+            <!-- A5 Q10 -->
+            <div class="exercise-box" id="a5_ex10">
+                <p class="question-text">Berapakah \( 8 \times 9 \) ?</p>
+                <input type="text" id="a5_input10" placeholder="Jawaban...">
+                <div class="controls"><button class="btn btn-muted" onclick="resetExercise('a5_ex10')">Reset</button><button class="btn btn-secondary" onclick="checkAnswerInput('a5_ex10', 'a5_input10', '72')">Check</button></div>
+                <div class="explanation" id="a5_exp10"><p class="id-text"><strong>Penjelasan:</strong> 8 x 9 = 72.</p></div>
+            </div>
+
+            <div class="controls" style="margin-top: 20px; justify-content: space-between;">
+                <button class="btn btn-muted" onclick="showSection('assign4', document.querySelectorAll('.nav-item')[10])">Previous</button>
+                <button class="btn btn-primary" onclick="printAssignment(5)">Print Result</button>
+                <button class="btn btn-primary" onclick="showSection('consolidation', document.querySelectorAll('.nav-item')[12])">Next</button>
+            </div>
+        </div>
+
+        <!-- CONSOLIDATION & REFLECTION -->
+        <div id="consolidation" class="section-container">
+            <h2>Consolidation & Reflection (01:00-01:05)</h2>
+            <p class="en-text">Consolidation & Reflection</p>
+
+            <div class="theory-box">
+                <p class="id-text">Selamat! Kamu telah menyelesaikan pelajaran tentang Perkalian Pecahan. Mari kita ingat poin pentingnya:</p>
+                <p class="en-text">Congratulations! You have completed the lesson on Fraction Multiplication. Let's remember the key points:</p>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.6;">
+                    <li class="id-text">1. Rumus dasar: \( \frac{a}{b} \times \frac{c}{d} = \frac{a \times c}{b \times d} \)</li>
+                    <li class="en-text">Basic formula: \( \frac{a}{b} \times \frac{c}{d} = \frac{a \times c}{b \times d} \)</li>
+                    <li class="id-text">2. Kalikan pembilang dengan pembilang, penyebut dengan penyebut.</li>
+                    <li class="en-text">Multiply numerator by numerator, denominator by denominator.</li>
+                    <li class="id-text">3. Selalu sederhanakan jawabanmu jika memungkinkan.</li>
+                    <li class="en-text">Always simplify your answer if possible.</li>
+                    <li class="id-text">4. Kata "dari" dalam soal cerita berarti perkalian (\( \times \)).</li>
+                    <li class="en-text">The word "of" in word problems means multiplication (\( \times \)).</li>
+                </ul>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <h3 style="margin-bottom: 15px;">Apakah kamu siap untuk belajar lebih lanjut?</h3>
+                <p class="en-text" style="margin-bottom: 20px;">Are you ready to learn more?</p>
+                <a href="https://learn.algonova.id" target="_blank" class="btn btn-primary" style="font-size: 1.2rem; padding: 15px 30px;">Kunjungi learn.algonova.id</a>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-muted" onclick="showSection('assign5', document.querySelectorAll('.nav-item')[11])">Previous</button>
+                <button class="btn btn-secondary" onclick="showSection('home', document.querySelectorAll('.nav-item')[0])">Kembali ke Home</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- AREA PRINT A4 -->
+    <div id="printArea"></div>
+
+    <script>
+        // Fungsi navigasi section
+        function showSection(sectionId, navElement) {
+            // Sembunyikan semua section
+            document.querySelectorAll('.section-container').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            // Tampilkan section yang dipilih
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update active state di navbar
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            if(navElement) {
+                navElement.classList.add('active');
+            }
+
+            // Render KaTeX setiap kali section berganti
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.getElementById(sectionId), {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '\\[', right: '\\]', display: true},
+                        {left: '\\(', right: '\\)', display: false}
+                    ]
+                });
+            }
+        }
+
+        // Fungsi reset semua progress
+        function resetAllProgress() {
+            if(confirm("Apakah Anda yakin ingin mereset SEMUA jawaban dan progres?")) {
+                document.querySelectorAll('input[type="text"]').forEach(inp => inp.value = '');
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.classList.remove('selected', 'correct', 'incorrect');
+                });
+                document.querySelectorAll('.explanation').forEach(exp => exp.classList.remove('show'));
+                alert("Progres telah direset!");
+                showSection('home', document.querySelectorAll('.nav-item')[0]);
+            }
+        }
+
+        // Fungsi random options (akan dipanggil saat load)
+        function shuffleOptions(containerId) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const options = Array.from(container.children);
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(options[j]);
+                options.splice(j, 1);
+            }
+        }
+
+        // Fungsi pilih jawaban
+        function selectAnswer(btn, isCorrect) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        // Fungsi check jawaban pilihan ganda
+        function checkAnswer(exId, correctAnswer) {
+            const exBox = document.getElementById(exId);
+            const selected = exBox.querySelector('.selected');
+            const explanation = exBox.querySelector('.explanation');
+            
+            if(!selected) {
+                alert("Silakan pilih jawaban terlebih dahulu!");
+                return;
+            }
+
+            const selectedValue = selected.getAttribute('data-value');
+            
+            if(selectedValue == correctAnswer || selected.textContent.includes(correctAnswer)) {
+                selected.classList.add('correct');
+            } else {
+                selected.classList.add('incorrect');
+                exBox.querySelectorAll('.option-btn').forEach(opt => {
+                    if(opt.getAttribute('data-value') == correctAnswer || opt.textContent.includes(correctAnswer)) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+            explanation.classList.add('show');
+        }
+
+        // Fungsi check jawaban isian
+        function checkAnswerInput(exId, inputId, correctAnswer) {
+            const exBox = document.getElementById(exId);
+            const input = document.getElementById(inputId);
+            const explanation = exBox.querySelector('.explanation');
+            const val = input.value.trim().toLowerCase().replace(/\s/g, '');
+
+            if(val === '') {
+                alert("Silakan ketik jawaban terlebih dahulu!");
+                return;
+            }
+
+            if(val === correctAnswer.toLowerCase().replace(/\s/g, '')) {
+                input.style.borderColor = "var(--primary)";
+                input.style.backgroundColor = "#d7ffb8";
+            } else {
+                input.style.borderColor = "var(--danger)";
+                input.style.backgroundColor = "#ffdada";
+            }
+            explanation.classList.add('show');
+        }
+
+        // Fungsi reset exercise
+        function resetExercise(exId) {
+            const exBox = document.getElementById(exId);
+            exBox.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+            });
+            const input = exBox.querySelector('input[type="text"]');
+            if(input) {
+                input.value = '';
+                input.style.borderColor = "";
+                input.style.backgroundColor = "";
+            }
+            exBox.querySelector('.explanation').classList.remove('show');
+        }
+
+        // Fungsi Print Assignment ke A4
+        function printAssignment(assignNum) {
+            const name = document.getElementById(`name${assignNum}`).value || '...';
+            const date = document.getElementById(`date${assignNum}`).value || '...';
+            const assignContainer = document.getElementById(`assign${assignNum}`);
+            const exercises = assignContainer.querySelectorAll('.exercise-box');
+            
+            let score = 0;
+            let tableRows = '';
+            
+            exercises.forEach((ex, index) => {
+                const qTextRaw = ex.querySelector('.question-text').innerText;
+                const qText = qTextRaw.replace(/\[|\]|\{|\}/g, '').replace(/\\frac/g, '').replace(/\\times/g, 'x').replace(/\\div/g, '/').replace(/\s+/g, ' ').trim();
+                
+                const input = ex.querySelector('input[type="text"]');
+                const studentAns = input ? input.value : '(kosong)';
+                
+                const checkBtn = ex.querySelector('.btn-secondary');
+                let correctVal = '';
+                if (checkBtn) {
+                    const onclickStr = checkBtn.getAttribute('onclick');
+                    const match = onclickStr.match(/'([^']+)'/g);
+                    if (match && match.length >= 3) {
+                        correctVal = match[2].replace(/'/g, '');
+                    }
+                }
+                
+                const isCorrect = studentAns.trim().toLowerCase().replace(/\s/g, '') === correctVal.toLowerCase().replace(/\s/g, '');
+                if (isCorrect) score++;
+                
+                tableRows += `
+                    <tr>
+                        <td style="text-align:center; border: 1px solid #000; padding: 5px;">${index + 1}</td>
+                        <td style="border: 1px solid #000; padding: 5px;">${qText}</td>
+                        <td style="text-align:center; border: 1px solid #000; padding: 5px;">${studentAns}</td>
+                        <td style="text-align:center; border: 1px solid #000; padding: 5px;">${correctVal}</td>
+                        <td style="text-align:center; border: 1px solid #000; padding: 5px; font-size: 1.2rem;">${isCorrect ? '&#10003;' : '&#10007;'}</td>
+                    </tr>
+                `;
+            });
+
+            const printContent = `
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; width: 100%; color: #000;">
+                    <h2 style="text-align:center; margin-bottom: 5px; color: #000;">MATH TUTORING by Deni</h2>
+                    <hr style="border: 1px solid #000; margin-bottom: 15px;">
+                    <table style="width: 100%; margin-bottom: 15px; font-size: 14px; color: #000;">
+                        <tr>
+                            <td><strong>Name:</strong> ${name}</td>
+                            <td><strong>Date:</strong> ${date}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Topic:</strong> Perkalian Pecahan</td>
+                            <td><strong>Assignment Group:</strong> ${assignNum}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>Score:</strong> ${score} / 10</td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; color: #000;">
+                        <thead>
+                            <tr style="background: #eee;">
+                                <th style="border: 1px solid #000; padding: 8px; width: 5%;">No.</th>
+                                <th style="border: 1px solid #000; padding: 8px; width: 45%;">Question</th>
+                                <th style="border: 1px solid #000; padding: 8px; width: 15%;">Student Answer</th>
+                                <th style="border: 1px solid #000; padding: 8px; width: 15%;">Correct Answer</th>
+                                <th style="border: 1px solid #000; padding: 8px; width: 10%;">Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                    <div style="text-align: right; margin-top: 40px; color: #000;">
+                        Checked by,<br><br>
+                        <strong>Deni</strong>
+                    </div>
+                </div>
+            `;
+
+            const printArea = document.getElementById('printArea');
+            printArea.innerHTML = printContent;
+            window.print();
+            setTimeout(() => { printArea.innerHTML = ''; }, 500);
+        }
+
+        // Inisialisasi awal: shuffle options dan render KaTeX saat load pertama kali
+        document.addEventListener('DOMContentLoaded', () => {
+            // Gabungan semua ID yang membutuhkan shuffle
+            const optIds = [
+                'opt1_1', 'opt1_2', 'opt1_4', 'opt1_5', 'opt1_6', 'opt1_10', 
+                'opt2_1', 'opt2_2', 'opt2_4', 'opt2_5', 'opt2_6', 'opt2_8', 'opt2_9',
+                'opt3_2', 'opt3_3', 'opt3_4', 'opt3_6', 'opt3_7', 'opt3_10', 
+                'opt4_1', 'opt4_3', 'opt4_4', 'opt4_5', 'opt4_6', 'opt4_9', 'opt4_10',
+                'opt5_1', 'opt5_3', 'opt5_4', 'opt5_5', 'opt5_7', 'opt5_9', 'opt5_10',
+                'opt6_2', 'opt6_3', 'opt6_5', 'opt6_6', 'opt6_9'
+            ];
+            
+            optIds.forEach(id => shuffleOptions(id));
+            
+            // Render KaTeX untuk seluruh body
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
